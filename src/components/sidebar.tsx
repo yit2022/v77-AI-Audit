@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 
 const links = [
   { href: "/dashboard", label: "Dashboard" },
+  { href: "/compliance", label: "Compliance" },
   { href: "/systems", label: "AI Inventory" },
   { href: "/controls", label: "Control Crosswalk" },
   { href: "/assessments", label: "Assessments" },
