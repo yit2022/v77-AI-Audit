@@ -6,6 +6,7 @@ import { getSession } from "@/lib/auth/session";
 import { id } from "@/lib/ids";
 import { seedIfEmpty } from "@/lib/db/seed";
 import { runEvalSuite } from "@/lib/evals/runner";
+import type { EvalCategory } from "@/lib/evals/types";
 
 export async function GET() {
   await seedIfEmpty();
@@ -28,6 +29,8 @@ const bodySchema = z.object({
   categories: z
     .array(z.enum(["robustness", "prompt_injection", "pii_leakage", "hallucination", "fairness"]))
     .optional(),
+  fairnessCsv: z.string().optional(),
+  sensitiveColumn: z.string().optional(),
 });
 
 export async function POST(req: Request) {
@@ -37,11 +40,12 @@ export async function POST(req: Request) {
   const parsed = bodySchema.safeParse(await req.json().catch(() => null));
   if (!parsed.success) return NextResponse.json({ error: "Invalid body" }, { status: 400 });
   try {
-    const categories = parsed.data.categories?.filter(
-      (c): c is "robustness" | "prompt_injection" | "pii_leakage" | "hallucination" =>
-        c !== "fairness",
-    );
-    const suite = await runEvalSuite(parsed.data.provider, categories);
+    const suite = await runEvalSuite({
+      providerId: parsed.data.provider,
+      categories: parsed.data.categories as EvalCategory[] | undefined,
+      fairnessCsv: parsed.data.fairnessCsv,
+      sensitiveColumn: parsed.data.sensitiveColumn,
+    });
     await ensureDb();
     const runId = id();
     await db.insert(schema.evalRuns).values({
@@ -53,6 +57,7 @@ export async function POST(req: Request) {
       resultsJson: JSON.stringify({
         results: suite.results,
         categoryScores: suite.categoryScores,
+        fairnessMetrics: suite.fairnessMetrics ?? null,
       }),
       passCount: suite.passCount,
       failCount: suite.failCount,

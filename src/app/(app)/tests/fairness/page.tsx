@@ -24,7 +24,7 @@ export default async function FairnessPage() {
     <div>
       <PageHeader
         title="Fairness tests"
-        subtitle="Upload a predictions CSV with y_true, y_pred, and a sensitive attribute column. Computes demographic parity and equalized odds."
+        subtitle="Quantitative bias metrics also fold into the shared scored eval suite report. Upload a predictions CSV with y_true, y_pred, and a sensitive attribute column. Computes demographic parity and equalized odds."
       />
       <FairnessForm systems={systems.map((s) => ({ id: s.id, name: s.name }))} />
       <div className="mt-6 space-y-4">
