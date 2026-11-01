@@ -146,11 +146,8 @@ export function Sidebar({
   }
 
   function isCollapsed(id: string) {
-    if (collapsed[id] === undefined) {
-      // Default: expand Overview + active section's group; collapse the rest for density.
-      const active = sectionContainsPath(SECTIONS.find((s) => s.id === id)!, pathname);
-      return id !== "overview" && !active;
-    }
+    // Default open so every destination is one click away; users can collapse sections.
+    if (collapsed[id] === undefined) return false;
     return collapsed[id];
   }
 
