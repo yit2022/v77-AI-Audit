@@ -326,5 +326,8 @@ export const pilotLeads = pgTable("pilot_leads", {
   roleTitle: text("role_title").notNull().default(""),
   message: text("message").notNull().default(""),
   source: text("source").notNull().default("landing"),
+  status: text("status").notNull().default("new"),
+  notes: text("notes").notNull().default(""),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().$defaultFn(() => new Date()),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().$defaultFn(() => new Date()),
 });

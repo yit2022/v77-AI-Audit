@@ -188,6 +188,9 @@ CREATE TABLE IF NOT EXISTS pilot_leads (
   role_title text NOT NULL DEFAULT '',
   message text NOT NULL DEFAULT '',
   source text NOT NULL DEFAULT 'landing',
+  status text NOT NULL DEFAULT 'new',
+  notes text NOT NULL DEFAULT '',
+  updated_at integer,
   created_at integer
 );
 CREATE INDEX IF NOT EXISTS pilot_leads_email_idx ON pilot_leads(email);

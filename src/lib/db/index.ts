@@ -5,6 +5,7 @@ import { drizzle as drizzleLibsql, type LibSQLDatabase } from "drizzle-orm/libsq
 import { drizzle as drizzleD1 } from "drizzle-orm/d1";
 import * as schema from "./schema";
 import { SQLITE_DDL } from "./ddl-sqlite";
+import { MIGRATIONS } from "./migrations";
 import { resolveDbBackend } from "./backend";
 
 // Use LibSQLDatabase as the shared typing surface; D1 instance is cast at runtime.
@@ -81,21 +82,34 @@ export const db = new Proxy({} as object, {
   },
 }) as unknown as V77Db;
 
-async function execDdl(backend: "d1" | "sqlite") {
-  const statements = SQLITE_DDL.split(";")
+async function execStatements(backend: "d1" | "sqlite", sql: string, { ignoreErrors = false } = {}) {
+  const statements = sql.split(";")
     .map((s) => s.trim())
     .filter((s) => s.length > 0 && !s.startsWith("--"));
   if (backend === "d1") {
     const d1 = global.__v77_d1!;
     for (const stmt of statements) {
-      await d1.prepare(stmt).run();
+      try {
+        await d1.prepare(stmt).run();
+      } catch (e) {
+        if (!ignoreErrors) throw e;
+      }
     }
     return;
   }
   const client = global.__v77_libsql!;
   for (const stmt of statements) {
-    await client.execute(stmt);
+    try {
+      await client.execute(stmt);
+    } catch (e) {
+      if (!ignoreErrors) throw e;
+    }
   }
+}
+
+async function execDdl(backend: "d1" | "sqlite") {
+  await execStatements(backend, SQLITE_DDL);
+  await execStatements(backend, MIGRATIONS, { ignoreErrors: true });
 }
 
 export async function ensureDb() {

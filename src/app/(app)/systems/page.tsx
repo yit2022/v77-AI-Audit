@@ -7,6 +7,7 @@ import { getSession } from "@/lib/auth/session";
 import { PageHeader, RiskBadge, EmptyState } from "@/components/ui";
 import { filterRegistry, summariseRegistry } from "@/lib/registry/summary";
 import { RegistryFilters } from "@/components/registry-filters";
+import { InventoryCsvImport } from "@/components/inventory-csv-import";
 
 export default async function SystemsPage({
   searchParams,
@@ -59,6 +60,7 @@ export default async function SystemsPage({
         subtitle="EU AI Act risk tiers, value-chain roles, lifecycle status, and guided classification."
         actions={
           <>
+            <InventoryCsvImport />
             <a className="btn btn-secondary" href="/api/systems?format=registry">
               Export registry JSON
             </a>

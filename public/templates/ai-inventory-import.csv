@@ -1,0 +1,4 @@
+name,description,intended_purpose,role,domain,lifecycle,vendor,version,risk_tier,gpai
+HireSense Ranking,ML ranking of applicants,Support recruiters shortlisting,provider,employment,production,Internal,1.2,high_risk,false
+SupportPilot Chat,Customer support LLM,Answer product questions,deployer,customer_support,pilot,Acme LLM,0.9,limited,true
+DocIntel Extractor,Document OCR+LLM extract,Extract fields from contracts,provider,legal,discovered,Internal,0.3,,false

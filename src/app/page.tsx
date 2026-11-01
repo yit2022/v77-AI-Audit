@@ -44,25 +44,28 @@ export default async function HomePage() {
 
   return (
     <main className="min-h-screen bg-[radial-gradient(ellipse_at_top,_#e8f7fd_0%,_#ffffff_48%,_#ffffff_100%)]">
-      <header className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-6 py-6">
+      <header className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-5 sm:px-6 sm:py-6">
         <LogoMark />
-        <nav className="flex flex-wrap items-center gap-2 sm:gap-3">
-          <a href="#pricing" className="hidden text-sm font-medium text-slate-600 hover:text-[#0F2A4A] sm:inline">
+        <nav className="flex flex-wrap items-center justify-end gap-2 sm:gap-3">
+          <Link href="/how-it-works" className="hidden text-sm font-medium text-slate-600 hover:text-[#0F2A4A] sm:inline">
+            How it works
+          </Link>
+          <Link href="/frameworks" className="hidden text-sm font-medium text-slate-600 hover:text-[#0F2A4A] md:inline">
+            Frameworks
+          </Link>
+          <a href="#pricing" className="hidden text-sm font-medium text-slate-600 hover:text-[#0F2A4A] lg:inline">
             Pricing
           </a>
-          <a href="#request-pilot" className="hidden text-sm font-medium text-slate-600 hover:text-[#0F2A4A] md:inline">
-            Pilot
-          </a>
-          <Link href="/login" className="btn btn-secondary">
+          <Link href="/login" className="btn btn-secondary px-3 py-2 sm:px-5">
             Sign in
           </Link>
-          <Link href="/signup" className="btn btn-primary">
-            Start free workspace
+          <Link href="/signup" className="btn btn-primary px-3 py-2 sm:px-5">
+            Start free
           </Link>
         </nav>
       </header>
 
-      <section className="mx-auto max-w-6xl px-6 pb-10 pt-6">
+      <section className="mx-auto max-w-6xl px-4 sm:px-6 pb-10 pt-6">
         <div className="grid items-center gap-10 lg:grid-cols-[1.15fr_0.85fr]">
           <div>
             <p className="text-xs font-bold uppercase tracking-[0.18em] text-sky-700">Global AI audit platform</p>
@@ -110,7 +113,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <section id="capabilities" className="mx-auto max-w-6xl px-6 py-10">
+      <section id="capabilities" className="mx-auto max-w-6xl px-4 sm:px-6 py-10">
         <h2 className="text-2xl font-semibold text-[#0F2A4A]">Built for deployers, providers and auditors</h2>
         <div className="mt-6 grid gap-4 md:grid-cols-3">
           {pillars.map((p) => (
@@ -122,7 +125,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-6xl px-6 pb-10">
+      <section className="mx-auto max-w-6xl px-4 sm:px-6 pb-10">
         <div className="card p-8">
           <h2 className="text-xl font-semibold text-[#0F2A4A]">Platform modules</h2>
           <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
@@ -138,7 +141,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <section id="pricing" className="mx-auto max-w-6xl px-6 pb-10">
+      <section id="pricing" className="mx-auto max-w-6xl px-4 sm:px-6 pb-10">
         <div className="card overflow-hidden p-0">
           <div className="grid lg:grid-cols-2">
             <div className="border-b border-[#d7e6ef] bg-[#6FCDF5]/15 p-8 lg:border-b-0 lg:border-r">
@@ -156,7 +159,7 @@ export default async function HomePage() {
             </div>
             <div className="p-8">
               <h3 className="text-lg font-semibold text-[#0F2A4A]">Request a pilot</h3>
-              <p className="mt-1 text-sm text-slate-500">Tell us about your programme. We'll be in touch within 2 business days.</p>
+              <p className="mt-1 text-sm text-slate-500">Tell us about your programme. We&apos;ll be in touch within 2 business days.</p>
               <div className="mt-5">
                 <PilotRequestForm />
               </div>
@@ -166,12 +169,17 @@ export default async function HomePage() {
       </section>
 
       <footer className="border-t border-[#d7e6ef] bg-white">
-        <div className="mx-auto flex max-w-6xl flex-col gap-4 px-6 py-8 sm:flex-row sm:items-center sm:justify-between">
+        <div className="mx-auto flex max-w-6xl flex-col gap-4 px-4 py-8 sm:flex-row sm:items-center sm:justify-between sm:px-6">
           <div className="space-y-2">
             <LogoMark />
             <p className="text-xs text-slate-500">© 2026 Tamalaki Business Network Ltd</p>
           </div>
-          <div className="flex gap-4 text-sm font-medium text-[#0F2A4A]">
+          <div className="flex flex-wrap gap-x-4 gap-y-2 text-sm font-medium text-[#0F2A4A]">
+            <Link href="/how-it-works" className="hover:text-sky-700">How it works</Link>
+            <Link href="/frameworks" className="hover:text-sky-700">Frameworks</Link>
+            <Link href="/security" className="hover:text-sky-700">Security</Link>
+            <Link href="/privacy" className="hover:text-sky-700">Privacy</Link>
+            <Link href="/terms" className="hover:text-sky-700">Terms</Link>
             <Link href="/login" className="hover:text-sky-700">Sign in</Link>
             <Link href="/signup" className="hover:text-sky-700">Sign up</Link>
           </div>
