@@ -6,6 +6,7 @@ import { getSession } from "@/lib/auth/session";
 import { classifyAiSystem, CLASSIFICATION_QUESTIONS } from "@/lib/classification";
 import { controlsForTier } from "@/lib/crosswalk";
 import { id } from "@/lib/ids";
+import { insertInChunks } from "@/lib/db/chunk-insert";
 import { seedIfEmpty } from "@/lib/db/seed";
 
 export async function GET() {
@@ -49,10 +50,15 @@ export async function POST(req: Request) {
     });
     const applicable = controlsForTier(result.tier);
     if (applicable.length) {
-      await db.insert(schema.assessmentControls).values(
+      await insertInChunks(
+        schema.assessmentControls,
         applicable.map((c) => ({
-          id: id(), assessmentId: assessmentId!, controlId: c.id,
-          status: "not_started", ownerUserId: session.userId,
+          id: id(),
+          assessmentId: assessmentId!,
+          controlId: c.id,
+          status: "not_started",
+          ownerUserId: session.userId,
+          notes: "",
         })),
       );
     }

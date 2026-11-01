@@ -58,3 +58,9 @@ data/*.sqlite
 # Cloudflare / local runtime
 .wrangler/
 .open-next/
+
+# Playwright
+test-results/
+playwright-report/
+blob-report/
+playwright/.cache/

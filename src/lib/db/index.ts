@@ -101,7 +101,9 @@ async function execDdl(backend: "d1" | "sqlite") {
 export async function ensureDb() {
   if (!global.__v77_ready) {
     global.__v77_ready = (async () => {
-      const d1 = await getD1Binding();
+      const forceSqlite =
+        process.env.V77_FORCE_SQLITE === "true" || Boolean(process.env.V77_DATA_DIR);
+      const d1 = forceSqlite ? null : await getD1Binding();
       if (d1) {
         _db = drizzleD1(d1, { schema }) as unknown as V77Db;
         global.__v77_db = _db;

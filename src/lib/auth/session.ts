@@ -42,7 +42,7 @@ export async function getSession(): Promise<SessionUser | null> {
   await ensureDb();
   const jar = await cookies();
   const sid = jar.get(COOKIE)?.value;
-  if (!assertSessionIdShape(sid)) return null;
+  if (!assertSessionIdShape(sid) || !sid) return null;
   const rows = await db
     .select({
       sessionId: schema.sessions.id,

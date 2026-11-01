@@ -3,17 +3,7 @@ import { eq } from "drizzle-orm";
 import { db, ensureDb, schema } from "./index";
 import { CONTROL_SEEDS } from "@/lib/crosswalk";
 import { id } from "@/lib/ids";
-
-async function insertInChunks<T extends Record<string, unknown>>(
-  table: Parameters<typeof db.insert>[0],
-  rows: T[],
-  chunkSize = 5,
-) {
-  for (let i = 0; i < rows.length; i += chunkSize) {
-    const chunk = rows.slice(i, i + chunkSize);
-    if (chunk.length) await db.insert(table).values(chunk as never);
-  }
-}
+import { insertInChunks } from "./chunk-insert";
 
 function resolveSeedPasswords(): {
   admin: string;

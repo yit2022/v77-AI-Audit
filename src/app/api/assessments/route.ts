@@ -4,6 +4,7 @@ import { z } from "zod";
 import { db, ensureDb, schema } from "@/lib/db";
 import { getSession } from "@/lib/auth/session";
 import { id } from "@/lib/ids";
+import { insertInChunks } from "@/lib/db/chunk-insert";
 import { controlsForTier } from "@/lib/crosswalk";
 import { seedIfEmpty } from "@/lib/db/seed";
 
@@ -58,9 +59,15 @@ export async function POST(req: Request) {
     id: assessmentId, orgId: session.orgId, systemId: system.id, name: parsed.data.name, status: "draft",
   });
   const applicable = controlsForTier(system.riskTier ?? "minimal");
-  await db.insert(schema.assessmentControls).values(
+  await insertInChunks(
+    schema.assessmentControls,
     applicable.map((c) => ({
-      id: id(), assessmentId, controlId: c.id, status: "not_started", ownerUserId: session.userId,
+      id: id(),
+      assessmentId,
+      controlId: c.id,
+      status: "not_started",
+      ownerUserId: session.userId,
+      notes: "",
     })),
   );
   return NextResponse.json({ id: assessmentId }, { status: 201 });
