@@ -38,6 +38,11 @@ export default async function AssessmentDetailPage({
       <PageHeader
         title={assessment.name}
         subtitle={`Status: ${assessment.status.replace("_", " ")}`}
+        actions={
+          <a className="btn btn-secondary" href={`/api/assessments/${assessment.id}/report`}>
+            Download PDF report
+          </a>
+        }
       />
       <AssessmentControlsClient
         items={controls.map(({ ac, control }) => ({
