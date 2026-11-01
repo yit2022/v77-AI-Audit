@@ -168,4 +168,15 @@ CREATE TABLE IF NOT EXISTS api_keys (
   last_used_at timestamptz, revoked_at timestamptz,
   created_at timestamptz NOT NULL DEFAULT now()
 );
+CREATE TABLE IF NOT EXISTS pilot_leads (
+  id text PRIMARY KEY,
+  name text NOT NULL,
+  email text NOT NULL,
+  company text NOT NULL DEFAULT '',
+  role_title text NOT NULL DEFAULT '',
+  message text NOT NULL DEFAULT '',
+  source text NOT NULL DEFAULT 'landing',
+  created_at integer
+);
+CREATE INDEX IF NOT EXISTS pilot_leads_email_idx ON pilot_leads(email);
 `;

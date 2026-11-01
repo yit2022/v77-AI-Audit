@@ -318,3 +318,13 @@ export const orgInvites = pgTable("org_invites", {
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().$defaultFn(() => new Date()),
 });
 
+export const pilotLeads = pgTable("pilot_leads", {
+  id: text("id").primaryKey(),
+  name: text("name").notNull(),
+  email: text("email").notNull(),
+  company: text("company").notNull().default(""),
+  roleTitle: text("role_title").notNull().default(""),
+  message: text("message").notNull().default(""),
+  source: text("source").notNull().default("landing"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().$defaultFn(() => new Date()),
+});
