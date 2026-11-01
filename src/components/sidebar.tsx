@@ -1,5 +1,6 @@
 "use client";
 
+import { LogoMark } from "@/components/logo-mark";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 
@@ -17,6 +18,7 @@ const links = [
   { href: "/monitoring", label: "Monitoring" },
   { href: "/findings", label: "Findings" },
   { href: "/auditor", label: "Auditor Workspace" },
+  { href: "/activity", label: "Activity log" },
   { href: "/settings", label: "Settings" },
 ];
 
@@ -33,8 +35,7 @@ export function Sidebar({ userName, orgName, role }: { userName: string; orgName
   return (
     <aside className="flex h-full w-64 flex-col border-r border-[#d7e6ef] bg-white">
       <div className="border-b border-[#d7e6ef] px-5 py-4">
-        <div className="text-xs font-bold uppercase tracking-[0.14em] text-sky-700">V77</div>
-        <div className="mt-1 text-sm font-semibold text-slate-900">AI Auditor</div>
+        <LogoMark href="/dashboard" />
         <div className="mt-2 truncate text-xs text-slate-500">{orgName}</div>
       </div>
       <nav className="flex-1 space-y-0.5 p-3">
