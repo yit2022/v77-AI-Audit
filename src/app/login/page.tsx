@@ -1,15 +1,26 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 
 export default function LoginPage() {
   const router = useRouter();
+  const search = useSearchParams();
   const [email, setEmail] = useState("admin@v77.local");
   const [password, setPassword] = useState("demo1234");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [ssoEnabled, setSsoEnabled] = useState(false);
+
+  useEffect(() => {
+    const err = search.get("error");
+    if (err) setError(`SSO error: ${err.replaceAll("_", " ")}`);
+    fetch("/api/auth/oidc/status")
+      .then((r) => r.json())
+      .then((data) => setSsoEnabled(Boolean(data.enabled)))
+      .catch(() => undefined);
+  }, [search]);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -50,6 +61,15 @@ export default function LoginPage() {
           {error ? <p className="text-sm text-red-700">{error}</p> : null}
           <button className="btn btn-primary w-full" disabled={loading}>{loading ? "Signing in…" : "Sign in"}</button>
         </form>
+        {ssoEnabled ? (
+          <a className="btn btn-secondary mt-4 w-full text-center" href="/api/auth/oidc/start">
+            Continue with SSO
+          </a>
+        ) : (
+          <p className="mt-4 text-center text-xs text-slate-400">
+            SSO available when OIDC_ISSUER, OIDC_CLIENT_ID, OIDC_CLIENT_SECRET and OIDC_REDIRECT_URI are set.
+          </p>
+        )}
       </div>
     </main>
   );
