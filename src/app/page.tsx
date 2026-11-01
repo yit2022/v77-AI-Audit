@@ -61,10 +61,10 @@ export default async function HomePage() {
             {t(locale, "mkt.nav.frameworks")}
           </Link>
           <Link href="/demo" className="hidden text-sm font-medium text-slate-600 hover:text-[#0F2A4A] md:inline">
-            Demo
+            {t(locale, "mkt.nav.demo")}
           </Link>
           <Link href="/resources" className="hidden text-sm font-medium text-slate-600 hover:text-[#0F2A4A] lg:inline">
-            Resources
+            {t(locale, "mkt.nav.resources")}
           </Link>
           <Link href="/developers" className="hidden text-sm font-medium text-slate-600 hover:text-[#0F2A4A] lg:inline">
             {t(locale, "mkt.nav.developers")}
@@ -223,8 +223,8 @@ export default async function HomePage() {
           </div>
           <div className="flex flex-wrap gap-x-4 gap-y-2 text-sm font-medium text-[#0F2A4A]">
             <Link href="/how-it-works" className="hover:text-sky-700">How it works</Link>
-            <Link href="/demo" className="hover:text-sky-700">Demo</Link>
-            <Link href="/resources" className="hover:text-sky-700">Resources</Link>
+            <Link href="/demo" className="hover:text-sky-700">{t(locale, "mkt.nav.demo")}</Link>
+            <Link href="/resources" className="hover:text-sky-700">{t(locale, "mkt.nav.resources")}</Link>
             <Link href="/frameworks" className="hover:text-sky-700">Frameworks</Link>
             <Link href="/security" className="hover:text-sky-700">Security</Link>
             <Link href="/contact" className="hover:text-sky-700">Contact</Link>
