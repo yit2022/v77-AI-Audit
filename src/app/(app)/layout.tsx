@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { getSession } from "@/lib/auth/session";
 import { seedIfEmpty } from "@/lib/db/seed";
 import { Sidebar } from "@/components/sidebar";
+import { OnboardingTour } from "@/components/onboarding-tour";
 
 export default async function AppLayout({
   children,
@@ -22,6 +23,7 @@ export default async function AppLayout({
         role={session.role}
       />
       <main className="flex-1 overflow-auto p-8">{children}</main>
+      <OnboardingTour userName={session.name} />
     </div>
   );
 }
