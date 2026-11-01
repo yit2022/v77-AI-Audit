@@ -1,0 +1,36 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: v77
+      POSTGRES_PASSWORD: v77
+      POSTGRES_DB: v77
+    ports:
+      - "5432:5432"
+    volumes:
+      - v77_pg:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U v77 -d v77"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: production
+      V77_DATA_DIR: /data
+      DATABASE_URL: postgres://v77:v77@db:5432/v77
+    volumes:
+      - v77_data:/data
+      - v77_uploads:/app/uploads
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  v77_pg:
+  v77_data:
+  v77_uploads:
