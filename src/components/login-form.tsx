@@ -9,6 +9,7 @@ export function LoginForm() {
   const search = useSearchParams();
   const [email, setEmail] = useState("admin@v77.local");
   const [password, setPassword] = useState("");
+  const [csrfToken, setCsrfToken] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [ssoEnabled, setSsoEnabled] = useState(false);
@@ -20,6 +21,10 @@ export function LoginForm() {
       .then((r) => r.json())
       .then((data) => setSsoEnabled(Boolean(data.enabled)))
       .catch(() => undefined);
+    fetch("/api/auth/login", { credentials: "include" })
+      .then((r) => r.json())
+      .then((data) => setCsrfToken(String(data.csrfToken || "")))
+      .catch(() => undefined);
   }, [search]);
 
   async function onSubmit(e: React.FormEvent) {
@@ -28,8 +33,12 @@ export function LoginForm() {
     setError("");
     const res = await fetch("/api/auth/login", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+        ...(csrfToken ? { "x-csrf-token": csrfToken } : {}),
+      },
+      body: JSON.stringify({ email, password, csrfToken }),
     });
     setLoading(false);
     if (!res.ok) {
@@ -44,7 +53,9 @@ export function LoginForm() {
   return (
     <main className="mx-auto flex min-h-screen max-w-md flex-col justify-center px-6">
       <div className="card p-8">
-        <Link href="/" className="text-xs font-bold uppercase tracking-[0.14em] text-teal-700">V77 AI Auditor</Link>
+        <Link href="/" className="text-xs font-bold uppercase tracking-[0.14em] text-teal-700">
+          V77 AI Auditor
+        </Link>
         <h1 className="mt-3 text-2xl font-semibold text-slate-900">Sign in</h1>
         <p className="mt-1 text-sm text-slate-500">
           Use your organisation credentials. Local development seeds are documented in the README only.
@@ -56,10 +67,18 @@ export function LoginForm() {
           </div>
           <div>
             <label className="mb-1 block text-xs font-semibold text-slate-600">Password</label>
-            <input className="input" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+            <input
+              className="input"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
           </div>
           {error ? <p className="text-sm text-red-700">{error}</p> : null}
-          <button className="btn btn-primary w-full" disabled={loading}>{loading ? "Signing in…" : "Sign in"}</button>
+          <button className="btn btn-primary w-full" disabled={loading}>
+            {loading ? "Signing in…" : "Sign in"}
+          </button>
         </form>
         {ssoEnabled ? (
           <a className="btn btn-secondary mt-4 w-full text-center" href="/api/auth/oidc/start">

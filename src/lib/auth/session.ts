@@ -3,6 +3,7 @@ import { eq, and } from "drizzle-orm";
 import { db, ensureDb, schema } from "@/lib/db";
 import { id } from "@/lib/ids";
 import type { Role } from "@/lib/db/schema";
+import { assertSessionIdShape, sessionCookieOptions } from "@/lib/security/session-policy";
 
 const COOKIE = "v77_session";
 const TTL_MS = 1000 * 60 * 60 * 24 * 14;
@@ -23,7 +24,7 @@ export async function createSession(userId: string, orgId: string) {
   const expiresAt = new Date(Date.now() + TTL_MS);
   await db.insert(schema.sessions).values({ id: sessionId, userId, orgId, expiresAt });
   const jar = await cookies();
-  jar.set(COOKIE, sessionId, { httpOnly: true, sameSite: "lax", path: "/", expires: expiresAt });
+  jar.set(COOKIE, sessionId, sessionCookieOptions(expiresAt));
   return sessionId;
 }
 
@@ -41,7 +42,7 @@ export async function getSession(): Promise<SessionUser | null> {
   await ensureDb();
   const jar = await cookies();
   const sid = jar.get(COOKIE)?.value;
-  if (!sid) return null;
+  if (!assertSessionIdShape(sid)) return null;
   const rows = await db
     .select({
       sessionId: schema.sessions.id,
