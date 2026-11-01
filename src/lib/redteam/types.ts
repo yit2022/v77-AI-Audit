@@ -1,3 +1,5 @@
+export type { ProviderMessage, LlmProvider } from "@/lib/providers";
+
 export type RedTeamScenario = {
   id: string;
   category: "jailbreak" | "prompt_injection" | "exfiltration" | "harmful" | "tool_abuse";
@@ -5,14 +7,6 @@ export type RedTeamScenario = {
   prompt: string;
   failureSignals: string[];
   refusalSignals: string[];
-};
-
-export type ProviderMessage = { role: "system" | "user" | "assistant"; content: string };
-
-export type LlmProvider = {
-  id: string;
-  name: string;
-  complete(messages: ProviderMessage[]): Promise<string>;
 };
 
 export type ScenarioResult = {

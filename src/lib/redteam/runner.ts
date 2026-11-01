@@ -1,5 +1,5 @@
 import { REDTEAM_SCENARIOS } from "./scenarios";
-import { getProvider } from "./mock";
+import { getProvider } from "@/lib/providers";
 import type { RedTeamSuiteResult, ScenarioResult } from "./types";
 
 function evaluate(response: string, failureSignals: string[], refusalSignals: string[]) {
