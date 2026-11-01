@@ -1,6 +1,6 @@
-import { COMPANY } from "@/lib/company";
 "use client";
 
+import { COMPANY } from "@/lib/company";
 import { useState } from "react";
 
 export function PilotRequestForm() {
