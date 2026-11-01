@@ -11,6 +11,7 @@ const links = [
   { href: "/evidence", label: "Evidence Vault" },
   { href: "/tests/fairness", label: "Fairness Tests" },
   { href: "/tests/redteam", label: "LLM Red-Team" },
+  { href: "/impact", label: "FRIA / DPIA" },
   { href: "/auditor", label: "Auditor Workspace" },
 ];
 

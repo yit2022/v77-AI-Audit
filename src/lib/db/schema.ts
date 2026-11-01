@@ -167,3 +167,26 @@ export const organisationsRelations = relations(organisations, ({ many }) => ({
 export const usersRelations = relations(users, ({ many }) => ({
   memberships: many(memberships),
 }));
+
+export const impactAssessments = pgTable("impact_assessments", {
+  id: text("id").primaryKey(),
+  orgId: text("org_id").notNull().references(() => organisations.id),
+  systemId: text("system_id").notNull().references(() => aiSystems.id),
+  templateId: text("template_id").notNull(),
+  title: text("title").notNull(),
+  status: text("status").notNull().default("draft"),
+  createdBy: text("created_by").references(() => users.id),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export const impactAnswers = pgTable(
+  "impact_answers",
+  {
+    id: text("id").primaryKey(),
+    impactId: text("impact_id").notNull().references(() => impactAssessments.id),
+    questionId: text("question_id").notNull(),
+    answer: text("answer").notNull().default(""),
+  },
+  (t) => [uniqueIndex("impact_answer_unique").on(t.impactId, t.questionId)],
+);

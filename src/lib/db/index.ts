@@ -107,6 +107,20 @@ CREATE TABLE IF NOT EXISTS auditor_comments (
   author_user_id text NOT NULL REFERENCES users(id), body text NOT NULL,
   created_at timestamptz NOT NULL DEFAULT now()
 );
+
+CREATE TABLE IF NOT EXISTS impact_assessments (
+  id text PRIMARY KEY, org_id text NOT NULL REFERENCES organisations(id),
+  system_id text NOT NULL REFERENCES ai_systems(id), template_id text NOT NULL,
+  title text NOT NULL, status text NOT NULL DEFAULT 'draft',
+  created_by text REFERENCES users(id),
+  created_at timestamptz NOT NULL DEFAULT now(),
+  updated_at timestamptz NOT NULL DEFAULT now()
+);
+CREATE TABLE IF NOT EXISTS impact_answers (
+  id text PRIMARY KEY, impact_id text NOT NULL REFERENCES impact_assessments(id),
+  question_id text NOT NULL, answer text NOT NULL DEFAULT ''
+);
+CREATE UNIQUE INDEX IF NOT EXISTS impact_answer_unique ON impact_answers(impact_id, question_id);
 CREATE TABLE IF NOT EXISTS auditor_signoffs (
   id text PRIMARY KEY, assessment_id text NOT NULL UNIQUE REFERENCES assessments(id),
   auditor_user_id text NOT NULL REFERENCES users(id), opinion text NOT NULL,
