@@ -45,8 +45,10 @@ export default async function AssessmentDetailPage({
         }
       />
       <AssessmentControlsClient
+        systemId={assessment.systemId}
         items={controls.map(({ ac, control }) => ({
           id: ac.id,
+          controlId: control.id,
           status: ac.status,
           notes: ac.notes ?? "",
           code: control.code,

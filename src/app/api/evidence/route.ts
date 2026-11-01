@@ -6,6 +6,7 @@ import { id } from "@/lib/ids";
 import { seedIfEmpty } from "@/lib/db/seed";
 import { hashEvidenceContent } from "@/lib/evidence/chain";
 import { storeEvidenceBlob } from "@/lib/storage/evidence";
+import { appendAuditLog } from "@/lib/audit/log";
 
 export async function GET(req: Request) {
   await seedIfEmpty();
@@ -68,6 +69,14 @@ export async function POST(req: Request) {
     sha256,
     prevSha256,
     uploadedBy: session.userId,
+  });
+  await appendAuditLog({
+    orgId: session.orgId,
+    actorUserId: session.userId,
+    action: "evidence.upload",
+    entityType: "evidence",
+    entityId: evidenceId,
+    detail: { controlId, systemId, title, filename: file.name },
   });
   return NextResponse.json({ id: evidenceId, sha256, prevSha256 }, { status: 201 });
 }

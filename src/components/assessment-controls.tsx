@@ -1,9 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import { ControlEvidenceUpload } from "@/components/control-evidence-upload";
 
 type Item = {
   id: string;
+  controlId: string;
   status: string;
   notes: string;
   code: string;
@@ -15,7 +17,13 @@ type Item = {
 
 const STATUSES = ["not_started", "in_progress", "implemented", "not_applicable", "waived"];
 
-export function AssessmentControlsClient({ items }: { items: Item[] }) {
+export function AssessmentControlsClient({
+  items,
+  systemId,
+}: {
+  items: Item[];
+  systemId: string;
+}) {
   const [rows, setRows] = useState(items);
   const [saving, setSaving] = useState<string | null>(null);
 
@@ -37,12 +45,12 @@ export function AssessmentControlsClient({ items }: { items: Item[] }) {
   return (
     <div className="card overflow-hidden">
       <table className="w-full text-left text-sm">
-        <thead className="bg-slate-50 text-xs uppercase text-slate-500">
+        <thead className="bg-sky-50 text-xs uppercase text-slate-500">
           <tr>
             <th className="px-4 py-2">Control</th>
             <th className="px-4 py-2">Crosswalk</th>
             <th className="px-4 py-2">Status</th>
-            <th className="px-4 py-2">Notes</th>
+            <th className="px-4 py-2">Notes & evidence</th>
           </tr>
         </thead>
         <tbody>
@@ -50,7 +58,7 @@ export function AssessmentControlsClient({ items }: { items: Item[] }) {
             <tr key={r.id} className="border-t border-slate-100 align-top">
               <td className="px-4 py-3">
                 <div className="font-mono text-xs text-sky-700">{r.code}</div>
-                <div className="font-medium text-slate-900">{r.title}</div>
+                <div className="font-medium text-[#0F2A4A]">{r.title}</div>
               </td>
               <td className="px-4 py-3 text-xs text-slate-500">
                 <div>EU: {r.euRef}</div>
@@ -69,21 +77,18 @@ export function AssessmentControlsClient({ items }: { items: Item[] }) {
                     </option>
                   ))}
                 </select>
-                {saving === r.id ? (
-                  <div className="mt-1 text-xs text-slate-400">Saving…</div>
-                ) : null}
+                {saving === r.id ? <div className="mt-1 text-xs text-slate-400">Saving…</div> : null}
               </td>
               <td className="px-4 py-3">
                 <textarea
                   className="textarea"
                   value={r.notes}
                   onChange={(e) =>
-                    setRows((prev) =>
-                      prev.map((x) => (x.id === r.id ? { ...x, notes: e.target.value } : x)),
-                    )
+                    setRows((prev) => prev.map((x) => (x.id === r.id ? { ...x, notes: e.target.value } : x)))
                   }
                   onBlur={(e) => update(r.id, { notes: e.target.value })}
                 />
+                <ControlEvidenceUpload systemId={systemId} controlId={r.controlId} controlCode={r.code} />
               </td>
             </tr>
           ))}
