@@ -10,7 +10,7 @@ import { NotificationsBell } from "@/components/notifications-bell";
 import { TrialBanner } from "@/components/trial-banner";
 import { getOrgAccess } from "@/lib/billing/trial";
 import { isPlatformAdminEmailAsync } from "@/lib/platform/admin";
-import { isLocale, type Locale } from "@/lib/i18n/dictionaries";
+import { ensureLocale, isLocale, type Locale } from "@/lib/i18n/dictionaries";
 
 export default async function AppLayout({
   children,
@@ -23,6 +23,7 @@ export default async function AppLayout({
   const jar = await cookies();
   const raw = jar.get("v77_locale")?.value;
   const locale: Locale = isLocale(raw) ? raw : "en";
+  await ensureLocale(locale);
   const access = await getOrgAccess(session.orgId);
   const showPlatform = await isPlatformAdminEmailAsync(session.email);
 

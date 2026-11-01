@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { isLocale, t, type Locale } from "@/lib/i18n/dictionaries";
+import { ensureLocale, isLocale, t, type Locale } from "@/lib/i18n/dictionaries";
 
 const KEY = "v77_cookie_consent";
 
@@ -19,7 +19,9 @@ export function CookieConsent() {
       setConsent(raw === "essential" || raw === "all" ? raw : null);
       const m = document.cookie.match(/(?:^|; )v77_locale=([^;]+)/);
       const loc = m ? decodeURIComponent(m[1]) : "en";
-      setLocale(isLocale(loc) ? loc : "en");
+      const next = isLocale(loc) ? loc : "en";
+      setLocale(next);
+      void ensureLocale(next);
     } catch {
       setConsent(null);
     }

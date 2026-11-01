@@ -5,7 +5,7 @@ import { runPublicRiskCheck, PUBLIC_RISK_QUESTIONS } from "@/lib/risk-checker/pu
 import { BLOG_ARTICLES } from "@/lib/blog/articles";
 import { SECURITY_HEADERS } from "@/lib/security/headers";
 import { COMPANY } from "@/lib/company";
-import { hasTranslation, dictKeys } from "@/lib/i18n/dictionaries";
+import { ensureLocale, hasTranslation, dictKeys } from "@/lib/i18n/dictionaries";
 
 const root = resolve(__dirname, "..");
 
@@ -46,10 +46,11 @@ describe("Round 9 hardening artefacts", () => {
 });
 
 describe("Round 9 i18n", () => {
-  it("translates demo/resources/notifications/onboarding nav keys", () => {
+  it("translates demo/resources/notifications/onboarding nav keys", async () => {
     for (const key of ["mkt.nav.demo", "mkt.nav.resources", "nav.notifications", "nav.onboarding"]) {
       expect(dictKeys()).toContain(key);
       for (const loc of ["de", "fr", "pl", "nl", "es", "it", "sv"] as const) {
+        await ensureLocale(loc);
         expect(hasTranslation(loc, key)).toBe(true);
       }
     }

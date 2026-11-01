@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { dictKeys, hasTranslation, t } from "@/lib/i18n/dictionaries";
+import { ensureLocale, dictKeys, hasTranslation, t } from "@/lib/i18n/dictionaries";
 import { canApprove, canWrite, isReadOnly, roleAtLeast } from "@/lib/auth/rbac";
 import { getPublicSsoStatus, isSamlEnabled, isSsoFlagEnabled } from "@/lib/auth/sso";
 import { buildSpMetadataXml, extractEmailFromSamlResponse, loadSamlConfig } from "@/lib/auth/saml";
@@ -8,10 +8,11 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 
 describe("Round 7+ EU i18n", () => {
-  it("has matching keys for en/de/fr/pl/nl/es/it/sv on public + nav + cookie strings", () => {
+  it("has matching keys for en/de/fr/pl/nl/es/it/sv on public + nav + cookie strings", async () => {
     const keys = dictKeys().filter((k) => k.startsWith("nav.") || k.startsWith("mkt.") || k.startsWith("cookie."));
     expect(keys.length).toBeGreaterThan(20);
     const locales = ["de", "fr", "pl", "nl", "es", "it", "sv"] as const;
+    for (const loc of locales) await ensureLocale(loc);
     for (const key of keys) {
       for (const loc of locales) {
         expect(hasTranslation(loc, key)).toBe(true);

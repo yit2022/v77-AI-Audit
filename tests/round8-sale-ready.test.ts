@@ -6,7 +6,7 @@ import { isPlatformAdminEmail } from "@/lib/platform/admin";
 import { VENDOR_QUESTIONS, scoreAnswers } from "@/lib/vendors/questions";
 import { POLICY_TEMPLATES } from "@/lib/policies/templates";
 import { COMPANY } from "@/lib/company";
-import { hasTranslation, dictKeys } from "@/lib/i18n/dictionaries";
+import { ensureLocale, hasTranslation, dictKeys } from "@/lib/i18n/dictionaries";
 
 const root = resolve(__dirname, "..");
 
@@ -81,7 +81,7 @@ describe("Round 8 product routes + handover", () => {
 });
 
 describe("Round 8 nav i18n", () => {
-  it("translates new Round 8 nav keys in DE/FR", () => {
+  it("translates new Round 8 nav keys in DE/FR", async () => {
     const keys = [
       "nav.gapAnalysis",
       "nav.policies",
@@ -91,6 +91,7 @@ describe("Round 8 nav i18n", () => {
       "nav.billing",
       "nav.platform",
     ];
+    for (const loc of ["de","fr","pl","nl","es","it","sv"] as const) await ensureLocale(loc);
     for (const key of keys) {
       expect(dictKeys()).toContain(key);
       expect(hasTranslation("de", key)).toBe(true);

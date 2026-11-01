@@ -5,7 +5,7 @@ import { CONTROL_SEEDS, crosswalkByArea } from "@/lib/crosswalk";
 import { readinessByFramework } from "@/lib/compliance/dashboard";
 import { isExpired, isOverdue, summarizeExpiry } from "@/lib/evidence-requests/service";
 import { buildBoardReportPdf } from "@/lib/reports/board-pdf";
-import { dictKeys, hasTranslation, LOCALES } from "@/lib/i18n/dictionaries";
+import { ensureLocale, dictKeys, hasTranslation, LOCALES } from "@/lib/i18n/dictionaries";
 import { COMPANY } from "@/lib/company";
 
 const root = resolve(__dirname, "..");
@@ -108,7 +108,7 @@ describe("Round 10 partner + board surfaces", () => {
 });
 
 describe("Round 10 i18n for new pages", () => {
-  it("translates partner, evidence requests, board and controls keys in all 8 locales", () => {
+  it("translates partner, evidence requests, board and controls keys in all 8 locales", async () => {
     const keys = [
       "nav.partner",
       "nav.evidenceRequests",
@@ -120,6 +120,7 @@ describe("Round 10 i18n for new pages", () => {
     ];
     expect(dictKeys().length).toBeGreaterThanOrEqual(100);
     for (const locale of LOCALES.map((l) => l.code)) {
+      await ensureLocale(locale);
       for (const key of keys) {
         expect(hasTranslation(locale, key), `${locale}:${key}`).toBe(true);
       }
