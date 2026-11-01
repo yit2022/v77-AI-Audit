@@ -5,6 +5,7 @@ import { CONTROL_SEEDS } from "@/lib/crosswalk";
 import { syncControlCatalogue } from "@/lib/db/sync-controls";
 import { id } from "@/lib/ids";
 import { insertInChunks } from "./chunk-insert";
+import { ensureBuyerDemoOrg } from "@/lib/demo/sample-org";
 
 function resolveSeedPasswords(): {
   admin: string;
@@ -288,6 +289,8 @@ async function seedOnce() {
       status: "new",
       notes: "Demo lead seeded with sample workspace.",
     });
+
+    try { await ensureBuyerDemoOrg(); } catch { /* buyer demo optional */ }
 
     return {
       seeded: true,

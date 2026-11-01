@@ -368,4 +368,21 @@ CREATE TABLE IF NOT EXISTS org_onboarding (
 );
 CREATE UNIQUE INDEX IF NOT EXISTS org_onboarding_org_step ON org_onboarding(org_id, step_id);
 
-CREATE INDEX IF NOT EXISTS incidents_org_idx ON incidents(org_id);`;
+CREATE INDEX IF NOT EXISTS incidents_org_idx ON incidents(org_id);
+CREATE TABLE IF NOT EXISTS billing_invoices (
+  id text PRIMARY KEY,
+  org_id text NOT NULL REFERENCES organisations(id),
+  plan_tier text NOT NULL,
+  amount_eur_cents integer NOT NULL DEFAULT 0,
+  charge_currency text NOT NULL DEFAULT 'USD',
+  charge_amount_minor integer NOT NULL DEFAULT 0,
+  status text NOT NULL DEFAULT 'pending',
+  paystack_reference text NOT NULL DEFAULT '',
+  description text NOT NULL DEFAULT '',
+  paid_at integer,
+  created_at integer,
+  updated_at integer
+);
+CREATE INDEX IF NOT EXISTS billing_invoices_org_idx ON billing_invoices(org_id);
+CREATE INDEX IF NOT EXISTS billing_invoices_ref_idx ON billing_invoices(paystack_reference);
+`;

@@ -6,6 +6,9 @@ import type { Role } from "@/lib/db/schema";
 import { id } from "@/lib/ids";
 import { inviteAcceptUrl } from "@/lib/site";
 import { appendAuditLog } from "@/lib/audit/log";
+import { sendEmail } from "@/lib/email/send";
+import { inviteEmail } from "@/lib/email/templates";
+import { getPartnerForOrg } from "@/lib/partner/service";
 
 const TTL_MS = 1000 * 60 * 60 * 24 * 7;
 
@@ -57,12 +60,22 @@ export async function createOrgInvite(opts: {
     entityId: inviteId,
     detail: { email, role: opts.role },
   });
+  const acceptUrl = inviteAcceptUrl(token, opts.req);
+  const orgRows = await db.select().from(schema.organisations).where(eq(schema.organisations.id, opts.orgId)).limit(1);
+  const orgName = orgRows[0]?.name || "your organisation";
+  let brand = undefined as undefined | { name: string; logoUrl?: string; primaryColor?: string; accentColor?: string };
+  try {
+    const partner = await getPartnerForOrg(opts.orgId);
+    if (partner) brand = { name: partner.name, logoUrl: partner.logoUrl, primaryColor: partner.primaryColor, accentColor: partner.accentColor };
+  } catch { /* optional */ }
+  const tpl = inviteEmail({ orgName, role: opts.role, acceptUrl, brand });
+  await sendEmail({ to: email, subject: tpl.subject, html: tpl.html, text: tpl.text, fromName: tpl.fromName, tags: tpl.tags });
   return {
     id: inviteId,
     email,
     role: opts.role,
     expiresAt,
-    acceptUrl: inviteAcceptUrl(token, opts.req),
+    acceptUrl,
     token,
   };
 }

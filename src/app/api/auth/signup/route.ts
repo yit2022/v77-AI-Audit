@@ -8,6 +8,8 @@ import { createSession } from "@/lib/auth/session";
 import { appendAuditLog } from "@/lib/audit/log";
 import { rateLimit } from "@/lib/security/rate-limit";
 import { seedIfEmpty } from "@/lib/db/seed";
+import { sendEmail } from "@/lib/email/send";
+import { signupEmail } from "@/lib/email/templates";
 
 const bodySchema = z.object({
   orgName: z.string().min(2).max(120),
@@ -73,6 +75,9 @@ export async function POST(req: Request) {
     entityId: orgId,
     detail: { email },
   });
+
+  const tpl = signupEmail({ name: parsed.data.name.trim(), orgName: parsed.data.orgName.trim() });
+  await sendEmail({ to: email, subject: tpl.subject, html: tpl.html, text: tpl.text, tags: tpl.tags });
 
   return NextResponse.json({ ok: true, orgId, userId }, { status: 201 });
 }

@@ -7,6 +7,10 @@ CREATE TABLE IF NOT EXISTS organisations (
   plan_tier text NOT NULL DEFAULT 'pilot',
   seat_limit integer NOT NULL DEFAULT 5,
   partner_id text,
+  billing_status text NOT NULL DEFAULT 'none',
+  paystack_customer_code text NOT NULL DEFAULT '',
+  paystack_subaccount text NOT NULL DEFAULT '',
+  paystack_split_code text NOT NULL DEFAULT '',
   created_at integer
 );
 CREATE TABLE IF NOT EXISTS users (
@@ -389,6 +393,7 @@ CREATE TABLE IF NOT EXISTS partners (
   logo_url text NOT NULL DEFAULT '',
   primary_color text NOT NULL DEFAULT '#0F2A4A',
   accent_color text NOT NULL DEFAULT '#6FCDF5',
+  custom_domain text NOT NULL DEFAULT '',
   created_at integer
 );
 CREATE TABLE IF NOT EXISTS partner_memberships (
@@ -416,4 +421,20 @@ CREATE TABLE IF NOT EXISTS evidence_requests (
   updated_at integer
 );
 CREATE INDEX IF NOT EXISTS evidence_requests_org_idx ON evidence_requests(org_id);
+CREATE TABLE IF NOT EXISTS billing_invoices (
+  id text PRIMARY KEY,
+  org_id text NOT NULL REFERENCES organisations(id),
+  plan_tier text NOT NULL,
+  amount_eur_cents integer NOT NULL DEFAULT 0,
+  charge_currency text NOT NULL DEFAULT 'USD',
+  charge_amount_minor integer NOT NULL DEFAULT 0,
+  status text NOT NULL DEFAULT 'pending',
+  paystack_reference text NOT NULL DEFAULT '',
+  description text NOT NULL DEFAULT '',
+  paid_at integer,
+  created_at integer,
+  updated_at integer
+);
+CREATE INDEX IF NOT EXISTS billing_invoices_org_idx ON billing_invoices(org_id);
+CREATE INDEX IF NOT EXISTS billing_invoices_ref_idx ON billing_invoices(paystack_reference);
 `;

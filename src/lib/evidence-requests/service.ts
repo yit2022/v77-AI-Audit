@@ -1,6 +1,10 @@
 import { and, asc, eq } from "drizzle-orm";
 import { db, ensureDb, schema } from "@/lib/db";
 import { id } from "@/lib/ids";
+import { sendEmail } from "@/lib/email/send";
+import { evidenceRequestEmail } from "@/lib/email/templates";
+import { getAppOrigin } from "@/lib/site";
+import { getPartnerForOrg } from "@/lib/partner/service";
 
 export type EvidenceRequestInput = {
   orgId: string;
@@ -52,6 +56,29 @@ export async function createEvidenceRequest(input: EvidenceRequestInput) {
     status: "open",
     createdBy: input.createdBy || null,
   });
+  if (input.assigneeUserId) {
+    try {
+      const users = await db.select().from(schema.users).where(eq(schema.users.id, input.assigneeUserId)).limit(1);
+      const u = users[0];
+      if (u?.email) {
+        let brand = undefined as undefined | { name: string; logoUrl?: string; primaryColor?: string; accentColor?: string };
+        try {
+          const partner = await getPartnerForOrg(input.orgId);
+          if (partner) brand = { name: partner.name, logoUrl: partner.logoUrl, primaryColor: partner.primaryColor, accentColor: partner.accentColor };
+        } catch { /* optional */ }
+        const url = `${getAppOrigin()}/evidence-requests`;
+        const tpl = evidenceRequestEmail({
+          title: input.title.trim(),
+          dueAt: input.nextDueAt.toISOString().slice(0, 10),
+          url,
+          brand,
+        });
+        await sendEmail({ to: u.email, subject: tpl.subject, html: tpl.html, text: tpl.text, fromName: tpl.fromName, tags: tpl.tags });
+      }
+    } catch (e) {
+      console.error("[evidence-email]", e instanceof Error ? e.message : e);
+    }
+  }
   return rowId;
 }
 

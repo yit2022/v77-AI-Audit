@@ -10,6 +10,7 @@ type Partner = {
   logoUrl: string;
   primaryColor: string;
   accentColor: string;
+  customDomain?: string;
 };
 
 type Client = {
@@ -108,7 +109,7 @@ export function PartnerClient({
             <p className="text-xs text-slate-500">/{partner.slug}</p>
           </div>
         </div>
-        <div className="grid gap-3 border-t border-slate-100 p-5 md:grid-cols-2 xl:grid-cols-4">
+        <div className="grid gap-3 border-t border-slate-100 p-5 md:grid-cols-2 xl:grid-cols-3">
           <div>
             <label className="mb-1 block text-xs font-semibold text-slate-600">{labels.partnerName}</label>
             <input id="brand-name" className="input w-full" defaultValue={partner.name} />
@@ -116,6 +117,10 @@ export function PartnerClient({
           <div>
             <label className="mb-1 block text-xs font-semibold text-slate-600">{labels.logoUrl}</label>
             <input id="brand-logo" className="input w-full" defaultValue={partner.logoUrl} placeholder="https://…" />
+          </div>
+          <div>
+            <label className="mb-1 block text-xs font-semibold text-slate-600">{labels.customDomain || "Custom domain"}</label>
+            <input id="brand-domain" className="input w-full" defaultValue={partner.customDomain || ""} placeholder="trust.partner.example" />
           </div>
           <div>
             <label className="mb-1 block text-xs font-semibold text-slate-600">{labels.primaryColor}</label>
@@ -138,6 +143,7 @@ export function PartnerClient({
                 logoUrl: (document.getElementById("brand-logo") as HTMLInputElement).value,
                 primaryColor: (document.getElementById("brand-primary") as HTMLInputElement).value,
                 accentColor: (document.getElementById("brand-accent") as HTMLInputElement).value,
+                customDomain: (document.getElementById("brand-domain") as HTMLInputElement).value,
               })
             }
           >

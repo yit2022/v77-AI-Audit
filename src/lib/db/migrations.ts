@@ -224,4 +224,25 @@ CREATE TABLE IF NOT EXISTS evidence_requests (
   updated_at integer
 );
 CREATE INDEX IF NOT EXISTS evidence_requests_org_idx ON evidence_requests(org_id);
+ALTER TABLE organisations ADD COLUMN billing_status text NOT NULL DEFAULT 'none';
+ALTER TABLE organisations ADD COLUMN paystack_customer_code text NOT NULL DEFAULT '';
+ALTER TABLE organisations ADD COLUMN paystack_subaccount text NOT NULL DEFAULT '';
+ALTER TABLE organisations ADD COLUMN paystack_split_code text NOT NULL DEFAULT '';
+ALTER TABLE partners ADD COLUMN custom_domain text NOT NULL DEFAULT '';
+CREATE TABLE IF NOT EXISTS billing_invoices (
+  id text PRIMARY KEY,
+  org_id text NOT NULL REFERENCES organisations(id),
+  plan_tier text NOT NULL,
+  amount_eur_cents integer NOT NULL DEFAULT 0,
+  charge_currency text NOT NULL DEFAULT 'USD',
+  charge_amount_minor integer NOT NULL DEFAULT 0,
+  status text NOT NULL DEFAULT 'pending',
+  paystack_reference text NOT NULL DEFAULT '',
+  description text NOT NULL DEFAULT '',
+  paid_at integer,
+  created_at integer,
+  updated_at integer
+);
+CREATE INDEX IF NOT EXISTS billing_invoices_org_idx ON billing_invoices(org_id);
+CREATE INDEX IF NOT EXISTS billing_invoices_ref_idx ON billing_invoices(paystack_reference);
 `;

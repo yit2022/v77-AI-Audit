@@ -9,6 +9,7 @@ export type PartnerBranding = {
   logoUrl: string;
   primaryColor: string;
   accentColor: string;
+  customDomain: string;
 };
 
 function slugify(name: string): string {
@@ -29,6 +30,7 @@ export async function getPartnerForUser(userId: string): Promise<PartnerBranding
       logoUrl: schema.partners.logoUrl,
       primaryColor: schema.partners.primaryColor,
       accentColor: schema.partners.accentColor,
+      customDomain: schema.partners.customDomain,
     })
     .from(schema.partnerMemberships)
     .innerJoin(schema.partners, eq(schema.partnerMemberships.partnerId, schema.partners.id))
@@ -58,6 +60,7 @@ export async function createPartnerForUser(opts: {
     logoUrl: (opts.logoUrl || "").trim(),
     primaryColor: opts.primaryColor?.trim() || "#0F2A4A",
     accentColor: opts.accentColor?.trim() || "#6FCDF5",
+    customDomain: "",
   };
   await db.insert(schema.partners).values({
     id: branding.id,
@@ -66,6 +69,7 @@ export async function createPartnerForUser(opts: {
     logoUrl: branding.logoUrl,
     primaryColor: branding.primaryColor,
     accentColor: branding.accentColor,
+    customDomain: branding.customDomain,
   });
   await db.insert(schema.partnerMemberships).values({
     id: id(),
@@ -79,7 +83,7 @@ export async function createPartnerForUser(opts: {
 export async function updatePartnerBranding(
   partnerId: string,
   userId: string,
-  patch: Partial<Pick<PartnerBranding, "name" | "logoUrl" | "primaryColor" | "accentColor">>,
+  patch: Partial<Pick<PartnerBranding, "name" | "logoUrl" | "primaryColor" | "accentColor" | "customDomain">>,
 ): Promise<PartnerBranding | null> {
   await ensureDb();
   const membership = await db
@@ -95,6 +99,7 @@ export async function updatePartnerBranding(
       ...(patch.logoUrl !== undefined ? { logoUrl: patch.logoUrl.trim() } : {}),
       ...(patch.primaryColor !== undefined ? { primaryColor: patch.primaryColor.trim() } : {}),
       ...(patch.accentColor !== undefined ? { accentColor: patch.accentColor.trim() } : {}),
+      ...(patch.customDomain !== undefined ? { customDomain: patch.customDomain.trim().toLowerCase() } : {}),
     })
     .where(eq(schema.partners.id, partnerId));
   const rows = await db.select().from(schema.partners).where(eq(schema.partners.id, partnerId)).limit(1);
@@ -107,6 +112,7 @@ export async function updatePartnerBranding(
     logoUrl: p.logoUrl,
     primaryColor: p.primaryColor,
     accentColor: p.accentColor,
+    customDomain: p.customDomain || "",
   };
 }
 
@@ -214,4 +220,23 @@ export async function listLinkableOrgs(userId: string, partnerId: string) {
   return orgs
     .filter((o) => o.partnerId !== partnerId)
     .map((o) => ({ id: o.id, name: o.name, slug: o.slug, partnerId: o.partnerId }));
+}
+
+export async function getPartnerForOrg(orgId: string): Promise<PartnerBranding | null> {
+  await ensureDb();
+  const orgs = await db.select().from(schema.organisations).where(eq(schema.organisations.id, orgId)).limit(1);
+  const partnerId = orgs[0]?.partnerId;
+  if (!partnerId) return null;
+  const rows = await db.select().from(schema.partners).where(eq(schema.partners.id, partnerId)).limit(1);
+  const p = rows[0];
+  if (!p) return null;
+  return {
+    id: p.id,
+    name: p.name,
+    slug: p.slug,
+    logoUrl: p.logoUrl,
+    primaryColor: p.primaryColor,
+    accentColor: p.accentColor,
+    customDomain: p.customDomain || "",
+  };
 }

@@ -15,6 +15,7 @@ export type BoardReportInput = {
   topRisks: Array<{ title: string; severity: string }>;
   partnerName?: string | null;
   primaryColor?: string;
+  accentColor?: string;
 };
 
 function hexToRgb(hex: string) {
@@ -48,7 +49,7 @@ export async function buildBoardReportPdf(input: BoardReportInput): Promise<Uint
   const W = 842; // A4 landscape
   const H = 595;
   const brand = hexToRgb(input.primaryColor || "#0F2A4A");
-  const accent = rgb(0.435, 0.804, 0.961);
+  const accent = input.accentColor ? hexToRgb(input.accentColor) : rgb(0.435, 0.804, 0.961);
   const ink = rgb(0.059, 0.165, 0.29);
   const muted = rgb(0.4, 0.45, 0.5);
   const white = rgb(1, 1, 1);

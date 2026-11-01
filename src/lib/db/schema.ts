@@ -26,6 +26,10 @@ export const organisations = pgTable("organisations", {
   planTier: text("plan_tier").notNull().default("pilot"),
   seatLimit: integer("seat_limit").notNull().default(5),
   partnerId: text("partner_id"),
+  billingStatus: text("billing_status").notNull().default("none"),
+  paystackCustomerCode: text("paystack_customer_code").notNull().default(""),
+  paystackSubaccount: text("paystack_subaccount").notNull().default(""),
+  paystackSplitCode: text("paystack_split_code").notNull().default(""),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().$defaultFn(() => new Date()),
 });
 
@@ -540,6 +544,7 @@ export const partners = pgTable("partners", {
   logoUrl: text("logo_url").notNull().default(""),
   primaryColor: text("primary_color").notNull().default("#0F2A4A"),
   accentColor: text("accent_color").notNull().default("#6FCDF5"),
+  customDomain: text("custom_domain").notNull().default(""),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().$defaultFn(() => new Date()),
 });
 
@@ -568,6 +573,21 @@ export const evidenceRequests = pgTable("evidence_requests", {
   status: text("status").notNull().default("open"),
   createdBy: text("created_by").references(() => users.id),
   completedAt: timestamp("completed_at", { withTimezone: true }),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().$defaultFn(() => new Date()),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().$defaultFn(() => new Date()),
+});
+
+export const billingInvoices = pgTable("billing_invoices", {
+  id: text("id").primaryKey(),
+  orgId: text("org_id").notNull().references(() => organisations.id),
+  planTier: text("plan_tier").notNull(),
+  amountEurCents: integer("amount_eur_cents").notNull().default(0),
+  chargeCurrency: text("charge_currency").notNull().default("USD"),
+  chargeAmountMinor: integer("charge_amount_minor").notNull().default(0),
+  status: text("status").notNull().default("pending"),
+  paystackReference: text("paystack_reference").notNull().default(""),
+  description: text("description").notNull().default(""),
+  paidAt: timestamp("paid_at", { withTimezone: true }),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().$defaultFn(() => new Date()),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().$defaultFn(() => new Date()),
 });

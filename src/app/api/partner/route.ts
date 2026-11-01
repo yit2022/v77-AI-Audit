@@ -31,6 +31,7 @@ export async function POST(req: NextRequest) {
     logoUrl?: string;
     primaryColor?: string;
     accentColor?: string;
+    customDomain?: string;
     orgName?: string;
     orgId?: string;
   };
@@ -57,6 +58,7 @@ export async function POST(req: NextRequest) {
       logoUrl: body.logoUrl,
       primaryColor: body.primaryColor,
       accentColor: body.accentColor,
+      customDomain: body.customDomain,
     });
     return NextResponse.json({ partner: updated });
   }

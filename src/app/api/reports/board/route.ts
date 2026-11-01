@@ -82,6 +82,7 @@ export async function GET() {
     ).map((r) => ({ title: r.title, severity: r.severity })),
     partnerName: partner?.name,
     primaryColor: partner?.primaryColor || "#0F2A4A",
+    accentColor: partner?.accentColor || "#6FCDF5",
   });
 
   return new NextResponse(Buffer.from(pdf), {

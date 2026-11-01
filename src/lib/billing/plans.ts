@@ -14,7 +14,7 @@ export const DEFAULT_PLANS = [
     tier: "team",
     name: "Team",
     seatLimit: 25,
-    priceNote: "Pricing on request",
+    priceNote: "€499 / month (EUR display)",
     features: ["Everything in Pilot", "Approvals & Trust Center", "API keys", "Vendor questionnaires"],
   },
   {
@@ -22,7 +22,7 @@ export const DEFAULT_PLANS = [
     name: "Enterprise",
     seatLimit: 200,
     priceNote: "Pricing on request — custom MSA",
-    features: ["Everything in Team", "SSO scaffolding", "Platform usage exports", "Dedicated onboarding"],
+    features: ["Everything in Team", "SSO scaffolding", "Platform usage exports", "Dedicated onboarding", "Partner split billing"],
   },
 ] as const;
 

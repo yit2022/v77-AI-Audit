@@ -2,8 +2,10 @@ import { and, asc, desc, eq, isNull, lte } from "drizzle-orm";
 import { db, ensureDb, schema } from "@/lib/db";
 import { id } from "@/lib/ids";
 import { canWrite } from "@/lib/auth/rbac";
+import { sendEmail } from "@/lib/email/send";
+import { reminderEmail } from "@/lib/email/templates";
 
-/** Create or refresh due in-app reminders from reassessment schedules (no email). */
+/** Create or refresh due in-app reminders from reassessment schedules; email when Resend is configured. */
 export async function syncReassessmentReminders(orgId: string) {
   await ensureDb();
   const now = new Date();
@@ -46,6 +48,21 @@ export async function syncReassessmentReminders(orgId: string) {
       href: `/assessments?systemId=${schedule.systemId}`,
       dueAt: schedule.nextDueAt,
     });
+    try {
+      const admins = await db
+        .select({ email: schema.users.email })
+        .from(schema.memberships)
+        .innerJoin(schema.users, eq(schema.memberships.userId, schema.users.id))
+        .where(and(eq(schema.memberships.orgId, orgId), eq(schema.memberships.role, "admin")))
+        .limit(1);
+      if (admins[0]?.email) {
+        const tpl = reminderEmail({
+          title,
+          dueAt: schedule.nextDueAt.toISOString().slice(0, 10),
+        });
+        await sendEmail({ to: admins[0].email, subject: tpl.subject, html: tpl.html, text: tpl.text, tags: tpl.tags });
+      }
+    } catch { /* non-blocking */ }
   }
 
   // Monitoring due reminders

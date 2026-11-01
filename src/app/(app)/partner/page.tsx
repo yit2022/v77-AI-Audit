@@ -49,6 +49,7 @@ export default async function PartnerPage() {
           logoUrl: t(locale, "partner.logoUrl"),
           primaryColor: t(locale, "partner.primaryColor"),
           accentColor: t(locale, "partner.accentColor"),
+          customDomain: t(locale, "partner.customDomain"),
           saveBranding: t(locale, "partner.saveBranding"),
           clients: t(locale, "partner.clients"),
           clientsHint: t(locale, "partner.clientsHint"),

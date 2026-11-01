@@ -11,10 +11,11 @@ import { hasTranslation, dictKeys } from "@/lib/i18n/dictionaries";
 const root = resolve(__dirname, "..");
 
 describe("Round 8 billing scaffolding", () => {
-  it("defines pilot/team/enterprise with pricing on request and seat limits", () => {
+  it("defines pilot/team/enterprise with seat limits and EUR or on-request pricing", () => {
     expect(DEFAULT_PLANS.map((p) => p.tier)).toEqual(["pilot", "team", "enterprise"]);
     for (const p of DEFAULT_PLANS) {
-      expect(p.priceNote.toLowerCase()).toContain("pricing on request");
+      const note = p.priceNote.toLowerCase();
+      expect(note.includes("pricing on request") || note.includes("€") || note.includes("eur")).toBe(true);
       expect(p.seatLimit).toBeGreaterThan(0);
     }
   });

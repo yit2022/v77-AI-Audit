@@ -100,14 +100,14 @@ Disable or wipe demo users before any customer production.
 | `/vendor/[token]` | Public vendor fill-in form |
 | `/incidents` | Art. 73 serious-incident register fields |
 | `/model-cards` | System documentation editor |
-| `/billing` | Plan tiers + seat limits; pricing on request |
+| `/billing` | Plan tiers + EUR prices; Paystack card checkout when enabled; invoices |
 | `/platform` | Owner super-console (orgs, tiers, usage scaffold) |
 
 ## Explicit non-goals in this codebase
 
-- No payment provider / Stripe (or similar) — commercial terms are “pricing on request”
-- No outbound email sending from the app (share links are copy/paste)
 - No automatic authority notification for incidents (record-keeping only)
+- Mobile money / M-Pesa channels are never enabled (Paystack card-only when billing is on)
+- Live Paystack/Resend keys are not bundled — billing stays behind `V77_BILLING_ENABLED=false` until provisioned
 
 ## Branding
 
@@ -136,3 +136,31 @@ Prefer `sales@vertex77.com` for commercial handover and `contact@vertex77.com` f
 - Evidence request automation with assignee, cadence, due/expiry tracking (`/evidence-requests`)
 - Executive board report landscape PDF (`/board-report`, `/api/reports/board`)
 - New app strings translated across EN DE FR PL NL ES IT SV
+
+## Round 11 (billing + email + AI readiness + demo + white-label)
+
+- Paystack billing with split/subaccount support, **card-only** channels, EUR display prices, `PAYSTACK_CURRENCY` (default USD + EUR→USD conversion; EUR when set), webhook HMAC verification, plan activation, `/billing/invoices`
+- Flag `V77_BILLING_ENABLED=false` until keys exist; checkout display name **V77 Trust**
+- Resend transactional email abstraction (`noreply@v77trust.com`, reply-to `support@v77trust.com`) for signup, invite, reminder, evidence request, lead notification — localised templates; no-op without `RESEND_API_KEY`
+- Real-AI provider hardening: timeouts, retries, input cost caps, PII redaction (`V77_ENABLE_REAL_PROVIDERS` remains `false`)
+- Buyer guided demo tour + seeded sample org (`v77-buyer-demo`)
+- Deeper white-label: partner `custom_domain`, partner-branded emails and board PDFs
+
+### Secrets / keys to provision (names only)
+
+| Name | Purpose |
+|------|---------|
+| `PAYSTACK_SECRET_KEY` | Paystack server secret (webhook HMAC + initialize/verify) |
+| `PAYSTACK_PUBLIC_KEY` | Paystack public key (optional client use) |
+| `RESEND_API_KEY` | Resend API key for transactional email |
+| `V77_BILLING_ENABLED` | Must be `true` to expose live checkout (keep `false` until keys exist) |
+| `PAYSTACK_CURRENCY` | Charge currency: `USD` (default) or `EUR` |
+| `PAYSTACK_EUR_USD_RATE` | EUR→USD conversion when charging USD |
+| `V77_EMAIL_FROM` | From address (default `noreply@v77trust.com`) |
+| `V77_EMAIL_REPLY_TO` | Reply-To (default `support@v77trust.com`) |
+| `V77_LEAD_NOTIFY_EMAIL` | Optional lead notification inbox (defaults to sales@vertex77.com) |
+| `OPENAI_API_KEY` / `ANTHROPIC_API_KEY` / Azure OpenAI vars | Only if enabling real providers later |
+| `V77_ENABLE_REAL_PROVIDERS` | Keep `false` until provider keys and spend controls are ready |
+| Partner Paystack `subaccount` / `split_code` | Stored per organisation in D1 (not env secrets) |
+
+Also rotate existing secrets from earlier rounds: session secret, `V77_PLATFORM_ADMIN_EMAILS`, admin seed password, Cloudflare/Wrangler credentials.

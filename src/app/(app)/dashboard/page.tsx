@@ -5,6 +5,7 @@ import { eq, count } from "drizzle-orm";
 import { db, ensureDb, schema } from "@/lib/db";
 import { getSession } from "@/lib/auth/session";
 import { PageHeader, RiskBadge } from "@/components/ui";
+import { DemoTour } from "@/components/demo-tour";
 
 export default async function DashboardPage() {
   const session = await getSession();
@@ -34,6 +35,7 @@ export default async function DashboardPage() {
 
   return (
     <div>
+      <DemoTour />
       <PageHeader
         title="Dashboard"
         subtitle={`Welcome, ${session.name}. Track inventory, risk tiers, and assurance work for ${session.orgName}.`}

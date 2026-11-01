@@ -5,6 +5,7 @@ import { createAzureOpenAiProvider } from "./azure";
 import { createHttpProvider } from "./http";
 import { createWorkersAiProvider } from "./workers-ai";
 import { realProvidersEnabled } from "./flags";
+import { withSafeProvider } from "./safe";
 import type { LlmProvider, ProviderId } from "./types";
 
 export type { LlmProvider, ProviderMessage, ProviderId } from "./types";
@@ -48,15 +49,15 @@ export function getProvider(id: string = "mock", fetchImpl: typeof fetch = fetch
   }
   switch (requested) {
     case "openai":
-      return createOpenAiProvider(fetchImpl);
+      return withSafeProvider(createOpenAiProvider(fetchImpl));
     case "anthropic":
-      return createAnthropicProvider(fetchImpl);
+      return withSafeProvider(createAnthropicProvider(fetchImpl));
     case "azure_openai":
-      return createAzureOpenAiProvider(fetchImpl);
+      return withSafeProvider(createAzureOpenAiProvider(fetchImpl));
     case "http":
-      return createHttpProvider(fetchImpl);
+      return withSafeProvider(createHttpProvider(fetchImpl));
     case "workers_ai":
-      return createWorkersAiProvider();
+      return withSafeProvider(createWorkersAiProvider());
     case "mock":
     default:
       return mockProvider;
