@@ -12,10 +12,18 @@
   "observability": { "enabled": true },
   "workers_dev": true,
   "vars": {
-    "V77_APP_ORIGIN": "https://v77.isaacmuthui.com",
-    "V77_CUSTOM_DOMAIN": "v77.isaacmuthui.com"
+    "V77_APP_ORIGIN": "https://v77trust.com",
+    "V77_CUSTOM_DOMAIN": "v77trust.com"
   },
   "routes": [
+    {
+      "pattern": "v77trust.com",
+      "custom_domain": true
+    },
+    {
+      "pattern": "www.v77trust.com",
+      "custom_domain": true
+    },
     {
       "pattern": "v77.isaacmuthui.com",
       "custom_domain": true

@@ -1,5 +1,7 @@
 {
-  "customDomain": "v77.isaacmuthui.com",
+  "customDomain": "v77trust.com",
+  "wwwDomain": "www.v77trust.com",
+  "legacyDomain": "v77.isaacmuthui.com",
   "workerName": "v77-ai-auditor",
-  "note": "Change customDomain here, run npm run sync-domain, then redeploy. Isaac will swap to a new Cloudflare domain later."
+  "note": "Primary: v77trust.com (+ www). Legacy custom domain kept on same Worker. Run npm run sync-domain then redeploy."
 }
