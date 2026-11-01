@@ -18,7 +18,7 @@
     "V77_BILLING_ENABLED": "false",
     "PAYSTACK_CURRENCY": "USD",
     "PAYSTACK_EUR_USD_RATE": "1.08",
-    "V77_EMAIL_FROM": "noreply@v77trust.com",
+    "V77_EMAIL_FROM": "V77 Trust <noreply@v77trust.com>",
     "V77_EMAIL_REPLY_TO": "support@v77trust.com"
   },
   "routes": [

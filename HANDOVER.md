@@ -164,3 +164,9 @@ Prefer `sales@vertex77.com` for commercial handover and `contact@vertex77.com` f
 | Partner Paystack `subaccount` / `split_code` | Stored per organisation in D1 (not env secrets) |
 
 Also rotate existing secrets from earlier rounds: session secret, `V77_PLATFORM_ADMIN_EMAILS`, admin seed password, Cloudflare/Wrangler credentials.
+
+### Password reset (added with secrets wiring)
+
+- `/forgot-password` + `/api/auth/forgot-password` — generic response, rate-limited per IP and email; Resend link (60 minutes, hashed single-use token)
+- `/reset-password?token=` + `/api/auth/reset-password` — sets password and invalidates all sessions
+- Settings → Change password (`/api/auth/change-password`) — requires current password; invalidates sessions

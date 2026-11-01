@@ -385,4 +385,14 @@ CREATE TABLE IF NOT EXISTS billing_invoices (
 );
 CREATE INDEX IF NOT EXISTS billing_invoices_org_idx ON billing_invoices(org_id);
 CREATE INDEX IF NOT EXISTS billing_invoices_ref_idx ON billing_invoices(paystack_reference);
+
+CREATE TABLE IF NOT EXISTS password_reset_tokens (
+  id text PRIMARY KEY,
+  user_id text NOT NULL REFERENCES users(id),
+  token_hash text NOT NULL UNIQUE,
+  expires_at integer NOT NULL,
+  used_at integer,
+  created_at integer
+);
+CREATE INDEX IF NOT EXISTS password_reset_tokens_user_idx ON password_reset_tokens(user_id);
 `;

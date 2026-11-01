@@ -38,6 +38,39 @@ export function SettingsClient({
   const [revealed, setRevealed] = useState<string | null>(null);
   const [inviteUrl, setInviteUrl] = useState<string | null>(null);
   const [error, setError] = useState("");
+  const [pwMsg, setPwMsg] = useState("");
+  const [pwBusy, setPwBusy] = useState(false);
+
+  async function changePassword() {
+    setError("");
+    setPwMsg("");
+    const currentPassword = (document.getElementById("current-password") as HTMLInputElement).value;
+    const newPassword = (document.getElementById("new-password") as HTMLInputElement).value;
+    const confirmPassword = (document.getElementById("confirm-password") as HTMLInputElement).value;
+    if (newPassword !== confirmPassword) {
+      setError("New passwords do not match");
+      return;
+    }
+    setPwBusy(true);
+    const res = await fetch("/api/auth/change-password", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ currentPassword, newPassword }),
+    });
+    const body = await res.json().catch(() => ({}));
+    setPwBusy(false);
+    if (!res.ok) {
+      setError(body.error || "Password change failed");
+      return;
+    }
+    setPwMsg("Password updated. Please sign in again.");
+    (document.getElementById("current-password") as HTMLInputElement).value = "";
+    (document.getElementById("new-password") as HTMLInputElement).value = "";
+    (document.getElementById("confirm-password") as HTMLInputElement).value = "";
+    setTimeout(() => {
+      window.location.href = "/login";
+    }, 800);
+  }
 
   async function createKey() {
     setError("");
@@ -143,6 +176,37 @@ export function SettingsClient({
 
   return (
     <div className="space-y-8">
+      <div className="card p-5">
+        <h2 className="text-sm font-semibold text-slate-900">Change password</h2>
+        <p className="mt-1 text-sm text-slate-600">
+          Updates your account password and signs you out of all sessions.
+        </p>
+        <div className="mt-4 grid gap-3 md:grid-cols-3">
+          <div>
+            <label className="mb-1 block text-xs font-semibold text-slate-600" htmlFor="current-password">
+              Current password
+            </label>
+            <input id="current-password" className="input w-full" type="password" autoComplete="current-password" />
+          </div>
+          <div>
+            <label className="mb-1 block text-xs font-semibold text-slate-600" htmlFor="new-password">
+              New password
+            </label>
+            <input id="new-password" className="input w-full" type="password" minLength={10} autoComplete="new-password" />
+          </div>
+          <div>
+            <label className="mb-1 block text-xs font-semibold text-slate-600" htmlFor="confirm-password">
+              Confirm new password
+            </label>
+            <input id="confirm-password" className="input w-full" type="password" minLength={10} autoComplete="new-password" />
+          </div>
+        </div>
+        <button type="button" className="btn btn-secondary mt-4" disabled={pwBusy} onClick={() => void changePassword()}>
+          {pwBusy ? "Saving…" : "Update password"}
+        </button>
+        {pwMsg ? <p className="mt-2 text-sm text-sky-800">{pwMsg}</p> : null}
+      </div>
+
       <div className="card p-5">
         <h2 className="text-sm font-semibold text-slate-900">Team members</h2>
         <p className="mt-1 text-sm text-slate-600">People with access to this organisation.</p>

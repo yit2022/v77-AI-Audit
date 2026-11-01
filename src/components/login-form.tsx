@@ -65,7 +65,12 @@ export function LoginForm() {
             <input className="input" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
           </div>
           <div>
-            <label className="mb-1 block text-xs font-semibold text-slate-600">Password</label>
+            <div className="mb-1 flex items-center justify-between gap-2">
+              <label className="block text-xs font-semibold text-slate-600">Password</label>
+              <Link className="text-xs font-semibold text-sky-800 underline" href="/forgot-password">
+                Forgot password?
+              </Link>
+            </div>
             <input
               className="input"
               type="password"

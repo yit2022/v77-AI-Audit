@@ -22,6 +22,8 @@ const COPY: Record<
     evidenceBody: (title: string, due: string, url: string) => string;
     leadSubject: string;
     leadBody: (name: string, company: string) => string;
+    passwordResetSubject: string;
+    passwordResetBody: (name: string, url: string) => string;
     ctaOpen: string;
   }
 > = {
@@ -36,6 +38,16 @@ const COPY: Record<
     evidenceBody: (title, due, url) => `Please upload evidence for: ${title}\nDue: ${due}\n\nOpen: ${url}\n\n— ${COMPANY.productName}`,
     leadSubject: `New sales lead — ${COMPANY.productName}`,
     leadBody: (name, company) => `New lead from ${name} (${company}). Check the platform admin inbox.`,
+        passwordResetSubject: 'Reset your V77 Trust password',
+    passwordResetBody: (name, url) => `Hi ${name},
+
+We received a request to reset your password. This link expires in 60 minutes:
+
+${url}
+
+If you did not request this, you can ignore this email.
+
+— V77 Trust`,
     ctaOpen: "Open V77 Trust",
   },
   de: {
@@ -49,6 +61,16 @@ const COPY: Record<
     evidenceBody: (title, due, url) => `Bitte laden Sie Nachweise hoch für: ${title}\nFällig: ${due}\n\nÖffnen: ${url}\n\n— ${COMPANY.productName}`,
     leadSubject: `Neuer Lead — ${COMPANY.productName}`,
     leadBody: (name, company) => `Neuer Lead von ${name} (${company}).`,
+        passwordResetSubject: 'Passwort für V77 Trust zurücksetzen',
+    passwordResetBody: (name, url) => `Hallo ${name},
+
+Wir haben eine Anfrage zum Zurücksetzen Ihres Passworts erhalten. Dieser Link ist 60 Minuten gültig:
+
+${url}
+
+Wenn Sie das nicht waren, ignorieren Sie diese E-Mail.
+
+— V77 Trust`,
     ctaOpen: "V77 Trust öffnen",
   },
   fr: {
@@ -62,6 +84,16 @@ const COPY: Record<
     evidenceBody: (title, due, url) => `Veuillez téléverser une preuve pour : ${title}\nÉchéance : ${due}\n\nOuvrir : ${url}\n\n— ${COMPANY.productName}`,
     leadSubject: `Nouveau lead — ${COMPANY.productName}`,
     leadBody: (name, company) => `Nouveau lead de ${name} (${company}).`,
+        passwordResetSubject: 'Réinitialiser votre mot de passe V77 Trust',
+    passwordResetBody: (name, url) => `Bonjour ${name},
+
+Nous avons reçu une demande de réinitialisation. Ce lien expire dans 60 minutes :
+
+${url}
+
+Si ce n’était pas vous, ignorez cet e-mail.
+
+— V77 Trust`,
     ctaOpen: "Ouvrir V77 Trust",
   },
   pl: {
@@ -75,6 +107,16 @@ const COPY: Record<
     evidenceBody: (title, due, url) => `Prześlij dowód dla: ${title}\nTermin: ${due}\n\nOtwórz: ${url}\n\n— ${COMPANY.productName}`,
     leadSubject: `Nowy lead — ${COMPANY.productName}`,
     leadBody: (name, company) => `Nowy lead od ${name} (${company}).`,
+        passwordResetSubject: 'Zresetuj hasło V77 Trust',
+    passwordResetBody: (name, url) => `Cześć ${name},
+
+Otrzymaliśmy prośbę o reset hasła. Link jest ważny 60 minut:
+
+${url}
+
+Jeśli to nie Ty, zignoruj tę wiadomość.
+
+— V77 Trust`,
     ctaOpen: "Otwórz V77 Trust",
   },
   nl: {
@@ -88,6 +130,16 @@ const COPY: Record<
     evidenceBody: (title, due, url) => `Upload bewijs voor: ${title}\nDeadline: ${due}\n\nOpen: ${url}\n\n— ${COMPANY.productName}`,
     leadSubject: `Nieuwe lead — ${COMPANY.productName}`,
     leadBody: (name, company) => `Nieuwe lead van ${name} (${company}).`,
+        passwordResetSubject: 'V77 Trust-wachtwoord opnieuw instellen',
+    passwordResetBody: (name, url) => `Hallo ${name},
+
+We ontvingen een verzoek om je wachtwoord te resetten. Deze link verloopt over 60 minuten:
+
+${url}
+
+Als jij dit niet was, negeer deze e-mail.
+
+— V77 Trust`,
     ctaOpen: "Open V77 Trust",
   },
   es: {
@@ -101,6 +153,16 @@ const COPY: Record<
     evidenceBody: (title, due, url) => `Sube evidencia para: ${title}\nVence: ${due}\n\nAbrir: ${url}\n\n— ${COMPANY.productName}`,
     leadSubject: `Nuevo lead — ${COMPANY.productName}`,
     leadBody: (name, company) => `Nuevo lead de ${name} (${company}).`,
+        passwordResetSubject: 'Restablecer contraseña de V77 Trust',
+    passwordResetBody: (name, url) => `Hola ${name},
+
+Recibimos una solicitud para restablecer tu contraseña. Este enlace caduca en 60 minutos:
+
+${url}
+
+Si no fuiste tú, ignora este correo.
+
+— V77 Trust`,
     ctaOpen: "Abrir V77 Trust",
   },
   it: {
@@ -114,6 +176,16 @@ const COPY: Record<
     evidenceBody: (title, due, url) => `Carica evidenza per: ${title}\nScadenza: ${due}\n\nApri: ${url}\n\n— ${COMPANY.productName}`,
     leadSubject: `Nuovo lead — ${COMPANY.productName}`,
     leadBody: (name, company) => `Nuovo lead da ${name} (${company}).`,
+        passwordResetSubject: 'Reimposta la password di V77 Trust',
+    passwordResetBody: (name, url) => `Ciao ${name},
+
+Abbiamo ricevuto una richiesta di reset password. Questo link scade tra 60 minuti:
+
+${url}
+
+Se non sei stato tu, ignora questa email.
+
+— V77 Trust`,
     ctaOpen: "Apri V77 Trust",
   },
   sv: {
@@ -127,6 +199,16 @@ const COPY: Record<
     evidenceBody: (title, due, url) => `Ladda upp bevis för: ${title}\nFörfaller: ${due}\n\nÖppna: ${url}\n\n— ${COMPANY.productName}`,
     leadSubject: `Ny lead — ${COMPANY.productName}`,
     leadBody: (name, company) => `Ny lead från ${name} (${company}).`,
+        passwordResetSubject: 'Återställ ditt V77 Trust-lösenord',
+    passwordResetBody: (name, url) => `Hej ${name},
+
+Vi fick en begäran om att återställa ditt lösenord. Länken gäller i 60 minuter:
+
+${url}
+
+Om det inte var du kan du ignorera mejlet.
+
+— V77 Trust`,
     ctaOpen: "Öppna V77 Trust",
   },
 };
@@ -202,4 +284,11 @@ export function leadNotificationEmail(opts: { name: string; company: string; loc
   const body = c.leadBody(opts.name, opts.company);
   const shell = brandShell(body);
   return { subject: c.leadSubject, ...shell, tags: ["lead"] };
+}
+
+export function passwordResetEmail(opts: { name: string; resetUrl: string; locale?: string; brand?: PartnerEmailBrand }) {
+  const c = COPY[normalizeLocale(opts.locale)];
+  const body = c.passwordResetBody(opts.name, opts.resetUrl);
+  const shell = brandShell(body, opts.brand);
+  return { subject: c.passwordResetSubject, ...shell, tags: ["password_reset"] };
 }
