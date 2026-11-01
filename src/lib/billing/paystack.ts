@@ -7,6 +7,74 @@ export const CHECKOUT_DISPLAY_NAME = "V77 Trust";
 /** Card only — never enable M-Pesa / mobile money. */
 export const PAYSTACK_CHANNELS = ["card"] as const;
 
+/** Documented FarmMate platform share for subaccount + transaction_charge splits. */
+export const FARMMATE_PLATFORM_PERCENT = 1.5;
+
+/** Optional named Multi-Split (SPL_…). None exists on the shared live Paystack business today. */
+export function defaultPaystackSplitCode(
+  env: NodeJS.ProcessEnv | Record<string, string | undefined> = process.env,
+): string | null {
+  const v = env.PAYSTACK_SPLIT_CODE?.trim() || env.PAYSTACK_DEFAULT_SPLIT_CODE?.trim();
+  return v || null;
+}
+
+/** Optional default subaccount when org has none (partner/channel sales). */
+export function defaultPaystackSubaccount(
+  env: NodeJS.ProcessEnv | Record<string, string | undefined> = process.env,
+): string | null {
+  const v = env.PAYSTACK_DEFAULT_SUBACCOUNT?.trim();
+  return v || null;
+}
+
+/** Platform % kept on main account when using FarmMate-style subaccount splits. */
+export function paystackPlatformPercent(
+  env: NodeJS.ProcessEnv | Record<string, string | undefined> = process.env,
+): number {
+  const raw = env.PAYSTACK_PLATFORM_PERCENT?.trim();
+  if (raw == null || raw === "") return FARMMATE_PLATFORM_PERCENT;
+  const n = Number(raw);
+  return Number.isFinite(n) && n >= 0 ? n : FARMMATE_PLATFORM_PERCENT;
+}
+
+export function paystackSplitBearer(
+  env: NodeJS.ProcessEnv | Record<string, string | undefined> = process.env,
+): "account" | "subaccount" {
+  return env.PAYSTACK_SPLIT_BEARER?.trim() === "account" ? "account" : "subaccount";
+}
+
+export function resolveCheckoutSplit(opts: {
+  orgSplitCode?: string | null;
+  orgSubaccount?: string | null;
+  amountMinor: number;
+  env?: NodeJS.ProcessEnv | Record<string, string | undefined>;
+}): {
+  splitCode: string | null;
+  subaccount: string | null;
+  transactionCharge: number | null;
+  bearer: "account" | "subaccount" | null;
+  platformPercent: number;
+} {
+  const env = opts.env || process.env;
+  const splitCode = (opts.orgSplitCode || "").trim() || defaultPaystackSplitCode(env);
+  if (splitCode) {
+    return { splitCode, subaccount: null, transactionCharge: null, bearer: null, platformPercent: paystackPlatformPercent(env) };
+  }
+  const subaccount = (opts.orgSubaccount || "").trim() || defaultPaystackSubaccount(env);
+  const platformPercent = paystackPlatformPercent(env);
+  if (!subaccount) {
+    return { splitCode: null, subaccount: null, transactionCharge: null, bearer: null, platformPercent };
+  }
+  // FarmMate: always send explicit transaction_charge (even 0) so subaccount default % never surprises.
+  const transactionCharge = Math.round((opts.amountMinor * platformPercent) / 100);
+  return {
+    splitCode: null,
+    subaccount,
+    transactionCharge,
+    bearer: paystackSplitBearer(env),
+    platformPercent,
+  };
+}
+
 export type InitializeInput = {
   email: string;
   priceEurMonthly: number;
@@ -16,7 +84,10 @@ export type InitializeInput = {
   /** Partner revenue share: Paystack subaccount code and/or transaction split code. */
   subaccount?: string | null;
   splitCode?: string | null;
+  /** Flat commission in minor units when using subaccount (FarmMate pattern). */
   transactionCharge?: number | null;
+  /** Who bears Paystack fees when using subaccount: account | subaccount. */
+  bearer?: "account" | "subaccount" | null;
 };
 
 export type InitializeResult = {
@@ -58,10 +129,15 @@ export async function initializeTransaction(
       ],
     },
   };
-  if (input.splitCode) body.split_code = input.splitCode;
-  else if (input.subaccount) {
+  if (input.splitCode) {
+    body.split_code = input.splitCode;
+  } else if (input.subaccount) {
     body.subaccount = input.subaccount;
-    if (input.transactionCharge != null) body.transaction_charge = input.transactionCharge;
+    // FarmMate pattern: always set transaction_charge explicitly (incl. 0).
+    body.transaction_charge = input.transactionCharge ?? 0;
+    if (input.bearer === "account" || input.bearer === "subaccount") {
+      body.bearer = input.bearer;
+    }
   }
 
   const res = await fetchImpl(`${apiBase()}/transaction/initialize`, {

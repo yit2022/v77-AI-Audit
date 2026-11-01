@@ -8,7 +8,7 @@ import {
   eurToUsdRate,
 } from "@/lib/billing/currency";
 import { billingEnabled } from "@/lib/billing/flags";
-import { PAYSTACK_CHANNELS, CHECKOUT_DISPLAY_NAME, verifyPaystackSignature, isV77PaystackEvent } from "@/lib/billing/paystack";
+import { PAYSTACK_CHANNELS, CHECKOUT_DISPLAY_NAME, verifyPaystackSignature, isV77PaystackEvent, FARMMATE_PLATFORM_PERCENT, resolveCheckoutSplit, defaultPaystackSplitCode } from "@/lib/billing/paystack";
 import { sendEmail, emailConfigured } from "@/lib/email/send";
 import { signupEmail, inviteEmail, evidenceRequestEmail, reminderEmail, leadNotificationEmail } from "@/lib/email/templates";
 import { redactPii, withSafeProvider } from "@/lib/providers/safe";
@@ -151,5 +151,50 @@ describe("Sprint 11 webhook V77 filter", () => {
     expect(isV77PaystackEvent({ data: { reference: "hz_abc", metadata: { app: "v77" } } })).toBe(true);
     expect(isV77PaystackEvent({ data: { reference: "hz_abc", metadata: { source: "hazinova" } } })).toBe(false);
     expect(isV77PaystackEvent({ data: { reference: "other", metadata: null } })).toBe(false);
+  });
+});
+
+
+describe("Sprint 11 FarmMate-aligned split defaults", () => {
+  const keys = [
+    "PAYSTACK_SPLIT_CODE",
+    "PAYSTACK_DEFAULT_SPLIT_CODE",
+    "PAYSTACK_DEFAULT_SUBACCOUNT",
+    "PAYSTACK_PLATFORM_PERCENT",
+    "PAYSTACK_SPLIT_BEARER",
+  ] as const;
+  const prev: Record<string, string | undefined> = {};
+  beforeEach(() => {
+    for (const k of keys) prev[k] = process.env[k];
+    for (const k of keys) delete process.env[k];
+  });
+  afterEach(() => {
+    for (const k of keys) {
+      if (prev[k] === undefined) delete process.env[k];
+      else process.env[k] = prev[k];
+    }
+  });
+
+  it("defaults to FarmMate 1.5% platform charge when using a subaccount", () => {
+    expect(FARMMATE_PLATFORM_PERCENT).toBe(1.5);
+    const r = resolveCheckoutSplit({ orgSubaccount: "ACCT_test", amountMinor: 10000 });
+    expect(r.splitCode).toBeNull();
+    expect(r.subaccount).toBe("ACCT_test");
+    expect(r.transactionCharge).toBe(150);
+    expect(r.bearer).toBe("subaccount");
+  });
+
+  it("prefers named split_code over subaccount when set", () => {
+    process.env.PAYSTACK_SPLIT_CODE = "SPL_example";
+    const r = resolveCheckoutSplit({ orgSubaccount: "ACCT_test", amountMinor: 10000 });
+    expect(r.splitCode).toBe("SPL_example");
+    expect(r.subaccount).toBeNull();
+    expect(defaultPaystackSplitCode()).toBe("SPL_example");
+  });
+
+  it("uses org split override over env default", () => {
+    process.env.PAYSTACK_SPLIT_CODE = "SPL_env";
+    const r = resolveCheckoutSplit({ orgSplitCode: "SPL_org", amountMinor: 5000 });
+    expect(r.splitCode).toBe("SPL_org");
   });
 });

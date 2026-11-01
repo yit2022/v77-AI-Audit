@@ -182,3 +182,11 @@ V77 activates plans without depending on that webhook:
 3. `/api/billing/webhook` stays ready and **ignores non-V77** events
 
 Optional relay (owner of FarmMate webhook router — not applied by V77): forward events where `metadata.app=v77` or `metadata.source=v77` or reference starts with `v77_`, with raw body + `x-paystack-signature` unchanged (and e.g. `x-farmmate-forwarded: 1`), to `https://v77trust.com/api/billing/webhook`.
+
+### FarmMate Paystack split (shared live business)
+
+Investigated 1 Nov 2026 (EAT / UTC+3):
+- `GET /split` on the shared live Paystack business returns **no Multi-Splits** (no `SPL_` to reuse).
+- Live subaccounts present are Hazinova creator payouts (`ACCT_…`, `percentage_charge` 35) — not a FarmMate SaaS Multi-Split.
+- FarmMate’s documented pattern (host `167.172.182.244`, path `/opt/farmerp`, mirrored by Hazinova docs): per-transaction **`subaccount` + explicit `transaction_charge`**, platform share **1.5%** (Hazinova tips separately use 35%).
+- V77 applies: org `paystack_split_code` / `paystack_subaccount` overrides → else env `PAYSTACK_SPLIT_CODE` → else env `PAYSTACK_DEFAULT_SUBACCOUNT` with `PAYSTACK_PLATFORM_PERCENT` (default **1.5**) and `PAYSTACK_SPLIT_BEARER`. No new Paystack split was created.

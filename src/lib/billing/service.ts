@@ -9,7 +9,9 @@ import {
   listTransactions,
   isV77PaystackEvent,
   CHECKOUT_DISPLAY_NAME,
+  resolveCheckoutSplit,
 } from "./paystack";
+import { chargeAmountMinor } from "./currency";
 import { billingEnabled } from "./flags";
 
 export async function listInvoices(orgId: string) {
@@ -53,6 +55,12 @@ export async function startCheckout(opts: {
 
   const reference = `v77_${opts.orgId.slice(0, 8)}_${id().slice(0, 12)}`;
   const invoiceId = id();
+  const priced = chargeAmountMinor(plan.priceEurMonthly);
+  const split = resolveCheckoutSplit({
+    orgSplitCode: org.paystackSplitCode,
+    orgSubaccount: org.paystackSubaccount,
+    amountMinor: priced.amountMinor,
+  });
   const init = await initializeTransaction({
     email: opts.email,
     priceEurMonthly: plan.priceEurMonthly,
@@ -66,9 +74,14 @@ export async function startCheckout(opts: {
       plan_tier: plan.tier,
       invoice_id: invoiceId,
       product: CHECKOUT_DISPLAY_NAME,
+      split_code: split.splitCode || undefined,
+      subaccount: split.subaccount || undefined,
+      platform_percent: split.subaccount ? split.platformPercent : undefined,
     },
-    subaccount: org.paystackSubaccount || null,
-    splitCode: org.paystackSplitCode || null,
+    subaccount: split.subaccount,
+    splitCode: split.splitCode,
+    transactionCharge: split.transactionCharge,
+    bearer: split.bearer,
   });
 
   await db.insert(schema.billingInvoices).values({
