@@ -331,3 +331,23 @@ export const pilotLeads = pgTable("pilot_leads", {
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().$defaultFn(() => new Date()),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().$defaultFn(() => new Date()),
 });
+
+
+export const euAnnexDocs = pgTable("eu_annex_docs", {
+  id: text("id").primaryKey(),
+  orgId: text("org_id").notNull().references(() => organisations.id),
+  systemId: text("system_id").notNull().references(() => aiSystems.id),
+  answersJson: text("answers_json").notNull().default("{}"),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().$defaultFn(() => new Date()),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().$defaultFn(() => new Date()),
+});
+
+export const euConformitySteps = pgTable("eu_conformity_steps", {
+  id: text("id").primaryKey(),
+  orgId: text("org_id").notNull().references(() => organisations.id),
+  systemId: text("system_id").notNull().references(() => aiSystems.id),
+  stepId: text("step_id").notNull(),
+  status: text("status").notNull().default("not_started"),
+  notes: text("notes").notNull().default(""),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().$defaultFn(() => new Date()),
+});

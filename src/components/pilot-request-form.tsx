@@ -1,3 +1,4 @@
+import { COMPANY } from "@/lib/company";
 "use client";
 
 import { useState } from "react";
@@ -69,7 +70,12 @@ export function PilotRequestForm() {
       <button className="btn btn-primary" disabled={status === "loading"}>
         {status === "loading" ? "Submitting…" : "Request a pilot"}
       </button>
-      <p className="text-xs text-slate-500">We&apos;ll be in touch within 2 business days.</p>
+      <p className="text-xs text-slate-500">
+        We&apos;ll be in touch within 2 business days. Sales:{" "}
+        <a className="font-medium text-sky-700 hover:underline" href={`mailto:${COMPANY.salesEmail}`}>
+          {COMPANY.salesEmail}
+        </a>
+      </p>
     </form>
   );
 }

@@ -182,4 +182,23 @@ CREATE TABLE IF NOT EXISTS pilot_leads (
   created_at integer
 );
 CREATE INDEX IF NOT EXISTS pilot_leads_email_idx ON pilot_leads(email);
+
+CREATE TABLE IF NOT EXISTS eu_annex_docs (
+  id text PRIMARY KEY,
+  org_id text NOT NULL REFERENCES organisations(id),
+  system_id text NOT NULL REFERENCES ai_systems(id),
+  answers_json text NOT NULL DEFAULT '{}',
+  updated_at integer,
+  created_at integer
+);
+CREATE TABLE IF NOT EXISTS eu_conformity_steps (
+  id text PRIMARY KEY,
+  org_id text NOT NULL REFERENCES organisations(id),
+  system_id text NOT NULL REFERENCES ai_systems(id),
+  step_id text NOT NULL,
+  status text NOT NULL DEFAULT 'not_started',
+  notes text NOT NULL DEFAULT '',
+  updated_at integer
+);
+CREATE INDEX IF NOT EXISTS eu_conformity_system_idx ON eu_conformity_steps(system_id);
 `;

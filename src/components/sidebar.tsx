@@ -4,10 +4,13 @@ import { LogoMark } from "@/components/logo-mark";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
+import { LocaleSwitcher } from "@/components/locale-switcher";
+import type { Locale } from "@/lib/i18n/dictionaries";
 
 const links = [
   { href: "/dashboard", label: "Dashboard" },
   { href: "/compliance", label: "Compliance" },
+  { href: "/eu-ai-act", label: "EU AI Act" },
   { href: "/systems", label: "AI Inventory" },
   { href: "/controls", label: "Control Crosswalk" },
   { href: "/assessments", label: "Assessments" },
@@ -23,7 +26,7 @@ const links = [
   { href: "/settings", label: "Settings" },
 ];
 
-export function Sidebar({ userName, orgName, role }: { userName: string; orgName: string; role: string }) {
+export function Sidebar({ userName, orgName, role, locale = "en" }: { userName: string; orgName: string; role: string; locale?: Locale }) {
   const pathname = usePathname();
   const router = useRouter();
   const [open, setOpen] = useState(false);
@@ -59,6 +62,9 @@ export function Sidebar({ userName, orgName, role }: { userName: string; orgName
       <div className="border-t border-[#d7e6ef] p-4">
         <div className="text-sm font-medium text-slate-800">{userName}</div>
         <div className="text-xs capitalize text-slate-500">{role.replace("_", " ")}</div>
+        <div className="mt-3">
+          <LocaleSwitcher value={locale} />
+        </div>
         <button type="button" onClick={logout} className="btn btn-secondary mt-3 w-full">
           Sign out
         </button>

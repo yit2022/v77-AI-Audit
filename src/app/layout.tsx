@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
+import { cookies } from "next/headers";
 import "./globals.css";
 import { getAppOrigin } from "@/lib/site";
+import { CookieConsent } from "@/components/cookie-consent";
+import { isLocale } from "@/lib/i18n/dictionaries";
 
 const origin = getAppOrigin();
 
@@ -22,7 +25,7 @@ export const metadata: Metadata = {
     "AI inventory",
     "AI compliance",
   ],
-  authors: [{ name: "V77 Trust" }],
+  authors: [{ name: "Vertex77 sp. z o.o." }],
   openGraph: {
     type: "website",
     locale: "en_GB",
@@ -57,10 +60,19 @@ export const metadata: Metadata = {
   manifest: "/site.webmanifest",
 };
 
-export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+  const jar = await cookies();
+  const raw = jar.get("v77_locale")?.value;
+  const lang = isLocale(raw) ? raw : "en";
   return (
-    <html lang="en">
-      <body className="min-h-screen antialiased">{children}</body>
+    <html lang={lang}>
+      <body className="min-h-screen antialiased">
+        <a href="#main-content" className="skip-link">
+          Skip to main content
+        </a>
+        {children}
+        <CookieConsent />
+      </body>
     </html>
   );
 }

@@ -6,6 +6,7 @@ import { getSession } from "@/lib/auth/session";
 import { seedIfEmpty } from "@/lib/db/seed";
 import { LogoMark } from "@/components/logo-mark";
 import { PilotRequestForm } from "@/components/pilot-request-form";
+import { COMPANY } from "@/lib/company";
 
 const pillars = [
   {
@@ -43,7 +44,7 @@ export default async function HomePage() {
   if (session) redirect("/dashboard");
 
   return (
-    <main className="min-h-screen bg-[radial-gradient(ellipse_at_top,_#e8f7fd_0%,_#ffffff_48%,_#ffffff_100%)]">
+    <main id="main-content" tabIndex={-1} className="min-h-screen bg-[radial-gradient(ellipse_at_top,_#e8f7fd_0%,_#ffffff_48%,_#ffffff_100%)]">
       <header className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-5 sm:px-6 sm:py-6">
         <LogoMark />
         <nav className="flex flex-wrap items-center justify-end gap-2 sm:gap-3">
@@ -52,6 +53,9 @@ export default async function HomePage() {
           </Link>
           <Link href="/frameworks" className="hidden text-sm font-medium text-slate-600 hover:text-[#0F2A4A] md:inline">
             Frameworks
+          </Link>
+          <Link href="/contact" className="hidden text-sm font-medium text-slate-600 hover:text-[#0F2A4A] lg:inline">
+            Contact
           </Link>
           <a href="#pricing" className="hidden text-sm font-medium text-slate-600 hover:text-[#0F2A4A] lg:inline">
             Pricing
@@ -149,7 +153,11 @@ export default async function HomePage() {
               <h2 className="mt-2 text-2xl font-semibold text-[#0F2A4A]">Pricing on request</h2>
               <p className="mt-3 text-sm leading-relaxed text-slate-600">
                 Pilots and enterprise plans are scoped to your AI inventory, frameworks and assurance depth.
-                No public list prices — we quote after a short discovery call.
+                Pricing on request — we quote in EUR after a short discovery call. Sales:{" "}
+                <a className="font-semibold text-sky-800 hover:underline" href={`mailto:${COMPANY.salesEmail}`}>
+                  {COMPANY.salesEmail}
+                </a>
+                .
               </p>
               <ul className="mt-5 space-y-2 text-sm text-[#0F2A4A]">
                 <li>• Guided EU AI Act classification and control crosswalk</li>
@@ -159,7 +167,13 @@ export default async function HomePage() {
             </div>
             <div className="p-8">
               <h3 className="text-lg font-semibold text-[#0F2A4A]">Request a pilot</h3>
-              <p className="mt-1 text-sm text-slate-500">Tell us about your programme. We&apos;ll be in touch within 2 business days.</p>
+              <p className="mt-1 text-sm text-slate-500">
+                Tell us about your programme. We&apos;ll be in touch within 2 business days — or email{" "}
+                <a className="font-semibold text-sky-700 hover:underline" href={`mailto:${COMPANY.salesEmail}`}>
+                  {COMPANY.salesEmail}
+                </a>
+                .
+              </p>
               <div className="mt-5">
                 <PilotRequestForm />
               </div>
@@ -169,15 +183,27 @@ export default async function HomePage() {
       </section>
 
       <footer className="border-t border-[#d7e6ef] bg-white">
-        <div className="mx-auto flex max-w-6xl flex-col gap-4 px-4 py-8 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+        <div className="mx-auto flex max-w-6xl flex-col gap-4 px-4 py-8 sm:flex-row sm:items-start sm:justify-between sm:px-6">
           <div className="space-y-2">
             <LogoMark />
-            <p className="text-xs text-slate-500">© 2026 V77 Trust</p>
+            <p className="text-xs text-slate-500">{COMPANY.footerCopyright}</p>
+            <p className="text-xs text-slate-500">
+              Sales:{" "}
+              <a className="text-sky-700 hover:underline" href={`mailto:${COMPANY.salesEmail}`}>
+                {COMPANY.salesEmail}
+              </a>
+              {" · "}
+              General:{" "}
+              <a className="text-sky-700 hover:underline" href={`mailto:${COMPANY.email}`}>
+                {COMPANY.email}
+              </a>
+            </p>
           </div>
           <div className="flex flex-wrap gap-x-4 gap-y-2 text-sm font-medium text-[#0F2A4A]">
             <Link href="/how-it-works" className="hover:text-sky-700">How it works</Link>
             <Link href="/frameworks" className="hover:text-sky-700">Frameworks</Link>
             <Link href="/security" className="hover:text-sky-700">Security</Link>
+            <Link href="/contact" className="hover:text-sky-700">Contact</Link>
             <Link href="/privacy" className="hover:text-sky-700">Privacy</Link>
             <Link href="/terms" className="hover:text-sky-700">Terms</Link>
             <Link href="/login" className="hover:text-sky-700">Sign in</Link>

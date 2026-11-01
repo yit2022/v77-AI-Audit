@@ -21,7 +21,8 @@ describe("pilot leads", () => {
   it("footer uses brand lockup and company copyright without placeholder copy", () => {
     const page = readFileSync(resolve(__dirname, "../src/app/page.tsx"), "utf8");
     const form = readFileSync(resolve(__dirname, "../src/components/pilot-request-form.tsx"), "utf8");
-    expect(page).toContain("© 2026 V77 Trust");
+    expect(page).toContain("COMPANY.footerCopyright");
+    expect(page).toContain("COMPANY.salesEmail");
     expect(page).not.toMatch(/tamalaki|kenya|nairobi|africa/i);
     expect(page).not.toMatch(/artwork pending|placeholder mark/i);
     expect(form).toMatch(/within 2 business days/i);

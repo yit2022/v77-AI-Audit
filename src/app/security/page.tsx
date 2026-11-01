@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { MarketingChrome } from "@/components/marketing-chrome";
+import { COMPANY } from "@/lib/company";
 
 export const metadata: Metadata = {
   title: "Security & Trust — V77 Trust",
@@ -55,11 +56,15 @@ export default function SecurityPage() {
           ))}
         </div>
         <p className="mt-8 text-sm text-slate-600">
-          Questions about our security programme?{" "}
+          Questions about our security programme? Email{" "}
+          <a className="font-semibold text-sky-700 hover:underline" href={`mailto:${COMPANY.email}`}>
+            {COMPANY.email}
+          </a>{" "}
+          or{" "}
           <Link href="/#request-pilot" className="font-semibold text-sky-700 hover:underline">
-            Request a pilot
-          </Link>{" "}
-          and ask for the trust overview.
+            request a pilot
+          </Link>
+          . Operator: {COMPANY.legalName}, {COMPANY.addressLine}.
         </p>
       </section>
     </MarketingChrome>

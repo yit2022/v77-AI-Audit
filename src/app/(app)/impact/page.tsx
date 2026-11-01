@@ -28,6 +28,15 @@ export default async function ImpactListPage() {
         title="Impact assessments"
         subtitle="EU AI Act Art. 27 FRIA and complementary GDPR DPIA templates."
       />
+      <div className="card mb-6 border-sky-200 bg-sky-50/70 p-4 text-sm text-slate-700">
+        <strong className="text-[#0F2A4A]">GDPR / DPIA linkage:</strong> when a high-risk system processes personal
+        data, complete both an Art. 27 FRIA and a GDPR Art. 35 DPIA. Neither replaces the other — start both from this
+        page and keep them linked in your evidence vault. Continue obligations tracking in{" "}
+        <a className="font-semibold text-sky-700 hover:underline" href="/eu-ai-act">
+          EU AI Act
+        </a>
+        .
+      </div>
       <ImpactCreateForm systems={systems} templates={IMPACT_TEMPLATES.map((t) => ({ id: t.id, name: t.name }))} />
       <div className="mt-6 space-y-3">
         {items.map((item) => (

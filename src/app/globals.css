@@ -88,3 +88,31 @@ a { color: inherit; text-decoration: none; }
 .badge-prohibited { background: #111827; color: #f9fafb; }
 .badge-gpai { background: #e0e7ff; color: #3730a3; }
 .badge-neutral { background: #eef6fb; color: #0f2a4a; }
+
+.skip-link {
+  position: absolute;
+  left: -999px;
+  top: 0;
+  z-index: 100;
+  padding: 0.5rem 1rem;
+  background: #0f2a4a;
+  color: #fff;
+  border-radius: 0 0 8px 0;
+}
+.skip-link:focus {
+  left: 0;
+}
+
+:focus-visible {
+  outline: 2px solid #4fbcec;
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
