@@ -34,11 +34,14 @@ describe("password reset", () => {
       });
       expect(tpl.subject.length).toBeGreaterThan(5);
       expect(tpl.text).toContain("https://v77trust.com/reset-password?token=abc");
-      expect(tpl.html).toContain("https://v77trust.com/reset-password?token=abc");
+      expect(tpl.html).toContain('href="https://v77trust.com/reset-password?token=abc"');
+      // Long token URL must not appear as visible HTML body text (button href only).
+      expect(tpl.html.replace(/href="[^"]+"/g, "")).not.toContain("https://v77trust.com/reset-password?token=abc");
       expect(tpl.html).toContain("<a href=");
       expect(tpl.html).not.toContain("<pre");
       expect(tpl.html).toContain("https://v77trust.com/brand/v77-email-logo.png");
       expect(tpl.html).toContain('alt="V77 Trust"');
+      expect(tpl.html).toContain("ul. Świeradowska 47");
       expect(tpl.tags).toContain("password_reset");
     }
   });

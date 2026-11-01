@@ -27,7 +27,7 @@ function shell(textBody: string, unsub?: string): { html: string; text: string; 
     <a href="https://v77trust.com" style="display:inline-block;margin:0 0 16px;text-decoration:none"><img src="https://v77trust.com/brand/v77-email-logo.png" alt="V77 Trust" width="160" height="48" style="display:block;width:160px;height:auto;border:0;outline:none" /></a>
     <div style="height:4px;background:#6FCDF5;border-radius:2px;margin-bottom:20px"></div>
     <pre style="white-space:pre-wrap;font-family:inherit;margin:0;line-height:1.5">${escapeHtml(textBody)}</pre>
-    <p style="margin-top:24px;font-size:12px;color:#64748b">${COMPANY.productName} · ${COMPANY.legalName}</p>
+    <p style="margin-top:24px;font-size:12px;line-height:1.5;color:#64748b">${COMPANY.productName} · ${COMPANY.legalName}<br/>${COMPANY.addressLine}<br/><a href="https://v77trust.com" style="color:#64748b;text-decoration:underline">v77trust.com</a></p>
     ${unsubHtml}
   </div></body></html>`;
   return { html, text: full, fromName: COMPANY.productName };

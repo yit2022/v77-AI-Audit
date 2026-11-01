@@ -25,6 +25,7 @@ const COPY: Record<
     passwordResetSubject: string;
     passwordResetBody: (name: string, url: string) => string;
     passwordResetCta: string;
+    passwordResetFallback: string;
     ctaOpen: string;
   }
 > = {
@@ -50,6 +51,7 @@ If you did not request this, you can ignore this email.
 
 — V77 Trust`,
     passwordResetCta: "Reset password",
+    passwordResetFallback: "If the button does not work, open https://v77trust.com/forgot-password and request a new link.",
     ctaOpen: "Open V77 Trust",
   },
   de: {
@@ -74,6 +76,7 @@ Wenn Sie das nicht waren, ignorieren Sie diese E-Mail.
 
 — V77 Trust`,
     passwordResetCta: "Passwort zurücksetzen",
+    passwordResetFallback: "Wenn die Schaltfläche nicht funktioniert, öffnen Sie https://v77trust.com/forgot-password und fordern Sie einen neuen Link an.",
     ctaOpen: "V77 Trust öffnen",
   },
   fr: {
@@ -98,6 +101,7 @@ Si ce n’était pas vous, ignorez cet e-mail.
 
 — V77 Trust`,
     passwordResetCta: "Réinitialiser le mot de passe",
+    passwordResetFallback: "Si le bouton ne fonctionne pas, ouvrez https://v77trust.com/forgot-password et demandez un nouveau lien.",
     ctaOpen: "Ouvrir V77 Trust",
   },
   pl: {
@@ -122,6 +126,7 @@ Jeśli to nie Ty, zignoruj tę wiadomość.
 
 — V77 Trust`,
     passwordResetCta: "Zresetuj hasło",
+    passwordResetFallback: "Jeśli przycisk nie działa, otwórz https://v77trust.com/forgot-password i poproś o nowy link.",
     ctaOpen: "Otwórz V77 Trust",
   },
   nl: {
@@ -146,6 +151,7 @@ Als jij dit niet was, negeer deze e-mail.
 
 — V77 Trust`,
     passwordResetCta: "Wachtwoord resetten",
+    passwordResetFallback: "Werkt de knop niet, open dan https://v77trust.com/forgot-password en vraag een nieuwe link aan.",
     ctaOpen: "Open V77 Trust",
   },
   es: {
@@ -170,6 +176,7 @@ Si no fuiste tú, ignora este correo.
 
 — V77 Trust`,
     passwordResetCta: "Restablecer contraseña",
+    passwordResetFallback: "Si el botón no funciona, abre https://v77trust.com/forgot-password y solicita un nuevo enlace.",
     ctaOpen: "Abrir V77 Trust",
   },
   it: {
@@ -194,6 +201,7 @@ Se non sei stato tu, ignora questa email.
 
 — V77 Trust`,
     passwordResetCta: "Reimposta password",
+    passwordResetFallback: "Se il pulsante non funziona, apri https://v77trust.com/forgot-password e richiedi un nuovo link.",
     ctaOpen: "Apri V77 Trust",
   },
   sv: {
@@ -218,6 +226,7 @@ Om det inte var du kan du ignorera mejlet.
 
 — V77 Trust`,
     passwordResetCta: "Återställ lösenord",
+    passwordResetFallback: "Om knappen inte fungerar, öppna https://v77trust.com/forgot-password och begär en ny länk.",
     ctaOpen: "Öppna V77 Trust",
   },
 };
@@ -230,7 +239,7 @@ function normalizeLocale(locale?: string): LocaleCode {
 function brandShell(
   textBody: string,
   brand?: PartnerEmailBrand,
-  opts?: { ctaLabel?: string; ctaUrl?: string },
+  opts?: { ctaLabel?: string; ctaUrl?: string; ctaFallback?: string },
 ): { html: string; text: string; fromName: string } {
   const name = brand?.name?.trim() || COMPANY.productName;
   const color = brand?.primaryColor || "#0F2A4A";
@@ -238,22 +247,30 @@ function brandShell(
   const logoHtml = brand?.logoUrl
     ? `<img src="${escapeHtml(brand.logoUrl)}" alt="${escapeHtml(name)}" width="160" height="40" style="display:block;width:160px;height:auto;max-height:48px;border:0;outline:none;margin:0 0 16px" />`
     : `<a href="https://v77trust.com" style="display:inline-block;margin:0 0 16px;text-decoration:none"><img src="https://v77trust.com/brand/v77-email-logo.png" alt="V77 Trust" width="160" height="48" style="display:block;width:160px;height:auto;border:0;outline:none" /></a>`;
+  const hideRawUrl = Boolean(opts?.ctaUrl);
   const paragraphs = textBody
     .split(/\n\n+/)
     .map((p) => p.trim())
     .filter(Boolean)
+    .filter((p) => {
+      if (!hideRawUrl) return true;
+      // Keep long token URLs out of HTML (button carries the href).
+      if (opts?.ctaUrl && p === opts.ctaUrl) return false;
+      return !/^https?:\/\/\S+$/.test(p);
+    })
     .map((p) => {
-      const onlyUrl = /^https?:\/\/\S+$/.test(p);
-      if (onlyUrl) {
-        return `<p style="margin:0 0 16px;font-family:Arial,Helvetica,sans-serif;font-size:13px;line-height:1.5;color:#64748b;word-break:break-all">${escapeHtml(p)}</p>`;
-      }
       return `<p style="margin:0 0 16px;font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.55;color:#0f172a">${escapeHtml(p).replace(/\n/g, "<br/>")}</p>`;
     })
     .join("");
   const cta =
     opts?.ctaUrl && opts?.ctaLabel
-      ? `<p style="margin:8px 0 20px"><a href="${escapeHtml(opts.ctaUrl)}" style="display:inline-block;background:${color};color:#ffffff;text-decoration:none;font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1;padding:12px 18px;border-radius:8px">${escapeHtml(opts.ctaLabel)}</a></p>`
+      ? `<p style="margin:8px 0 12px"><a href="${escapeHtml(opts.ctaUrl)}" style="display:inline-block;background:${color};color:#ffffff;text-decoration:none;font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1;padding:12px 18px;border-radius:8px">${escapeHtml(opts.ctaLabel)}</a></p>`
       : "";
+  const ctaFallback =
+    opts?.ctaUrl && opts?.ctaFallback
+      ? `<p style="margin:0 0 16px;font-family:Arial,Helvetica,sans-serif;font-size:13px;line-height:1.5;color:#64748b">${escapeHtml(opts.ctaFallback)}</p>`
+      : "";
+  const addressFooter = `<p style="margin:24px 0 0;font-size:12px;line-height:1.5;color:#64748b;font-family:Arial,Helvetica,sans-serif">${escapeHtml(name)} · ${escapeHtml(COMPANY.legalName)}<br/>${escapeHtml(COMPANY.addressLine)}<br/><a href="https://v77trust.com" style="color:#64748b;text-decoration:underline">v77trust.com</a></p>`;
   const html = `<!DOCTYPE html><html lang="en"><body style="margin:0;padding:0;background:#f8fafc;color:#0f172a">
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f8fafc;padding:24px 12px">
     <tr><td align="center">
@@ -263,7 +280,8 @@ function brandShell(
           <div style="height:4px;background:${accent};border-radius:2px;margin-bottom:20px"></div>
           ${paragraphs}
           ${cta}
-          <p style="margin:24px 0 0;font-size:12px;line-height:1.5;color:#64748b;font-family:Arial,Helvetica,sans-serif">${escapeHtml(name)} · <span style="color:${color}">${escapeHtml(COMPANY.legalName)}</span></p>
+          ${ctaFallback}
+          ${addressFooter}
         </td></tr>
       </table>
     </td></tr>
@@ -326,7 +344,11 @@ export function leadNotificationEmail(opts: { name: string; company: string; loc
 export function passwordResetEmail(opts: { name: string; resetUrl: string; locale?: string; brand?: PartnerEmailBrand }) {
   const c = COPY[normalizeLocale(opts.locale)];
   const body = c.passwordResetBody(opts.name, opts.resetUrl);
-  const shell = brandShell(body, opts.brand, { ctaLabel: c.passwordResetCta, ctaUrl: opts.resetUrl });
+  const shell = brandShell(body, opts.brand, {
+    ctaLabel: c.passwordResetCta,
+    ctaUrl: opts.resetUrl,
+    ctaFallback: c.passwordResetFallback,
+  });
   return { subject: c.passwordResetSubject, ...shell, tags: ["password_reset"] };
 }
 
