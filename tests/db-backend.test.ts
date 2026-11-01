@@ -2,10 +2,10 @@ import { describe, expect, it } from "vitest";
 import { resolveDbBackend } from "../src/lib/db/backend";
 
 describe("resolveDbBackend", () => {
-  it("falls back to pglite when DATABASE_URL is unset", () => {
-    expect(resolveDbBackend({})).toBe("pglite");
-    expect(resolveDbBackend({ DATABASE_URL: "" })).toBe("pglite");
-    expect(resolveDbBackend({ DATABASE_URL: "  " })).toBe("pglite");
+  it("falls back to sqlite when DATABASE_URL is unset", () => {
+    expect(resolveDbBackend({})).toBe("sqlite");
+    expect(resolveDbBackend({ DATABASE_URL: "" })).toBe("sqlite");
+    expect(resolveDbBackend({ DATABASE_URL: "  " })).toBe("sqlite");
   });
 
   it("selects postgres for postgres URLs", () => {
@@ -14,6 +14,6 @@ describe("resolveDbBackend", () => {
   });
 
   it("ignores non-postgres URLs", () => {
-    expect(resolveDbBackend({ DATABASE_URL: "mysql://localhost/v77" })).toBe("pglite");
+    expect(resolveDbBackend({ DATABASE_URL: "mysql://localhost/v77" })).toBe("sqlite");
   });
 });

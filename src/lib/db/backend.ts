@@ -1,8 +1,8 @@
-export type DbBackend = "postgres" | "pglite";
+export type DbBackend = "d1" | "sqlite" | "postgres" | "pglite";
 
-/** Pure helper: choose Postgres when DATABASE_URL is set, otherwise PGlite. */
+/** Local default is sqlite (libsql file). Postgres URL retained for Contabo compose. */
 export function resolveDbBackend(env: NodeJS.ProcessEnv = process.env): DbBackend {
   const url = env.DATABASE_URL?.trim();
-  if (url && /^postgres(ql)?:\/\//i.test(url)) return "postgres";
-  return "pglite";
+  if (url?.startsWith("postgres://") || url?.startsWith("postgresql://")) return "postgres";
+  return "sqlite";
 }

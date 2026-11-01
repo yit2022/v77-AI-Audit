@@ -50,3 +50,11 @@ data-e2e/
 .env
 .env.local
 deploy-secrets.txt
+.open-next
+.dev.vars
+wrangler.toml
+data/*.sqlite
+
+# Cloudflare / local runtime
+.wrangler/
+.open-next/

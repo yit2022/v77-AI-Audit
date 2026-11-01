@@ -10,10 +10,15 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "db:seed": "tsx scripts/seed.ts",
-    "e2e": "bash scripts/e2e-smoke.sh"
+    "e2e": "bash scripts/e2e-smoke.sh",
+    "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
+    "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
+    "cf-typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts"
   },
   "dependencies": {
     "@electric-sql/pglite": "^0.3.14",
+    "@libsql/client": "^0.18.0",
+    "@opennextjs/cloudflare": "^1.20.15",
     "bcryptjs": "^3.0.3",
     "date-fns": "^4.4.0",
     "drizzle-orm": "^0.45.4",
@@ -40,6 +45,15 @@
     "tailwindcss": "^4",
     "tsx": "^4.20.3",
     "typescript": "^5",
-    "vitest": "^2.1.9"
+    "vitest": "^2.1.9",
+    "wrangler": "^4.156.0"
+  },
+  "allowScripts": {
+    "workerd@1.20261023.1": true,
+    "esbuild@0.18.20": true,
+    "esbuild@0.28.2": true,
+    "esbuild@0.25.12": true,
+    "esbuild@0.21.5": true,
+    "better-sqlite3@13.0.3": true
   }
 }

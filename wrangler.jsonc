@@ -1,0 +1,33 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "v77-ai-auditor",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2026-11-01",
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  "account_id": "adc489ec390a6b82b90e8ea640fe8566",
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  },
+  "observability": { "enabled": true },
+  "workers_dev": true,
+  "routes": [
+    {
+      "pattern": "v77.isaacmuthui.com",
+      "custom_domain": true
+    }
+  ],
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "v77-ai-audit",
+      "database_id": "d573ab51-d920-4b27-b310-bb8f9da03ba1"
+    }
+  ],
+  "r2_buckets": [
+    {
+      "binding": "EVIDENCE",
+      "bucket_name": "v77-ai-audit-evidence"
+    }
+  ]
+}

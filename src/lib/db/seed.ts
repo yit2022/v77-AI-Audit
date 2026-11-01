@@ -4,6 +4,17 @@ import { db, ensureDb, schema } from "./index";
 import { CONTROL_SEEDS } from "@/lib/crosswalk";
 import { id } from "@/lib/ids";
 
+async function insertInChunks<T extends Record<string, unknown>>(
+  table: Parameters<typeof db.insert>[0],
+  rows: T[],
+  chunkSize = 5,
+) {
+  for (let i = 0; i < rows.length; i += chunkSize) {
+    const chunk = rows.slice(i, i + chunkSize);
+    if (chunk.length) await db.insert(table).values(chunk as never);
+  }
+}
+
 function resolveSeedPasswords(): {
   admin: string;
   owner: string;
@@ -37,7 +48,8 @@ async function seedOnce() {
   if (existing.length > 0) {
     const ctrl = await db.select().from(schema.controls).limit(1);
     if (ctrl.length === 0) {
-      await db.insert(schema.controls).values(
+      await insertInChunks(
+        schema.controls,
         CONTROL_SEEDS.map((c) => ({
           id: c.id, code: c.code, title: c.title, description: c.description,
           area: c.area, euRef: c.euRef, nistRef: c.nistRef, isoRef: c.isoRef, gdprRef: c.gdprRef, appliesTo: c.appliesTo,
@@ -68,7 +80,8 @@ async function seedOnce() {
       { id: id(), orgId, userId: ownerId, role: "ai_owner" },
       { id: id(), orgId, userId: auditorId, role: "auditor" },
     ]);
-    await db.insert(schema.controls).values(
+    await insertInChunks(
+      schema.controls,
       CONTROL_SEEDS.map((c) => ({
         id: c.id, code: c.code, title: c.title, description: c.description,
         area: c.area, euRef: c.euRef, nistRef: c.nistRef, isoRef: c.isoRef, gdprRef: c.gdprRef, appliesTo: c.appliesTo,
@@ -99,7 +112,8 @@ async function seedOnce() {
       id: assessmentId, orgId, systemId: systemHigh, name: "HireSense — Q4 readiness", status: "in_review",
     });
     const highControls = CONTROL_SEEDS.filter((c) => c.appliesTo.split(",").includes("high_risk"));
-    await db.insert(schema.assessmentControls).values(
+    await insertInChunks(
+      schema.assessmentControls,
       highControls.map((c, i) => ({
         id: id(), assessmentId, controlId: c.id,
         status: i < 3 ? "implemented" : i < 6 ? "in_progress" : "not_started",
@@ -127,8 +141,14 @@ async function seedOnce() {
   }
 }
 
-export async function seedIfEmpty() {
-  if (!seeding) seeding = seedOnce().finally(() => { /* keep resolved promise */ });
+export async function seedIfEmpty(opts?: { force?: boolean }) {
+  if (opts?.force) seeding = null;
+  if (!seeding) {
+    seeding = seedOnce().catch((err) => {
+      seeding = null;
+      throw err;
+    });
+  }
   return seeding;
 }
 

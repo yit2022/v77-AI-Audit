@@ -1,12 +1,11 @@
 import { NextResponse } from "next/server";
-import fs from "fs/promises";
-import path from "path";
 import { eq, desc, and } from "drizzle-orm";
 import { db, ensureDb, schema } from "@/lib/db";
 import { getSession } from "@/lib/auth/session";
 import { id } from "@/lib/ids";
 import { seedIfEmpty } from "@/lib/db/seed";
 import { hashEvidenceContent } from "@/lib/evidence/chain";
+import { storeEvidenceBlob } from "@/lib/storage/evidence";
 
 export async function GET(req: Request) {
   await seedIfEmpty();
@@ -42,10 +41,13 @@ export async function POST(req: Request) {
   const sha256 = hashEvidenceContent(buffer);
   const evidenceId = id();
   const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
-  const dir = path.join(process.cwd(), "uploads", "evidence", session.orgId);
-  await fs.mkdir(dir, { recursive: true });
-  const storagePath = path.join(dir, `${evidenceId}-${safeName}`);
-  await fs.writeFile(storagePath, buffer);
+  const storagePath = await storeEvidenceBlob({
+    orgId: session.orgId,
+    evidenceId,
+    safeName,
+    buffer,
+    contentType: file.type || "application/octet-stream",
+  });
   await ensureDb();
   const latest = await db
     .select()
