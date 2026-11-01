@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
+import { LogoMark } from "@/components/logo-mark";
 
 export function LoginForm() {
   const router = useRouter();
@@ -53,10 +54,8 @@ export function LoginForm() {
   return (
     <main className="mx-auto flex min-h-screen max-w-md flex-col justify-center px-6">
       <div className="card p-8">
-        <Link href="/" className="text-xs font-bold uppercase tracking-[0.14em] text-sky-700">
-          V77 AI Auditor
-        </Link>
-        <h1 className="mt-3 text-2xl font-semibold text-slate-900">Sign in</h1>
+        <LogoMark />
+        <h1 className="mt-4 text-2xl font-semibold text-[#0F2A4A]">Sign in</h1>
         <p className="mt-1 text-sm text-slate-500">
           Use your organisation credentials. Local development seeds are documented in the README only.
         </p>
@@ -89,6 +88,9 @@ export function LoginForm() {
             SSO available when OIDC_ISSUER, OIDC_CLIENT_ID, OIDC_CLIENT_SECRET and OIDC_REDIRECT_URI are set.
           </p>
         )}
+        <p className="mt-4 text-center text-xs text-slate-500">
+          New organisation? <Link className="font-semibold text-sky-800 underline" href="/signup">Create a workspace</Link>
+        </p>
       </div>
     </main>
   );
