@@ -34,6 +34,9 @@ describe("password reset", () => {
       });
       expect(tpl.subject.length).toBeGreaterThan(5);
       expect(tpl.text).toContain("https://v77trust.com/reset-password?token=abc");
+      expect(tpl.html).toContain("https://v77trust.com/reset-password?token=abc");
+      expect(tpl.html).toContain("<a href=");
+      expect(tpl.html).not.toContain("<pre");
       expect(tpl.tags).toContain("password_reset");
     }
   });

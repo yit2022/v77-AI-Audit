@@ -13,7 +13,7 @@ export type EmailPayload = {
 
 export type EmailResult = { ok: true; id?: string; mode: "resend" | "noop" } | { ok: false; error: string; mode: "resend" | "noop" };
 
-const DEFAULT_FROM = "noreply@v77trust.com";
+const DEFAULT_FROM = "noreply@mail.v77trust.com";
 const DEFAULT_REPLY = "support@v77trust.com";
 
 export function emailConfigured(env: NodeJS.ProcessEnv | Record<string, string | undefined> = process.env): boolean {

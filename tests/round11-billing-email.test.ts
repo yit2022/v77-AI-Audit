@@ -214,12 +214,12 @@ describe("Sprint 11 email from address", () => {
   });
 
   it("does not double-wrap a display-name V77_EMAIL_FROM", () => {
-    process.env.V77_EMAIL_FROM = "V77 Trust <noreply@v77trust.com>";
-    expect(formatFromAddress(process.env, "V77 Trust")).toBe("V77 Trust <noreply@v77trust.com>");
+    process.env.V77_EMAIL_FROM = "V77 Trust <noreply@mail.v77trust.com>";
+    expect(formatFromAddress(process.env, "V77 Trust")).toBe("V77 Trust <noreply@mail.v77trust.com>");
   });
 
   it("wraps a bare address with the display name", () => {
-    process.env.V77_EMAIL_FROM = "noreply@v77trust.com";
-    expect(formatFromAddress(process.env, "V77 Trust")).toBe("V77 Trust <noreply@v77trust.com>");
+    process.env.V77_EMAIL_FROM = "noreply@mail.v77trust.com";
+    expect(formatFromAddress(process.env, "V77 Trust")).toBe("V77 Trust <noreply@mail.v77trust.com>");
   });
 });

@@ -141,7 +141,7 @@ Prefer `sales@vertex77.com` for commercial handover and `contact@vertex77.com` f
 
 - Paystack billing with split/subaccount support, **card-only** channels, EUR display prices, `PAYSTACK_CURRENCY` (default USD + EUR→USD conversion; EUR when set), webhook HMAC verification, plan activation, `/billing/invoices`
 - Flag `V77_BILLING_ENABLED=false` until keys exist; checkout display name **V77 Trust**
-- Resend transactional email abstraction (`noreply@v77trust.com`, reply-to `support@v77trust.com`) for signup, invite, reminder, evidence request, lead notification — localised templates; no-op without `RESEND_API_KEY`
+- Resend transactional email abstraction (`noreply@mail.v77trust.com`, reply-to `support@v77trust.com`) for signup, invite, reminder, evidence request, lead notification — localised templates; no-op without `RESEND_API_KEY`
 - Real-AI provider hardening: timeouts, retries, input cost caps, PII redaction (`V77_ENABLE_REAL_PROVIDERS` remains `false`)
 - Buyer guided demo tour + seeded sample org (`v77-buyer-demo`)
 - Deeper white-label: partner `custom_domain`, partner-branded emails and board PDFs
@@ -156,7 +156,7 @@ Prefer `sales@vertex77.com` for commercial handover and `contact@vertex77.com` f
 | `V77_BILLING_ENABLED` | Must be `true` to expose live checkout (keep `false` until keys exist) |
 | `PAYSTACK_CURRENCY` | Charge currency: `USD` (default) or `EUR` |
 | `PAYSTACK_EUR_USD_RATE` | EUR→USD conversion when charging USD |
-| `V77_EMAIL_FROM` | From address (default `noreply@v77trust.com`) |
+| `V77_EMAIL_FROM` | From address (default `noreply@mail.v77trust.com`) |
 | `V77_EMAIL_REPLY_TO` | Reply-To (default `support@v77trust.com`) |
 | `V77_LEAD_NOTIFY_EMAIL` | Optional lead notification inbox (defaults to sales@vertex77.com) |
 | `OPENAI_API_KEY` / `ANTHROPIC_API_KEY` / Azure OpenAI vars | Only if enabling real providers later |

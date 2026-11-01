@@ -24,6 +24,7 @@ const COPY: Record<
     leadBody: (name: string, company: string) => string;
     passwordResetSubject: string;
     passwordResetBody: (name: string, url: string) => string;
+    passwordResetCta: string;
     ctaOpen: string;
   }
 > = {
@@ -48,6 +49,7 @@ ${url}
 If you did not request this, you can ignore this email.
 
 — V77 Trust`,
+    passwordResetCta: "Reset password",
     ctaOpen: "Open V77 Trust",
   },
   de: {
@@ -71,6 +73,7 @@ ${url}
 Wenn Sie das nicht waren, ignorieren Sie diese E-Mail.
 
 — V77 Trust`,
+    passwordResetCta: "Passwort zurücksetzen",
     ctaOpen: "V77 Trust öffnen",
   },
   fr: {
@@ -94,6 +97,7 @@ ${url}
 Si ce n’était pas vous, ignorez cet e-mail.
 
 — V77 Trust`,
+    passwordResetCta: "Réinitialiser le mot de passe",
     ctaOpen: "Ouvrir V77 Trust",
   },
   pl: {
@@ -117,6 +121,7 @@ ${url}
 Jeśli to nie Ty, zignoruj tę wiadomość.
 
 — V77 Trust`,
+    passwordResetCta: "Zresetuj hasło",
     ctaOpen: "Otwórz V77 Trust",
   },
   nl: {
@@ -140,6 +145,7 @@ ${url}
 Als jij dit niet was, negeer deze e-mail.
 
 — V77 Trust`,
+    passwordResetCta: "Wachtwoord resetten",
     ctaOpen: "Open V77 Trust",
   },
   es: {
@@ -163,6 +169,7 @@ ${url}
 Si no fuiste tú, ignora este correo.
 
 — V77 Trust`,
+    passwordResetCta: "Restablecer contraseña",
     ctaOpen: "Abrir V77 Trust",
   },
   it: {
@@ -186,6 +193,7 @@ ${url}
 Se non sei stato tu, ignora questa email.
 
 — V77 Trust`,
+    passwordResetCta: "Reimposta password",
     ctaOpen: "Apri V77 Trust",
   },
   sv: {
@@ -209,6 +217,7 @@ ${url}
 Om det inte var du kan du ignorera mejlet.
 
 — V77 Trust`,
+    passwordResetCta: "Återställ lösenord",
     ctaOpen: "Öppna V77 Trust",
   },
 };
@@ -218,20 +227,48 @@ function normalizeLocale(locale?: string): LocaleCode {
   return COPY[l] ? l : "en";
 }
 
-function brandShell(textBody: string, brand?: PartnerEmailBrand): { html: string; text: string; fromName: string } {
+function brandShell(
+  textBody: string,
+  brand?: PartnerEmailBrand,
+  opts?: { ctaLabel?: string; ctaUrl?: string },
+): { html: string; text: string; fromName: string } {
   const name = brand?.name?.trim() || COMPANY.productName;
   const color = brand?.primaryColor || "#0F2A4A";
   const accent = brand?.accentColor || "#6FCDF5";
   const logo = brand?.logoUrl
-    ? `<img src="${brand.logoUrl}" alt="${name}" style="max-height:40px;margin-bottom:16px" />`
+    ? `<img src="${escapeHtml(brand.logoUrl)}" alt="${escapeHtml(name)}" style="max-height:40px;margin-bottom:16px" />`
     : "";
-  const html = `<!DOCTYPE html><html><body style="font-family:system-ui,sans-serif;color:#0f172a;background:#f8fafc;padding:24px">
-  <div style="max-width:560px;margin:0 auto;background:#fff;border-radius:12px;padding:28px;border:1px solid #e2e8f0">
-    ${logo}
-    <div style="height:4px;background:${accent};border-radius:2px;margin-bottom:20px"></div>
-    <pre style="white-space:pre-wrap;font-family:inherit;margin:0;line-height:1.5">${escapeHtml(textBody)}</pre>
-    <p style="margin-top:24px;font-size:12px;color:#64748b">${name} · <span style="color:${color}">${COMPANY.legalName}</span></p>
-  </div></body></html>`;
+  const paragraphs = textBody
+    .split(/\n\n+/)
+    .map((p) => p.trim())
+    .filter(Boolean)
+    .map((p) => {
+      const onlyUrl = /^https?:\/\/\S+$/.test(p);
+      if (onlyUrl) {
+        return `<p style="margin:0 0 16px;font-family:Arial,Helvetica,sans-serif;font-size:13px;line-height:1.5;color:#64748b;word-break:break-all">${escapeHtml(p)}</p>`;
+      }
+      return `<p style="margin:0 0 16px;font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.55;color:#0f172a">${escapeHtml(p).replace(/\n/g, "<br/>")}</p>`;
+    })
+    .join("");
+  const cta =
+    opts?.ctaUrl && opts?.ctaLabel
+      ? `<p style="margin:8px 0 20px"><a href="${escapeHtml(opts.ctaUrl)}" style="display:inline-block;background:${color};color:#ffffff;text-decoration:none;font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1;padding:12px 18px;border-radius:8px">${escapeHtml(opts.ctaLabel)}</a></p>`
+      : "";
+  const html = `<!DOCTYPE html><html lang="en"><body style="margin:0;padding:0;background:#f8fafc;color:#0f172a">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f8fafc;padding:24px 12px">
+    <tr><td align="center">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;background:#ffffff;border:1px solid #e2e8f0;border-radius:12px">
+        <tr><td style="padding:28px 28px 8px">
+          ${logo}
+          <div style="height:4px;background:${accent};border-radius:2px;margin-bottom:20px"></div>
+          ${paragraphs}
+          ${cta}
+          <p style="margin:24px 0 0;font-size:12px;line-height:1.5;color:#64748b;font-family:Arial,Helvetica,sans-serif">${escapeHtml(name)} · <span style="color:${color}">${escapeHtml(COMPANY.legalName)}</span></p>
+        </td></tr>
+      </table>
+    </td></tr>
+  </table>
+</body></html>`;
   return { html, text: textBody, fromName: name };
 }
 
@@ -289,7 +326,7 @@ export function leadNotificationEmail(opts: { name: string; company: string; loc
 export function passwordResetEmail(opts: { name: string; resetUrl: string; locale?: string; brand?: PartnerEmailBrand }) {
   const c = COPY[normalizeLocale(opts.locale)];
   const body = c.passwordResetBody(opts.name, opts.resetUrl);
-  const shell = brandShell(body, opts.brand);
+  const shell = brandShell(body, opts.brand, { ctaLabel: c.passwordResetCta, ctaUrl: opts.resetUrl });
   return { subject: c.passwordResetSubject, ...shell, tags: ["password_reset"] };
 }
 

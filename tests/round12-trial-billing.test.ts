@@ -95,8 +95,8 @@ describe("sprint12 email helpers", () => {
   });
 
   it("does not double-wrap From", () => {
-    const from = formatFromAddress({ V77_EMAIL_FROM: "V77 Trust <noreply@v77trust.com>" });
-    expect(from).toBe("V77 Trust <noreply@v77trust.com>");
+    const from = formatFromAddress({ V77_EMAIL_FROM: "V77 Trust <noreply@mail.v77trust.com>" });
+    expect(from).toBe("V77 Trust <noreply@mail.v77trust.com>");
   });
 
   it("hashes unsubscribe tokens", () => {
