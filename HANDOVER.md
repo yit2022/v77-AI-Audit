@@ -116,3 +116,15 @@ Legal entity and customer materials: **Vertex77 sp. z o.o.** only. Product name:
 ## Support during transition
 
 Prefer `sales@vertex77.com` for commercial handover and `contact@vertex77.com` for product/privacy questions until cutover completes.
+
+
+## Round 9 additions (quality / trust / conversion)
+
+- Public AI Act risk tier checker on `/` (`#risk-checker`) → pilot CTA; leads stored with `source=risk_checker`
+- Product tour `/demo` (screenshots under `public/demo/`)
+- Resources `/resources` + three EU AI Act articles
+- `GET /api/health` uptime check (DB ping)
+- `bash scripts/d1-backup.sh` — Wrangler D1 remote export
+- `bash scripts/dep-audit.sh` — npm audit JSON summary
+- CSP without `unsafe-eval`; `object-src 'none'`
+- Org onboarding checklist `/onboarding` + in-app notification centre

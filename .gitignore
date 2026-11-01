@@ -64,3 +64,8 @@ test-results/
 playwright-report/
 blob-report/
 playwright/.cache/
+
+# Local backups / audit dumps
+backups/
+*.sql.dump
+data-e2e/

@@ -503,3 +503,28 @@ export const platformUsageDaily = pgTable("platform_usage_daily", {
   aiCalls: integer("ai_calls").notNull().default(0),
   evidenceUploads: integer("evidence_uploads").notNull().default(0),
 });
+
+export const notifications = pgTable("notifications", {
+  id: text("id").primaryKey(),
+  orgId: text("org_id").notNull().references(() => organisations.id),
+  userId: text("user_id").references(() => users.id),
+  kind: text("kind").notNull().default("info"),
+  title: text("title").notNull(),
+  body: text("body").notNull().default(""),
+  href: text("href").notNull().default(""),
+  readAt: timestamp("read_at", { withTimezone: true }),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().$defaultFn(() => new Date()),
+});
+
+export const orgOnboarding = pgTable(
+  "org_onboarding",
+  {
+    id: text("id").primaryKey(),
+    orgId: text("org_id").notNull().references(() => organisations.id),
+    stepId: text("step_id").notNull(),
+    done: boolean("done").notNull().default(false),
+    doneAt: timestamp("done_at", { withTimezone: true }),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().$defaultFn(() => new Date()),
+  },
+  (t) => [uniqueIndex("org_onboarding_org_step").on(t.orgId, t.stepId)],
+);

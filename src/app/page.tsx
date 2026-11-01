@@ -10,6 +10,7 @@ import { COMPANY } from "@/lib/company";
 import { getRequestLocale } from "@/lib/i18n/locale";
 import { t } from "@/lib/i18n/dictionaries";
 import { LocaleSwitcher } from "@/components/locale-switcher";
+import { RiskTierChecker } from "@/components/risk-tier-checker";
 
 const pillars = [
   {
@@ -59,6 +60,12 @@ export default async function HomePage() {
           <Link href="/frameworks" className="hidden text-sm font-medium text-slate-600 hover:text-[#0F2A4A] md:inline">
             {t(locale, "mkt.nav.frameworks")}
           </Link>
+          <Link href="/demo" className="hidden text-sm font-medium text-slate-600 hover:text-[#0F2A4A] md:inline">
+            Demo
+          </Link>
+          <Link href="/resources" className="hidden text-sm font-medium text-slate-600 hover:text-[#0F2A4A] lg:inline">
+            Resources
+          </Link>
           <Link href="/developers" className="hidden text-sm font-medium text-slate-600 hover:text-[#0F2A4A] lg:inline">
             {t(locale, "mkt.nav.developers")}
           </Link>
@@ -90,11 +97,14 @@ export default async function HomePage() {
               immutable audit log.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
-              <a href="#request-pilot" className="btn btn-primary">
+              <a href="#risk-checker" className="btn btn-primary">
+                Check AI Act risk tier
+              </a>
+              <a href="#request-pilot" className="btn btn-secondary">
                 {t(locale, "mkt.hero.ctaPilot")}
               </a>
-              <Link href="/signup" className="btn btn-secondary">
-                Create organisation
+              <Link href="/demo" className="btn btn-secondary">
+                Product tour
               </Link>
             </div>
             <p className="mt-4 text-xs text-slate-500">Built for global deployers, providers and auditors.</p>
@@ -153,6 +163,10 @@ export default async function HomePage() {
         </div>
       </section>
 
+      <section className="mx-auto max-w-6xl px-4 sm:px-6 pb-10">
+        <RiskTierChecker />
+      </section>
+
       <section id="pricing" className="mx-auto max-w-6xl px-4 sm:px-6 pb-10">
         <div className="card overflow-hidden p-0">
           <div className="grid lg:grid-cols-2">
@@ -209,6 +223,8 @@ export default async function HomePage() {
           </div>
           <div className="flex flex-wrap gap-x-4 gap-y-2 text-sm font-medium text-[#0F2A4A]">
             <Link href="/how-it-works" className="hover:text-sky-700">How it works</Link>
+            <Link href="/demo" className="hover:text-sky-700">Demo</Link>
+            <Link href="/resources" className="hover:text-sky-700">Resources</Link>
             <Link href="/frameworks" className="hover:text-sky-700">Frameworks</Link>
             <Link href="/security" className="hover:text-sky-700">Security</Link>
             <Link href="/contact" className="hover:text-sky-700">Contact</Link>

@@ -15,7 +15,10 @@ export V77_DATA_DIR="$ROOT/data-e2e"
 export V77_APP_ORIGIN="http://127.0.0.1:${PORT}"
 export V77_COOKIE_SECURE=false
 export NODE_ENV=production
-if [[ ! -d .next ]]; then
+if [[ "${V77_E2E_REBUILD:-}" == "1" ]]; then
+  rm -rf .next
+  npm run build
+elif [[ ! -d .next ]]; then
   npm run build
 fi
 exec npx next start -H 127.0.0.1 -p "$PORT"

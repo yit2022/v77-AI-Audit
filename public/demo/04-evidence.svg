@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="420" viewBox="0 0 800 420">
+<defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#e8f7fd"/><stop offset="100%" stop-color="#ffffff"/></linearGradient></defs>
+<rect width="800" height="420" fill="url(#g)"/>
+<rect x="0" y="0" width="800" height="52" fill="#ffffff" stroke="#d7e6ef"/>
+<circle cx="28" cy="26" r="10" fill="#6FCDF5"/><text x="46" y="31" font-family="ui-sans-serif,system-ui" font-size="14" font-weight="700" fill="#0F2A4A">V77 Trust</text>
+<text x="780" y="31" text-anchor="end" font-family="ui-sans-serif,system-ui" font-size="11" fill="#5b6b7c">Vertex77 · live product UI</text>
+<text x="24" y="64" font-family="ui-sans-serif,system-ui" font-size="11" font-weight="700" fill="#0369a1" letter-spacing="1">EVIDENCE VAULT</text>
+<rect x="24" y="70" width="752" height="84" rx="14" fill="#fff" stroke="#d7e6ef"/><text x="40" y="92" font-family="ui-sans-serif,system-ui" font-size="13" font-weight="700" fill="#0F2A4A">Hash-chained locker (R2)</text><text x="40" y="112" font-family="ui-sans-serif,system-ui" font-size="12" fill="#5b6b7c">evidence/hire/fria-v3.pdf  sha256:9f3a…</text><text x="40" y="130" font-family="ui-sans-serif,system-ui" font-size="12" fill="#5b6b7c">evidence/hire/fairness-2026-10.json  sha256:12bc…</text>
+</svg>

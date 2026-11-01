@@ -6,6 +6,7 @@ import { getSession } from "@/lib/auth/session";
 import { seedIfEmpty } from "@/lib/db/seed";
 import { Sidebar } from "@/components/sidebar";
 import { OnboardingTour } from "@/components/onboarding-tour";
+import { NotificationsBell } from "@/components/notifications-bell";
 import { isLocale, type Locale } from "@/lib/i18n/dictionaries";
 
 export default async function AppLayout({
@@ -23,9 +24,14 @@ export default async function AppLayout({
   return (
     <div className="flex min-h-screen flex-col lg:flex-row">
       <Sidebar userName={session.name} orgName={session.orgName} role={session.role} locale={locale} />
-      <main id="main-content" className="flex-1 overflow-auto p-4 sm:p-6 lg:p-8" tabIndex={-1}>
-        {children}
-      </main>
+      <div className="flex min-w-0 flex-1 flex-col">
+        <div className="sticky top-0 z-30 flex items-center justify-end gap-2 border-b border-[#d7e6ef] bg-white/95 px-4 py-2 backdrop-blur sm:px-6 lg:px-8">
+          <NotificationsBell />
+        </div>
+        <main id="main-content" className="flex-1 overflow-auto p-4 sm:p-6 lg:p-8" tabIndex={-1}>
+          {children}
+        </main>
+      </div>
       <OnboardingTour userName={session.name} />
     </div>
   );

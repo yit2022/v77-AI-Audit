@@ -16,7 +16,10 @@
     "cf-typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts",
     "sync-domain": "node scripts/sync-domain.mjs",
     "test:e2e": "playwright test",
-    "e2e:playwright": "playwright test"
+    "e2e:playwright": "playwright test",
+    "audit:deps": "bash scripts/dep-audit.sh",
+    "backup:d1": "bash scripts/d1-backup.sh",
+    "demo:screenshots": "node scripts/capture-demo-screenshots.mjs"
   },
   "dependencies": {
     "@electric-sql/pglite": "^0.3.14",

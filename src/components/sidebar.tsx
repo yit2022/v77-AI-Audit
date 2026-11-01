@@ -30,6 +30,8 @@ const linkDefs: Array<{ href: string; key: string }> = [
   { href: "/approvals", key: "nav.approvals" },
   { href: "/auditor", key: "nav.auditor" },
   { href: "/billing", key: "nav.billing" },
+  { href: "/onboarding", key: "nav.onboarding" },
+  { href: "/notifications", key: "nav.notifications" },
   { href: "/activity", key: "nav.activity" },
   { href: "/settings", key: "nav.settings" },
 ];

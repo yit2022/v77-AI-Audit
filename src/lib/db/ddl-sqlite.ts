@@ -355,4 +355,27 @@ CREATE TABLE IF NOT EXISTS platform_usage_daily (
   evidence_uploads integer NOT NULL DEFAULT 0
 );
 CREATE INDEX IF NOT EXISTS vendor_q_token_idx ON vendor_questionnaires(token);
+
+CREATE TABLE IF NOT EXISTS notifications (
+  id text PRIMARY KEY,
+  org_id text NOT NULL,
+  user_id text,
+  kind text NOT NULL DEFAULT 'info',
+  title text NOT NULL,
+  body text NOT NULL DEFAULT '',
+  href text NOT NULL DEFAULT '',
+  read_at integer,
+  created_at integer NOT NULL
+);
+CREATE INDEX IF NOT EXISTS notifications_org_idx ON notifications(org_id);
+CREATE TABLE IF NOT EXISTS org_onboarding (
+  id text PRIMARY KEY,
+  org_id text NOT NULL,
+  step_id text NOT NULL,
+  done integer NOT NULL DEFAULT 0,
+  done_at integer,
+  updated_at integer NOT NULL
+);
+CREATE UNIQUE INDEX IF NOT EXISTS org_onboarding_org_step ON org_onboarding(org_id, step_id);
+
 CREATE INDEX IF NOT EXISTS incidents_org_idx ON incidents(org_id);`;

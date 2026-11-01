@@ -1,0 +1,8 @@
+Round 9 dependency audit summary (npm audit)\n{
+  "info": 0,
+  "low": 0,
+  "moderate": 21,
+  "high": 7,
+  "critical": 2,
+  "total": 30
+}\nFull JSON available via: npm run audit:deps\nPolicy: track high/critical; V77_AUDIT_STRICT=1 fails CI when high+critical > 0.\n

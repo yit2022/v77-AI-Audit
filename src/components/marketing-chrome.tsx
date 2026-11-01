@@ -9,6 +9,8 @@ export async function MarketingChrome({ children }: { children: React.ReactNode 
   const locale = await getRequestLocale();
   const nav = [
     { href: "/how-it-works", key: "mkt.nav.how" as const },
+    { href: "/demo", key: "mkt.nav.demo" as const },
+    { href: "/resources", key: "mkt.nav.resources" as const },
     { href: "/frameworks", key: "mkt.nav.frameworks" as const },
     { href: "/security", key: "mkt.nav.security" as const },
     { href: "/contact", key: "mkt.nav.contact" as const },
