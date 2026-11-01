@@ -169,6 +169,7 @@ export default async function HomePage() {
       </section>
 
       <section id="pricing" className="mx-auto max-w-6xl px-4 sm:px-6 pb-10">
+        <div id="request-pilot" className="scroll-mt-24" />
         <div className="mb-6">
           <p className="text-xs font-bold uppercase tracking-[0.16em] text-sky-700">Pricing</p>
           <h2 className="mt-2 text-2xl font-semibold text-[#0F2A4A]">{t(locale, "mkt.pricing.title")}</h2>
