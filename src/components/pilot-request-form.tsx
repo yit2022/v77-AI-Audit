@@ -36,7 +36,7 @@ export function PilotRequestForm() {
   if (status === "done") {
     return (
       <div className="rounded-2xl border border-sky-200 bg-sky-50 p-5 text-sm text-[#0F2A4A]">
-        Thanks — your pilot request is saved. Our team will follow up with pricing and next steps.
+        Thanks — we've received your request. We'll be in touch within 2 business days.
       </div>
     );
   }
@@ -69,7 +69,7 @@ export function PilotRequestForm() {
       <button className="btn btn-primary" disabled={status === "loading"}>
         {status === "loading" ? "Submitting…" : "Request a pilot"}
       </button>
-      <p className="text-xs text-slate-500">Stored securely in V77 — we do not auto-send emails from this form.</p>
+      <p className="text-xs text-slate-500">We'll be in touch within 2 business days.</p>
     </form>
   );
 }

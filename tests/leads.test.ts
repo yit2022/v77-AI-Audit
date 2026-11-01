@@ -17,4 +17,13 @@ describe("pilot leads", () => {
     expect(page).toContain("PilotRequestForm");
     expect(page).not.toMatch(/african/i);
   });
+
+  it("footer uses brand lockup and company copyright without placeholder copy", () => {
+    const page = readFileSync(resolve(__dirname, "../src/app/page.tsx"), "utf8");
+    const form = readFileSync(resolve(__dirname, "../src/components/pilot-request-form.tsx"), "utf8");
+    expect(page).toContain("© 2026 Tamalaki Business Network Ltd");
+    expect(page).not.toMatch(/artwork pending|placeholder mark/i);
+    expect(form).toMatch(/within 2 business days/i);
+    expect(form).not.toMatch(/auto-send|automated email/i);
+  });
 });

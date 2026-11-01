@@ -156,7 +156,7 @@ export default async function HomePage() {
             </div>
             <div className="p-8">
               <h3 className="text-lg font-semibold text-[#0F2A4A]">Request a pilot</h3>
-              <p className="mt-1 text-sm text-slate-500">Tell us about your programme. We store the lead in V77 — no automated emails.</p>
+              <p className="mt-1 text-sm text-slate-500">Tell us about your programme. We'll be in touch within 2 business days.</p>
               <div className="mt-5">
                 <PilotRequestForm />
               </div>
@@ -166,14 +166,14 @@ export default async function HomePage() {
       </section>
 
       <footer className="border-t border-[#d7e6ef] bg-white">
-        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-6 py-6 text-xs text-slate-500">
-          <div className="flex items-center gap-3">
-            <LogoMark variant="mark" />
-            <span>Logo artwork pending — placeholder mark in use.</span>
+        <div className="mx-auto flex max-w-6xl flex-col gap-4 px-6 py-8 sm:flex-row sm:items-center sm:justify-between">
+          <div className="space-y-2">
+            <LogoMark />
+            <p className="text-xs text-slate-500">© 2026 Tamalaki Business Network Ltd</p>
           </div>
-          <div className="flex gap-4">
-            <Link href="/login">Sign in</Link>
-            <Link href="/signup">Sign up</Link>
+          <div className="flex gap-4 text-sm font-medium text-[#0F2A4A]">
+            <Link href="/login" className="hover:text-sky-700">Sign in</Link>
+            <Link href="/signup" className="hover:text-sky-700">Sign up</Link>
           </div>
         </div>
       </footer>
