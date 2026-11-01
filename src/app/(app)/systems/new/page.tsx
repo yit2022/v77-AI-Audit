@@ -23,6 +23,10 @@ export default function NewSystemPage() {
         intendedPurpose: fd.get("intendedPurpose"),
         roleInValueChain: fd.get("roleInValueChain"),
         domain: fd.get("domain"),
+        lifecycleStatus: fd.get("lifecycleStatus"),
+        versionLabel: fd.get("versionLabel"),
+        vendorName: fd.get("vendorName"),
+        euDatabaseId: fd.get("euDatabaseId"),
       }),
     });
     setLoading(false);
@@ -31,15 +35,15 @@ export default function NewSystemPage() {
       return;
     }
     const data = await res.json();
-    router.push(`/systems/${data.system.id}`);
+    router.push(`/classification/${data.system.id}`);
     router.refresh();
   }
 
   return (
     <div className="max-w-2xl">
       <PageHeader
-        title="Add AI system"
-        subtitle="Capture intended purpose and your role in the value chain."
+        title="Register AI system"
+        subtitle="Capture inventory fields, then continue to the EU AI Act risk classifier."
       />
       <form onSubmit={onSubmit} className="card space-y-4 p-6">
         <div>
@@ -65,13 +69,34 @@ export default function NewSystemPage() {
             </select>
           </div>
           <div>
+            <label className="mb-1 block text-xs font-semibold text-slate-600">Lifecycle</label>
+            <select name="lifecycleStatus" className="select" defaultValue="discovered">
+              <option value="discovered">Discovered</option>
+              <option value="pilot">Pilot</option>
+              <option value="production">Production</option>
+              <option value="retired">Retired</option>
+            </select>
+          </div>
+          <div>
             <label className="mb-1 block text-xs font-semibold text-slate-600">Domain</label>
             <input name="domain" className="input" defaultValue="general" />
+          </div>
+          <div>
+            <label className="mb-1 block text-xs font-semibold text-slate-600">Version</label>
+            <input name="versionLabel" className="input" placeholder="v1.2.0" />
+          </div>
+          <div>
+            <label className="mb-1 block text-xs font-semibold text-slate-600">Vendor / model provider</label>
+            <input name="vendorName" className="input" placeholder="Internal / OpenAI / ..." />
+          </div>
+          <div>
+            <label className="mb-1 block text-xs font-semibold text-slate-600">EU database ID</label>
+            <input name="euDatabaseId" className="input" placeholder="Optional registration id" />
           </div>
         </div>
         {error ? <p className="text-sm text-red-700">{error}</p> : null}
         <button className="btn btn-primary" disabled={loading}>
-          {loading ? "Saving…" : "Create system"}
+          {loading ? "Saving…" : "Save & classify"}
         </button>
       </form>
     </div>

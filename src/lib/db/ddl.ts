@@ -25,6 +25,11 @@ CREATE TABLE IF NOT EXISTS ai_systems (
   domain text NOT NULL DEFAULT 'general', owner_user_id text REFERENCES users(id),
   risk_tier text, classification_notes text DEFAULT '',
   gpai boolean NOT NULL DEFAULT false,
+  lifecycle_status text NOT NULL DEFAULT 'discovered',
+  version_label text NOT NULL DEFAULT '',
+  vendor_name text NOT NULL DEFAULT '',
+  eu_database_id text NOT NULL DEFAULT '',
+  last_reviewed_at timestamptz,
   created_at timestamptz NOT NULL DEFAULT now(),
   updated_at timestamptz NOT NULL DEFAULT now()
 );

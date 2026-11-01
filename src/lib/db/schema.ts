@@ -57,6 +57,11 @@ export const aiSystems = pgTable("ai_systems", {
   riskTier: text("risk_tier"),
   classificationNotes: text("classification_notes").default(""),
   gpai: boolean("gpai").notNull().default(false),
+  lifecycleStatus: text("lifecycle_status").notNull().default("discovered"),
+  versionLabel: text("version_label").notNull().default(""),
+  vendorName: text("vendor_name").notNull().default(""),
+  euDatabaseId: text("eu_database_id").notNull().default(""),
+  lastReviewedAt: timestamp("last_reviewed_at", { withTimezone: true }),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 });

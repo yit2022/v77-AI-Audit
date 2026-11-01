@@ -6,6 +6,7 @@ import { drizzle as drizzlePg, type PostgresJsDatabase } from "drizzle-orm/postg
 import postgres from "postgres";
 import * as schema from "./schema";
 import { DDL } from "./ddl";
+import { MIGRATIONS } from "./migrations";
 import { resolveDbBackend } from "./backend";
 
 const backend = resolveDbBackend();
@@ -48,9 +49,11 @@ async function execDdl() {
   if (backend === "postgres") {
     const sql = global.__v77_pg!;
     await sql.unsafe(DDL);
+    await sql.unsafe(MIGRATIONS);
     return;
   }
   await global.__v77_pglite!.exec(DDL);
+  await global.__v77_pglite!.exec(MIGRATIONS);
 }
 
 export async function ensureDb() {
