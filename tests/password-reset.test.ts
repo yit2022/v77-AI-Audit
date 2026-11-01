@@ -37,6 +37,8 @@ describe("password reset", () => {
       expect(tpl.html).toContain("https://v77trust.com/reset-password?token=abc");
       expect(tpl.html).toContain("<a href=");
       expect(tpl.html).not.toContain("<pre");
+      expect(tpl.html).toContain("https://v77trust.com/brand/v77-email-logo.png");
+      expect(tpl.html).toContain('alt="V77 Trust"');
       expect(tpl.tags).toContain("password_reset");
     }
   });
@@ -108,6 +110,18 @@ describe("password reset", () => {
       .update(schema.users)
       .set({ passwordHash: await bcrypt.hash("demo1234", 10) })
       .where(eq(schema.users.id, user.id));
+  });
+
+
+  it("uses partner logo instead of the V77 lockup when brand.logoUrl is set", async () => {
+    const { passwordResetEmail } = await import("@/lib/email/templates");
+    const tpl = passwordResetEmail({
+      name: "Ada",
+      resetUrl: "https://v77trust.com/reset-password?token=abc",
+      brand: { name: "Acme Partner", logoUrl: "https://cdn.example.com/partner.png" },
+    });
+    expect(tpl.html).toContain("https://cdn.example.com/partner.png");
+    expect(tpl.html).not.toContain("https://v77trust.com/brand/v77-email-logo.png");
   });
 
   it("hashes tokens with sha256 (not storing raw)", async () => {

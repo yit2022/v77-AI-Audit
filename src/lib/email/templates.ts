@@ -235,9 +235,9 @@ function brandShell(
   const name = brand?.name?.trim() || COMPANY.productName;
   const color = brand?.primaryColor || "#0F2A4A";
   const accent = brand?.accentColor || "#6FCDF5";
-  const logo = brand?.logoUrl
-    ? `<img src="${escapeHtml(brand.logoUrl)}" alt="${escapeHtml(name)}" style="max-height:40px;margin-bottom:16px" />`
-    : "";
+  const logoHtml = brand?.logoUrl
+    ? `<img src="${escapeHtml(brand.logoUrl)}" alt="${escapeHtml(name)}" width="160" height="40" style="display:block;width:160px;height:auto;max-height:48px;border:0;outline:none;margin:0 0 16px" />`
+    : `<a href="https://v77trust.com" style="display:inline-block;margin:0 0 16px;text-decoration:none"><img src="https://v77trust.com/brand/v77-email-logo.png" alt="V77 Trust" width="160" height="48" style="display:block;width:160px;height:auto;border:0;outline:none" /></a>`;
   const paragraphs = textBody
     .split(/\n\n+/)
     .map((p) => p.trim())
@@ -259,7 +259,7 @@ function brandShell(
     <tr><td align="center">
       <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;background:#ffffff;border:1px solid #e2e8f0;border-radius:12px">
         <tr><td style="padding:28px 28px 8px">
-          ${logo}
+          ${logoHtml}
           <div style="height:4px;background:${accent};border-radius:2px;margin-bottom:20px"></div>
           ${paragraphs}
           ${cta}

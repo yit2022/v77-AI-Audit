@@ -24,6 +24,7 @@ function shell(textBody: string, unsub?: string): { html: string; text: string; 
     : "";
   const html = `<!DOCTYPE html><html><body style="font-family:system-ui,sans-serif;color:#0f172a;background:#f8fafc;padding:24px">
   <div style="max-width:560px;margin:0 auto;background:#fff;border-radius:12px;padding:28px;border:1px solid #e2e8f0">
+    <a href="https://v77trust.com" style="display:inline-block;margin:0 0 16px;text-decoration:none"><img src="https://v77trust.com/brand/v77-email-logo.png" alt="V77 Trust" width="160" height="48" style="display:block;width:160px;height:auto;border:0;outline:none" /></a>
     <div style="height:4px;background:#6FCDF5;border-radius:2px;margin-bottom:20px"></div>
     <pre style="white-space:pre-wrap;font-family:inherit;margin:0;line-height:1.5">${escapeHtml(textBody)}</pre>
     <p style="margin-top:24px;font-size:12px;color:#64748b">${COMPANY.productName} · ${COMPANY.legalName}</p>
