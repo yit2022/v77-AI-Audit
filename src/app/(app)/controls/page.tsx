@@ -15,7 +15,7 @@ export default async function ControlsPage() {
     <div>
       <PageHeader
         title="Control crosswalk"
-        subtitle="One control → EU AI Act, NIST AI RMF, and ISO/IEC 42001 references. Descriptions are short paraphrases with clause citations only."
+        subtitle="One control maps to EU AI Act, NIST AI RMF, ISO/IEC 42001, and GDPR where personal data is in scope."
       />
       <div className="space-y-6">
         {Object.entries(byArea).map(([area, list]) => (
@@ -31,7 +31,7 @@ export default async function ControlsPage() {
                     <h3 className="text-sm font-semibold text-slate-900">{c.title}</h3>
                   </div>
                   <p className="mt-1 text-sm text-slate-600">{c.description}</p>
-                  <dl className="mt-3 grid gap-2 text-xs text-slate-500 md:grid-cols-3">
+                  <dl className="mt-3 grid gap-2 text-xs text-slate-500 md:grid-cols-2 xl:grid-cols-4">
                     <div>
                       <dt className="font-semibold text-slate-700">EU AI Act</dt>
                       <dd>{c.euRef || "—"}</dd>
@@ -43,6 +43,10 @@ export default async function ControlsPage() {
                     <div>
                       <dt className="font-semibold text-slate-700">ISO/IEC</dt>
                       <dd>{c.isoRef || "—"}</dd>
+                    </div>
+                    <div>
+                      <dt className="font-semibold text-slate-700">GDPR</dt>
+                      <dd>{c.gdprRef || "—"}</dd>
                     </div>
                   </dl>
                   <p className="mt-2 text-xs text-slate-400">Applies to: {c.appliesTo}</p>

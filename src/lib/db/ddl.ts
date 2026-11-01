@@ -41,7 +41,7 @@ CREATE TABLE IF NOT EXISTS controls (
   id text PRIMARY KEY, code text NOT NULL UNIQUE, title text NOT NULL,
   description text NOT NULL, area text NOT NULL,
   eu_ref text NOT NULL DEFAULT '', nist_ref text NOT NULL DEFAULT '',
-  iso_ref text NOT NULL DEFAULT '', applies_to text NOT NULL DEFAULT 'high_risk'
+  iso_ref text NOT NULL DEFAULT '', gdpr_ref text NOT NULL DEFAULT '', applies_to text NOT NULL DEFAULT 'high_risk'
 );
 CREATE TABLE IF NOT EXISTS assessments (
   id text PRIMARY KEY, org_id text NOT NULL REFERENCES organisations(id),
@@ -63,7 +63,7 @@ CREATE TABLE IF NOT EXISTS evidence_items (
   assessment_control_id text REFERENCES assessment_controls(id),
   title text NOT NULL, filename text NOT NULL, storage_path text NOT NULL,
   content_type text NOT NULL DEFAULT 'application/octet-stream',
-  sha256 text NOT NULL DEFAULT '', uploaded_by text REFERENCES users(id),
+  sha256 text NOT NULL DEFAULT '', prev_sha256 text NOT NULL DEFAULT '', uploaded_by text REFERENCES users(id),
   created_at timestamptz NOT NULL DEFAULT now()
 );
 CREATE TABLE IF NOT EXISTS fairness_runs (

@@ -17,7 +17,7 @@ async function seedOnce() {
       await db.insert(schema.controls).values(
         CONTROL_SEEDS.map((c) => ({
           id: c.id, code: c.code, title: c.title, description: c.description,
-          area: c.area, euRef: c.euRef, nistRef: c.nistRef, isoRef: c.isoRef, appliesTo: c.appliesTo,
+          area: c.area, euRef: c.euRef, nistRef: c.nistRef, isoRef: c.isoRef, gdprRef: c.gdprRef, appliesTo: c.appliesTo,
         })),
       );
     }
@@ -45,7 +45,7 @@ async function seedOnce() {
     await db.insert(schema.controls).values(
       CONTROL_SEEDS.map((c) => ({
         id: c.id, code: c.code, title: c.title, description: c.description,
-        area: c.area, euRef: c.euRef, nistRef: c.nistRef, isoRef: c.isoRef, appliesTo: c.appliesTo,
+        area: c.area, euRef: c.euRef, nistRef: c.nistRef, isoRef: c.isoRef, gdprRef: c.gdprRef, appliesTo: c.appliesTo,
       })),
     );
 

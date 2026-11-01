@@ -83,6 +83,7 @@ export const controls = pgTable("controls", {
   euRef: text("eu_ref").notNull().default(""),
   nistRef: text("nist_ref").notNull().default(""),
   isoRef: text("iso_ref").notNull().default(""),
+  gdprRef: text("gdpr_ref").notNull().default(""),
   appliesTo: text("applies_to").notNull().default("high_risk"),
 });
 
@@ -120,6 +121,7 @@ export const evidenceItems = pgTable("evidence_items", {
   storagePath: text("storage_path").notNull(),
   contentType: text("content_type").notNull().default("application/octet-stream"),
   sha256: text("sha256").notNull().default(""),
+  prevSha256: text("prev_sha256").notNull().default(""),
   uploadedBy: text("uploaded_by").references(() => users.id),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
