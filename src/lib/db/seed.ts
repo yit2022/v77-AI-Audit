@@ -4,7 +4,30 @@ import { db, ensureDb, schema } from "./index";
 import { CONTROL_SEEDS } from "@/lib/crosswalk";
 import { id } from "@/lib/ids";
 
-const DEMO_PASSWORD = "demo1234";
+function resolveSeedPasswords(): {
+  admin: string;
+  owner: string;
+  auditor: string;
+  demoDisabled: boolean;
+} {
+  const admin = process.env.V77_ADMIN_PASSWORD?.trim();
+  const demoDisabled =
+    process.env.DISABLE_DEMO_PASSWORDS === "true" ||
+    process.env.NODE_ENV === "production" ||
+    Boolean(admin);
+  if (demoDisabled) {
+    if (!admin) {
+      throw new Error(
+        "V77_ADMIN_PASSWORD is required when demo passwords are disabled (production).",
+      );
+    }
+    const owner = process.env.V77_OWNER_PASSWORD?.trim() || admin;
+    const auditor = process.env.V77_AUDITOR_PASSWORD?.trim() || admin;
+    return { admin, owner, auditor, demoDisabled: true };
+  }
+  const local = process.env.V77_DEMO_PASSWORD?.trim() || "demo1234";
+  return { admin: local, owner: local, auditor: local, demoDisabled: false };
+}
 
 let seeding: Promise<{ seeded: boolean; accounts?: unknown }> | null = null;
 
@@ -25,17 +48,20 @@ async function seedOnce() {
   }
 
   try {
+    const passwords = resolveSeedPasswords();
     const orgId = id();
     const adminId = id();
     const ownerId = id();
     const auditorId = id();
-    const hash = await bcrypt.hash(DEMO_PASSWORD, 10);
+    const adminHash = await bcrypt.hash(passwords.admin, 10);
+    const ownerHash = await bcrypt.hash(passwords.owner, 10);
+    const auditorHash = await bcrypt.hash(passwords.auditor, 10);
 
     await db.insert(schema.organisations).values({ id: orgId, name: "Tamalaki Business Network Ltd", slug: "tamalaki" });
     await db.insert(schema.users).values([
-      { id: adminId, email: "admin@v77.local", name: "Isaac Muthui", passwordHash: hash },
-      { id: ownerId, email: "owner@v77.local", name: "Amina Okello", passwordHash: hash },
-      { id: auditorId, email: "auditor@v77.local", name: "Elena Rossi", passwordHash: hash },
+      { id: adminId, email: "admin@v77.local", name: "Isaac Muthui", passwordHash: adminHash },
+      { id: ownerId, email: "owner@v77.local", name: "Amina Okello", passwordHash: ownerHash },
+      { id: auditorId, email: "auditor@v77.local", name: "Elena Rossi", passwordHash: auditorHash },
     ]);
     await db.insert(schema.memberships).values([
       { id: id(), orgId, userId: adminId, role: "admin" },
@@ -88,9 +114,9 @@ async function seedOnce() {
     return {
       seeded: true,
       accounts: [
-        { email: "admin@v77.local", role: "admin", password: DEMO_PASSWORD },
-        { email: "owner@v77.local", role: "ai_owner", password: DEMO_PASSWORD },
-        { email: "auditor@v77.local", role: "auditor", password: DEMO_PASSWORD },
+        { email: "admin@v77.local", role: "admin", password: passwords.demoDisabled ? "[set via V77_ADMIN_PASSWORD]" : passwords.admin },
+        { email: "owner@v77.local", role: "ai_owner", password: passwords.demoDisabled ? "[set via env]" : passwords.owner },
+        { email: "auditor@v77.local", role: "auditor", password: passwords.demoDisabled ? "[set via env]" : passwords.auditor },
       ],
     };
   } catch (e) {

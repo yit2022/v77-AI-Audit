@@ -15,10 +15,14 @@ WORKDIR /app
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV V77_DATA_DIR=/data
-RUN mkdir -p /data /app/uploads/evidence
+ENV PORT=3000
+ENV HOSTNAME=0.0.0.0
+RUN mkdir -p /data /app/uploads/evidence \
+  && chown -R node:node /data /app/uploads
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
 COPY --from=builder /app/package.json ./package.json
+USER node
 EXPOSE 3000
 CMD ["node", "server.js"]

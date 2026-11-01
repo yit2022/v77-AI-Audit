@@ -35,10 +35,16 @@ Open http://localhost:3000
 ## Docker Compose
 
 ```bash
+cp .env.example .env   # set V77_ADMIN_PASSWORD + POSTGRES_PASSWORD
 docker compose up --build
 ```
 
 Requires Docker. If Docker is unavailable, use the local PGlite path above.
+
+### Contabo production (`v77aiaudit.tamalakibn.com`)
+
+See `deploy/README.md`, `deploy/Caddyfile`, and `scripts/deploy-contabo.sh`.
+DNS for `tamalakibn.com` is at **Name.com**; add `A v77aiaudit → 169.58.28.132`. Production disables `demo1234` and requires `V77_ADMIN_PASSWORD`.
 
 ## Scripts
 

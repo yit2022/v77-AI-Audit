@@ -8,7 +8,7 @@ export function LoginForm() {
   const router = useRouter();
   const search = useSearchParams();
   const [email, setEmail] = useState("admin@v77.local");
-  const [password, setPassword] = useState("demo1234");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [ssoEnabled, setSsoEnabled] = useState(false);
@@ -47,7 +47,7 @@ export function LoginForm() {
         <Link href="/" className="text-xs font-bold uppercase tracking-[0.14em] text-teal-700">V77 AI Auditor</Link>
         <h1 className="mt-3 text-2xl font-semibold text-slate-900">Sign in</h1>
         <p className="mt-1 text-sm text-slate-500">
-          Demo: admin@v77.local / owner@v77.local / auditor@v77.local — password <code>demo1234</code>
+          Use your organisation credentials. Local development seeds are documented in the README only.
         </p>
         <form onSubmit={onSubmit} className="mt-6 space-y-4">
           <div>

@@ -72,7 +72,7 @@ export default async function HomePage() {
               <a href="#capabilities" className="btn btn-secondary">See capabilities</a>
             </div>
             <p className="mt-4 text-xs text-slate-500">
-              Demo: admin@v77.local / demo1234
+              Production credentials are provisioned separately (not shown here).
             </p>
           </div>
           <div className="card relative overflow-hidden p-6">
