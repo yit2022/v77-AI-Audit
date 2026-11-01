@@ -15,7 +15,7 @@ export async function GET() {
 
 const submitSchema = z.object({
   systemId: z.string().uuid(),
-  answers: z.record(z.enum(["yes", "no", "na"])),
+  answers: z.record(z.string(), z.enum(["yes", "no", "na"])),
   createAssessment: z.boolean().optional(),
 });
 

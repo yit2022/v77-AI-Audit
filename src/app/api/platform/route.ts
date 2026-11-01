@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { eq } from "drizzle-orm";
 import { getSession } from "@/lib/auth/session";
-import { isPlatformAdminEmail, listPlatformOrgs, listUsage } from "@/lib/platform/admin";
+import { isPlatformAdminEmailAsync, listPlatformOrgs, listUsage } from "@/lib/platform/admin";
 import { db, ensureDb, schema } from "@/lib/db";
 
 export async function GET() {
   const session = await getSession();
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  if (!isPlatformAdminEmail(session.email)) {
+  if (!await isPlatformAdminEmailAsync(session.email)) {
     return NextResponse.json({ error: "Platform admin only" }, { status: 403 });
   }
   const orgs = await listPlatformOrgs();
@@ -18,7 +18,7 @@ export async function GET() {
 export async function PATCH(req: NextRequest) {
   const session = await getSession();
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  if (!isPlatformAdminEmail(session.email)) {
+  if (!await isPlatformAdminEmailAsync(session.email)) {
     return NextResponse.json({ error: "Platform admin only" }, { status: 403 });
   }
   const body = (await req.json().catch(() => ({}))) as { orgId?: string; planTier?: string; seatLimit?: number };

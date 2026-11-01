@@ -1,11 +1,33 @@
 import { desc, eq, sql } from "drizzle-orm";
 import { db, ensureDb, schema } from "@/lib/db";
 
-/** Platform owner emails (comma-separated). Defaults to demo admin for local/sale demos. */
+async function resolvePlatformAdminEnv(env?: NodeJS.ProcessEnv): Promise<NodeJS.ProcessEnv> {
+  if (env) return env;
+  try {
+    const { getCloudflareContext } = await import("@opennextjs/cloudflare");
+    const ctx = await getCloudflareContext({ async: true });
+    const cfEnv = (ctx?.env || {}) as Record<string, unknown>;
+    // Merge CF bindings/secrets over process.env without mutating globals.
+    const merged: Record<string, string | undefined> = { ...process.env };
+    for (const [k, v] of Object.entries(cfEnv)) {
+      if (typeof v === "string") merged[k] = v;
+    }
+    return merged as NodeJS.ProcessEnv;
+  } catch {
+    return process.env;
+  }
+}
+
+/** Platform owner emails (comma-separated). Defaults to demo admin for local/sale demos. Never render this list in public UI. */
 export function isPlatformAdminEmail(email: string, env: NodeJS.ProcessEnv = process.env): boolean {
   const raw = env.V77_PLATFORM_ADMIN_EMAILS?.trim();
   const list = (raw ? raw.split(",") : ["admin@v77.local"]).map((s) => s.trim().toLowerCase()).filter(Boolean);
   return list.includes(email.trim().toLowerCase());
+}
+
+export async function isPlatformAdminEmailAsync(email: string): Promise<boolean> {
+  const env = await resolvePlatformAdminEnv();
+  return isPlatformAdminEmail(email, env);
 }
 
 export async function listPlatformOrgs() {

@@ -2,14 +2,14 @@ export const dynamic = "force-dynamic";
 
 import { redirect } from "next/navigation";
 import { getSession } from "@/lib/auth/session";
-import { isPlatformAdminEmail, listPlatformOrgs, listUsage } from "@/lib/platform/admin";
+import { isPlatformAdminEmailAsync, listPlatformOrgs, listUsage } from "@/lib/platform/admin";
 import { PageHeader } from "@/components/ui";
 import { PlatformAdminClient } from "@/components/platform-admin-client";
 
 export default async function PlatformPage() {
   const session = await getSession();
   if (!session) return null;
-  if (!isPlatformAdminEmail(session.email)) redirect("/dashboard");
+  if (!await isPlatformAdminEmailAsync(session.email)) redirect("/dashboard");
   const orgs = await listPlatformOrgs();
   const usage = await listUsage(20);
   return (

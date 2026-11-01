@@ -36,7 +36,7 @@
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "uuid": "^11.1.0",
-    "zod": "^3.25.76"
+    "zod": "^4.6.7"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
@@ -53,7 +53,8 @@
     "tailwindcss": "^4",
     "tsx": "^4.20.3",
     "typescript": "^5",
-    "vitest": "^2.1.9",
+    "vite": "^6.4.5",
+    "vitest": "^5.0.5",
     "wrangler": "^4.156.0"
   },
   "allowScripts": {
@@ -63,5 +64,12 @@
     "esbuild@0.25.12": true,
     "esbuild@0.21.5": true,
     "better-sqlite3@13.0.3": true
+  },
+  "overrides": {
+    "postcss": "8.5.32",
+    "glob": "14.0.3",
+    "minimatch": "11.0.3",
+    "tinypool": "2.2.0",
+    "esbuild": "0.25.12"
   }
 }

@@ -7,7 +7,7 @@ import { isAnswer, runPublicRiskCheck, PUBLIC_RISK_QUESTION_IDS } from "@/lib/ri
 import type { ClassificationInput } from "@/lib/classification";
 
 const schemaBody = z.object({
-  answers: z.record(z.string()),
+  answers: z.record(z.string(), z.string()),
   name: z.string().min(1).max(120).optional(),
   email: z.string().email().max(200).optional(),
   company: z.string().max(200).optional(),

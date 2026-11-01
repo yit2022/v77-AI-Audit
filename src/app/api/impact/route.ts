@@ -67,7 +67,7 @@ export async function POST(req: Request) {
 const updateSchema = z.object({
   id: z.string().uuid(),
   status: z.enum(["draft", "in_review", "complete"]).optional(),
-  answers: z.record(z.string()).optional(),
+  answers: z.record(z.string(), z.string()).optional(),
 });
 
 export async function PATCH(req: Request) {

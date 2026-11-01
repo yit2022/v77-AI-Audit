@@ -7,15 +7,16 @@ import { COMPANY } from "@/lib/company";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 
-describe("Round 7 i18n DE/FR", () => {
-  it("has matching keys for en/de/fr on public + nav strings", () => {
+describe("Round 7+ EU i18n", () => {
+  it("has matching keys for en/de/fr/pl/nl/es/it/sv on public + nav + cookie strings", () => {
     const keys = dictKeys().filter((k) => k.startsWith("nav.") || k.startsWith("mkt.") || k.startsWith("cookie."));
     expect(keys.length).toBeGreaterThan(20);
+    const locales = ["de", "fr", "pl", "nl", "es", "it", "sv"] as const;
     for (const key of keys) {
-      expect(hasTranslation("de", key)).toBe(true);
-      expect(hasTranslation("fr", key)).toBe(true);
-      expect(t("de", key)).not.toBe(key);
-      expect(t("fr", key)).not.toBe(key);
+      for (const loc of locales) {
+        expect(hasTranslation(loc, key)).toBe(true);
+        expect(t(loc, key)).not.toBe(key);
+      }
     }
   });
 });

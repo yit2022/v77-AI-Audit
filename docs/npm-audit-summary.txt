@@ -1,8 +1,13 @@
-Round 9 dependency audit summary (npm audit)\n{
-  "info": 0,
-  "low": 0,
-  "moderate": 21,
-  "high": 7,
-  "critical": 2,
-  "total": 30
-}\nFull JSON available via: npm run audit:deps\nPolicy: track high/critical; V77_AUDIT_STRICT=1 fails CI when high+critical > 0.\n
+Round 9→10 dependency audit
+
+BEFORE (Round 9 ship):
+  critical: 2, high: 7, moderate: 21, total: 30
+  Critical: vitest/tinypool
+  High: glob/@opennextjs/*, postcss/next, vite, zod
+
+AFTER (this patch):
+  critical: 0, high: 0, moderate: 0, total: 0
+  Changes: vitest@5.0.5, vite@^6.4.4, zod@4.6.7,
+  overrides: postcss@8.5.32, glob@14.0.3, minimatch@11.0.3, tinypool@2.2.0, esbuild@0.25.12
+
+Re-run: npm run audit:deps

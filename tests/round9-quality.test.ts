@@ -49,8 +49,9 @@ describe("Round 9 i18n", () => {
   it("translates demo/resources/notifications/onboarding nav keys", () => {
     for (const key of ["mkt.nav.demo", "mkt.nav.resources", "nav.notifications", "nav.onboarding"]) {
       expect(dictKeys()).toContain(key);
-      expect(hasTranslation("de", key)).toBe(true);
-      expect(hasTranslation("fr", key)).toBe(true);
+      for (const loc of ["de", "fr", "pl", "nl", "es", "it", "sv"] as const) {
+        expect(hasTranslation(loc, key)).toBe(true);
+      }
     }
   });
 });

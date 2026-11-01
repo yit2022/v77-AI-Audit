@@ -21,7 +21,7 @@ export async function GET(req: Request) {
 
 const putSchema = z.object({
   systemId: z.string().uuid(),
-  answers: z.record(z.string()),
+  answers: z.record(z.string(), z.string()),
 });
 
 export async function PUT(req: Request) {

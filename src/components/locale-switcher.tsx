@@ -14,14 +14,14 @@ export function LocaleSwitcher({ value }: { value: Locale }) {
     <label className="flex items-center gap-2 text-xs text-slate-500">
       <span className="sr-only">Language</span>
       <select
-        className="select w-auto py-1 text-xs"
+        className="select min-w-[9.5rem] max-w-[12rem] py-1.5 text-xs"
         aria-label="Language"
         value={value}
         onChange={(e) => onChange(e.target.value as Locale)}
       >
         {LOCALES.map((l) => (
           <option key={l.code} value={l.code}>
-            {l.native}
+            {l.native} ({l.code.toUpperCase()})
           </option>
         ))}
       </select>
