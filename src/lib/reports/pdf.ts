@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+import path from "node:path";
 import { PDFDocument, StandardFonts, rgb } from "pdf-lib";
 import { readinessByFramework, overallReadiness, type FrameworkKey } from "@/lib/compliance/dashboard";
 
@@ -118,8 +120,19 @@ export async function buildAuditReportPdf(input: AuditReportInput): Promise<Uint
   {
     const page = doc.addPage([pageWidth, pageHeight]);
     page.drawRectangle({ x: 0, y: pageHeight - 160, width: pageWidth, height: 160, color: brand });
-    page.drawText("V77", { x: margin, y: pageHeight - 70, size: 28, font: fontBold, color: ink });
-    page.drawText("AI Auditor", { x: margin, y: pageHeight - 100, size: 18, font, color: ink });
+    try {
+      const markPath = path.join(process.cwd(), "public", "brand", "v77-shield-mark.png");
+      const markBytes = readFileSync(markPath);
+      const mark = await doc.embedPng(markBytes);
+      const markW = 48;
+      const markH = (mark.height / mark.width) * markW;
+      page.drawImage(mark, { x: margin, y: pageHeight - 70 - markH + 20, width: markW, height: markH });
+      page.drawText("V77 Trust", { x: margin + markW + 12, y: pageHeight - 70, size: 26, font: fontBold, color: ink });
+      page.drawText("AI Auditor", { x: margin + markW + 12, y: pageHeight - 98, size: 14, font, color: ink });
+    } catch {
+      page.drawText("V77 Trust", { x: margin, y: pageHeight - 70, size: 28, font: fontBold, color: ink });
+      page.drawText("AI Auditor", { x: margin, y: pageHeight - 100, size: 18, font, color: ink });
+    }
     page.drawText(sanitizePdfText("Audit Report"), {
       x: margin,
       y: pageHeight - 220,

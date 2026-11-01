@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 200" role="img" aria-label="V77 Trust">
+  <title>V77 Trust</title>
+  <!-- Shield outline #6FCDF5 -->
+  <path fill="none" stroke="#6FCDF5" stroke-width="10" stroke-linejoin="round"
+    d="M70 28
+       C70 28 118 22 118 22
+       C118 22 166 28 166 28
+       L166 96
+       C166 128 118 158 118 158
+       C118 158 70 128 70 96
+       Z" />
+  <!-- Navy V / check inside shield #0F2A4A -->
+  <path fill="none" stroke="#0F2A4A" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"
+    d="M92 78 L118 118 L152 58" />
+  <!-- Wordmark -->
+  <text x="210" y="108" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif"
+        font-size="92" font-weight="800" fill="#0F2A4A" letter-spacing="-2">V77</text>
+  <text x="268" y="148" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif"
+        font-size="28" font-weight="500" fill="#0F2A4A" letter-spacing="6" text-anchor="middle">Trust</text>
+</svg>

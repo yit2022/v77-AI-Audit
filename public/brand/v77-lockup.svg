@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 160" role="img" aria-label="V77 Trust">
+  <title>V77 Trust</title>
+  <g transform="translate(8,10) scale(1.15)">
+    <path d="M18 18 C18 18 28 12 42 12 C46 16 54 16 58 12 C72 12 82 18 82 18 L82 58 C82 78 62 100 50 110 C38 100 18 78 18 58 Z" fill="none" stroke="#6FCDF5" stroke-width="7" stroke-linejoin="round"/>
+    <path d="M34 38 L48 78 L56 78 L46 38 Z" fill="#0F2A4A"/>
+    <path d="M48 62 L56 78 L68 52 L58 48 Z" fill="#0F2A4A"/>
+    <path d="M58 36 L70 34 L72 44 L60 46 Z" fill="#0F2A4A"/>
+  </g>
+  <text x="150" y="88" font-family="Inter, DejaVu Sans, Liberation Sans, Arial, sans-serif" font-size="78" font-weight="700" font-style="italic" letter-spacing="-2" fill="#0F2A4A">V77</text>
+  <text x="168" y="128" font-family="Inter, DejaVu Sans, Liberation Sans, Arial, sans-serif" font-size="26" font-weight="600" letter-spacing="4" fill="#0F2A4A">Trust</text>
+</svg>
