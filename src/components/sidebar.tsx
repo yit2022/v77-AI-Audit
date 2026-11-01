@@ -16,6 +16,7 @@ const links = [
   { href: "/monitoring", label: "Monitoring" },
   { href: "/findings", label: "Findings" },
   { href: "/auditor", label: "Auditor Workspace" },
+  { href: "/settings", label: "Settings" },
 ];
 
 export function Sidebar({ userName, orgName, role }: { userName: string; orgName: string; role: string }) {
