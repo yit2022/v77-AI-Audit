@@ -170,3 +170,15 @@ Also rotate existing secrets from earlier rounds: session secret, `V77_PLATFORM_
 - `/forgot-password` + `/api/auth/forgot-password` — generic response, rate-limited per IP and email; Resend link (60 minutes, hashed single-use token)
 - `/reset-password?token=` + `/api/auth/reset-password` — sets password and invalidates all sessions
 - Settings → Change password (`/api/auth/change-password`) — requires current password; invalidates sessions
+
+### Billing webhook strategy (shared Paystack business)
+
+Paystack live webhook remains on the Hazinova/FarmMate path — **not** overwritten:
+`https://cosbtjvuhjgbvmjhfwil.supabase.co/functions/v1/paystack-webhook` (and FarmMate router on `167.172.182.244`).
+
+V77 activates plans without depending on that webhook:
+1. Callback redirect → `/billing?checkout=return` → `POST /api/billing/verify-return` (Paystack `GET /transaction/verify/:reference`)
+2. Scheduled/manual `POST /api/billing/reconcile` (pending invoices + recent transactions with `metadata.app=v77` / `v77_` references)
+3. `/api/billing/webhook` stays ready and **ignores non-V77** events
+
+Optional relay (owner of FarmMate webhook router — not applied by V77): forward events where `metadata.app=v77` or `metadata.source=v77` or reference starts with `v77_`, with raw body + `x-paystack-signature` unchanged (and e.g. `x-farmmate-forwarded: 1`), to `https://v77trust.com/api/billing/webhook`.

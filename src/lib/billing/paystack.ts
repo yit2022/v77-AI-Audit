@@ -69,6 +69,7 @@ export async function initializeTransaction(
     headers: {
       Authorization: `Bearer ${secret}`,
       "Content-Type": "application/json",
+      "User-Agent": "V77Trust/1.0",
     },
     body: JSON.stringify(body),
   });
@@ -117,7 +118,7 @@ export async function verifyTransaction(
   const secret = paystackSecretKey(env);
   if (!secret) throw new Error("PAYSTACK_SECRET_KEY is not configured");
   const res = await fetchImpl(`${apiBase()}/transaction/verify/${encodeURIComponent(reference)}`, {
-    headers: { Authorization: `Bearer ${secret}` },
+    headers: { Authorization: `Bearer ${secret}`, "User-Agent": "V77Trust/1.0" },
   });
   const data = (await res.json().catch(() => ({}))) as {
     status?: boolean;
@@ -131,4 +132,41 @@ export async function verifyTransaction(
     currency: data.data?.currency || "",
     metadata: data.data?.metadata || {},
   };
+}
+
+export function isV77PaystackEvent(payload: {
+  data?: { reference?: string; metadata?: Record<string, unknown> | null };
+}): boolean {
+  const ref = payload.data?.reference || "";
+  const meta = payload.data?.metadata || {};
+  const app = meta && typeof meta === "object" ? String((meta as { app?: unknown }).app || (meta as { source?: unknown }).source || "") : "";
+  return app === "v77" || ref.startsWith("v77_");
+}
+
+export async function listTransactions(
+  opts: { perPage?: number; page?: number; status?: string } = {},
+  fetchImpl: typeof fetch = fetch,
+  env: NodeJS.ProcessEnv | Record<string, string | undefined> = process.env,
+): Promise<Array<{ reference: string; status: string; metadata: Record<string, unknown>; amount: number; currency: string }>> {
+  const secret = paystackSecretKey(env);
+  if (!secret) throw new Error("PAYSTACK_SECRET_KEY is not configured");
+  const params = new URLSearchParams();
+  params.set("perPage", String(opts.perPage ?? 50));
+  params.set("page", String(opts.page ?? 1));
+  if (opts.status) params.set("status", opts.status);
+  const res = await fetchImpl(`${apiBase()}/transaction?${params.toString()}`, {
+    headers: { Authorization: `Bearer ${secret}`, "User-Agent": "V77Trust/1.0" },
+  });
+  const data = (await res.json().catch(() => ({}))) as {
+    status?: boolean;
+    data?: Array<{ reference?: string; status?: string; metadata?: Record<string, unknown> | null; amount?: number; currency?: string }>;
+  };
+  if (!res.ok || !data.status) return [];
+  return (data.data || []).map((row) => ({
+    reference: row.reference || "",
+    status: row.status || "",
+    metadata: (row.metadata || {}) as Record<string, unknown>,
+    amount: row.amount ?? 0,
+    currency: row.currency || "",
+  }));
 }

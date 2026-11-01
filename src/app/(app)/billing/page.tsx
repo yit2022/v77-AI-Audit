@@ -8,6 +8,8 @@ import { billingEnabled } from "@/lib/billing/flags";
 import { PageHeader } from "@/components/ui";
 import { COMPANY } from "@/lib/company";
 import { BillingCheckoutButton } from "@/components/billing-checkout";
+import { BillingReturn } from "@/components/billing-return";
+import { Suspense } from "react";
 import { CHECKOUT_DISPLAY_NAME } from "@/lib/billing/paystack";
 import { getOrgSubscription } from "@/lib/billing/service";
 
@@ -23,6 +25,9 @@ export default async function BillingPage() {
 
   return (
     <div>
+      <Suspense fallback={null}>
+        <BillingReturn />
+      </Suspense>
       <PageHeader
         title="Plan & billing"
         subtitle={`${CHECKOUT_DISPLAY_NAME} · prices shown in EUR · card payments only (no mobile money)`}

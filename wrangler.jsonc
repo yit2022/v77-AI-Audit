@@ -15,7 +15,7 @@
     "V77_APP_ORIGIN": "https://v77trust.com",
     "V77_CUSTOM_DOMAIN": "v77trust.com",
     "V77_ENABLE_REAL_PROVIDERS": "false",
-    "V77_BILLING_ENABLED": "false",
+    "V77_BILLING_ENABLED": "true",
     "PAYSTACK_CURRENCY": "USD",
     "PAYSTACK_EUR_USD_RATE": "1.08",
     "V77_EMAIL_FROM": "V77 Trust <noreply@v77trust.com>",

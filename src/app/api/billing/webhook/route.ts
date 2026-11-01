@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { verifyPaystackSignature } from "@/lib/billing/paystack";
+import { isV77PaystackEvent, verifyPaystackSignature } from "@/lib/billing/paystack";
 import { activatePlanFromWebhook } from "@/lib/billing/service";
 
 export async function POST(req: Request) {
@@ -8,11 +8,18 @@ export async function POST(req: Request) {
   if (!verifyPaystackSignature(raw, signature)) {
     return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
   }
-  let payload: { event?: string; data?: { reference?: string } };
+  let payload: {
+    event?: string;
+    data?: { reference?: string; metadata?: Record<string, unknown> | null };
+  };
   try {
     payload = JSON.parse(raw) as typeof payload;
   } catch {
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
+  }
+  // Ready for forwarded events, but never process other products' charges.
+  if (!isV77PaystackEvent(payload)) {
+    return NextResponse.json({ ok: true, ignored: true, reason: "not_v77" });
   }
   const reference = payload.data?.reference;
   const event = payload.event || "";

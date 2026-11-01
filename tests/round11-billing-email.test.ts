@@ -8,7 +8,7 @@ import {
   eurToUsdRate,
 } from "@/lib/billing/currency";
 import { billingEnabled } from "@/lib/billing/flags";
-import { PAYSTACK_CHANNELS, CHECKOUT_DISPLAY_NAME, verifyPaystackSignature } from "@/lib/billing/paystack";
+import { PAYSTACK_CHANNELS, CHECKOUT_DISPLAY_NAME, verifyPaystackSignature, isV77PaystackEvent } from "@/lib/billing/paystack";
 import { sendEmail, emailConfigured } from "@/lib/email/send";
 import { signupEmail, inviteEmail, evidenceRequestEmail, reminderEmail, leadNotificationEmail } from "@/lib/email/templates";
 import { redactPii, withSafeProvider } from "@/lib/providers/safe";
@@ -141,5 +141,15 @@ describe("Sprint 11 provider hardening", () => {
 
     const capped = withSafeProvider(flaky, { maxInputChars: 5, redact: false });
     await expect(capped.complete([{ role: "user", content: "this is too long" }])).rejects.toThrow(/cost cap/);
+  });
+});
+
+
+describe("Sprint 11 webhook V77 filter", () => {
+  it("accepts v77 metadata/app or v77_ references only", () => {
+    expect(isV77PaystackEvent({ data: { reference: "v77_abc", metadata: {} } })).toBe(true);
+    expect(isV77PaystackEvent({ data: { reference: "hz_abc", metadata: { app: "v77" } } })).toBe(true);
+    expect(isV77PaystackEvent({ data: { reference: "hz_abc", metadata: { source: "hazinova" } } })).toBe(false);
+    expect(isV77PaystackEvent({ data: { reference: "other", metadata: null } })).toBe(false);
   });
 });
