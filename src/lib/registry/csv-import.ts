@@ -129,7 +129,13 @@ export function parseInventoryCsv(text: string): { rows: InventoryCsvRow[]; erro
         obj.riskTier = raw.toLowerCase().replace(/\s+/g, "_");
         return;
       }
-      (obj as Record<string, string>)[key] = raw;
+      if (key === "name") obj.name = raw;
+      else if (key === "description") obj.description = raw;
+      else if (key === "intendedPurpose") obj.intendedPurpose = raw;
+      else if (key === "domain") obj.domain = raw;
+      else if (key === "versionLabel") obj.versionLabel = raw;
+      else if (key === "vendorName") obj.vendorName = raw;
+      else if (key === "euDatabaseId") obj.euDatabaseId = raw;
     });
     if (!obj.name) {
       errors.push(`Line ${line}: missing name`);
