@@ -1,8 +1,8 @@
 import path from "path";
 import fs from "fs";
-import { drizzle as drizzlePglite } from "drizzle-orm/pglite";
+import { drizzle as drizzlePglite, type PgliteDatabase } from "drizzle-orm/pglite";
 import { PGlite } from "@electric-sql/pglite";
-import { drizzle as drizzlePg } from "drizzle-orm/postgres-js";
+import { drizzle as drizzlePg, type PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import * as schema from "./schema";
 import { DDL } from "./ddl";
@@ -14,16 +14,17 @@ const dataDir = process.env.V77_DATA_DIR
   ? path.resolve(process.env.V77_DATA_DIR)
   : path.join(process.cwd(), "data");
 
+export type V77Db = PostgresJsDatabase<typeof schema> | PgliteDatabase<typeof schema>;
+
 declare global {
   var __v77_pglite: PGlite | undefined;
   var __v77_pg: ReturnType<typeof postgres> | undefined;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  var __v77_db: any;
+  var __v77_db: V77Db | undefined;
   var __v77_ready: Promise<void> | undefined;
-  var __v77_backend: string | undefined;
+  var __v77_backend: "postgres" | "pglite" | undefined;
 }
 
-function createDb() {
+function createDb(): V77Db {
   if (backend === "postgres") {
     const url = process.env.DATABASE_URL!;
     if (!global.__v77_pg) {
@@ -37,7 +38,7 @@ function createDb() {
   return drizzlePglite(global.__v77_pglite, { schema });
 }
 
-export const db = global.__v77_db ?? createDb();
+export const db: V77Db = global.__v77_db ?? createDb();
 if (!global.__v77_db) {
   global.__v77_db = db;
   global.__v77_backend = backend;
@@ -60,7 +61,7 @@ export async function ensureDb() {
 }
 
 export function getDbBackend() {
-  return (global.__v77_backend as "postgres" | "pglite") || backend;
+  return global.__v77_backend || backend;
 }
 
 export { schema, resolveDbBackend };

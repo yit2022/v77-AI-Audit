@@ -1,4 +1,4 @@
-import { and, desc, eq } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 import { db, ensureDb, schema } from "@/lib/db";
 import { id } from "@/lib/ids";
 import { detectControlDrift, detectFairnessDrift, summariseFindings, type DriftFinding } from "./drift";
