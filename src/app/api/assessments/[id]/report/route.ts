@@ -40,6 +40,7 @@ export async function GET(
       euRef: schema.controls.euRef,
       nistRef: schema.controls.nistRef,
       isoRef: schema.controls.isoRef,
+      gdprRef: schema.controls.gdprRef,
     })
     .from(schema.assessmentControls)
     .innerJoin(schema.controls, eq(schema.assessmentControls.controlId, schema.controls.id))
@@ -59,6 +60,11 @@ export async function GET(
     .select()
     .from(schema.redteamRuns)
     .where(eq(schema.redteamRuns.systemId, system.id));
+
+  const findingRows = await db
+    .select()
+    .from(schema.findings)
+    .where(eq(schema.findings.systemId, system.id));
 
   const so = await db
     .select()
@@ -80,6 +86,12 @@ export async function GET(
     assessmentName: assessment.name,
     assessmentStatus: assessment.status,
     controls: controlRows,
+    findings: findingRows.map((f) => ({
+      title: f.title,
+      severity: f.severity,
+      status: f.status,
+      frameworkRef: f.frameworkRef,
+    })),
     fairnessRunCount: fairness.length,
     redteamSummary: redteam[0]
       ? `${redteam.length} run(s); latest pass ${redteam[0].passCount} / fail ${redteam[0].failCount}`
