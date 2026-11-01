@@ -8,7 +8,6 @@ import { insertInChunks } from "@/lib/db/chunk-insert";
 import { controlsForTier } from "@/lib/crosswalk";
 import { seedIfEmpty } from "@/lib/db/seed";
 import { assertOrgWritable } from "@/lib/billing/trial";
-import { assertUnderLimit } from "@/lib/billing/limits";
 
 export async function GET() {
   await seedIfEmpty();
@@ -55,7 +54,6 @@ export async function POST(req: Request) {
   await ensureDb();
   try {
     await assertOrgWritable(session.orgId);
-    await assertUnderLimit(session.orgId, "frameworks", 0); // soft: block new assessments when already over pack limit
   } catch (e) {
     const err = e as { status?: number; code?: string; message?: string; kind?: string; used?: number; limit?: number };
     return NextResponse.json(

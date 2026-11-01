@@ -9,6 +9,7 @@ import { OnboardingTour } from "@/components/onboarding-tour";
 import { NotificationsBell } from "@/components/notifications-bell";
 import { TrialBanner } from "@/components/trial-banner";
 import { getOrgAccess } from "@/lib/billing/trial";
+import { isPlatformAdminEmailAsync } from "@/lib/platform/admin";
 import { isLocale, type Locale } from "@/lib/i18n/dictionaries";
 
 export default async function AppLayout({
@@ -23,10 +24,11 @@ export default async function AppLayout({
   const raw = jar.get("v77_locale")?.value;
   const locale: Locale = isLocale(raw) ? raw : "en";
   const access = await getOrgAccess(session.orgId);
+  const showPlatform = await isPlatformAdminEmailAsync(session.email);
 
   return (
     <div className="flex min-h-screen flex-col lg:flex-row">
-      <Sidebar userName={session.name} orgName={session.orgName} role={session.role} locale={locale} />
+      <Sidebar userName={session.name} orgName={session.orgName} role={session.role} locale={locale} showPlatform={showPlatform} />
       <div className="flex min-w-0 flex-1 flex-col">
         {access ? <TrialBanner access={access} /> : null}
         <div className="sticky top-0 z-30 flex items-center justify-end gap-2 border-b border-[#d7e6ef] bg-white/95 px-4 py-2 backdrop-blur sm:px-6 lg:px-8">

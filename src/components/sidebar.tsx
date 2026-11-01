@@ -44,11 +44,13 @@ export function Sidebar({
   orgName,
   role,
   locale = "en",
+  showPlatform = false,
 }: {
   userName: string;
   orgName: string;
   role: string;
   locale?: Locale;
+  showPlatform?: boolean;
 }) {
   const pathname = usePathname();
   const router = useRouter();
@@ -59,7 +61,7 @@ export function Sidebar({
       ? [
           ...links.slice(0, -1),
           { href: "/leads", label: t(locale, "nav.leads") },
-          { href: "/platform", label: t(locale, "nav.platform") },
+          ...(showPlatform ? [{ href: "/platform", label: t(locale, "nav.platform") }] : []),
           links[links.length - 1],
         ]
       : links;

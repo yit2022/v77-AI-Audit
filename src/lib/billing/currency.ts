@@ -34,7 +34,7 @@ export const BILLABLE_PLANS: PricedPlan[] = [
     priceEurMonthly: null,
     priceEurAnnual: null,
     seatLimit: 5,
-    features: ["14-day trial", "Up to 3 AI systems", "5 users", "2 frameworks", "Evidence vault"],
+    features: ["14-day trial", "Up to 3 AI systems", "5 users", "6 frameworks", "Evidence vault"],
   },
   {
     tier: "team",
