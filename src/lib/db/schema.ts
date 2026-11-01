@@ -190,3 +190,37 @@ export const impactAnswers = pgTable(
   },
   (t) => [uniqueIndex("impact_answer_unique").on(t.impactId, t.questionId)],
 );
+
+export const monitoringSchedules = pgTable("monitoring_schedules", {
+  id: text("id").primaryKey(),
+  orgId: text("org_id").notNull().references(() => organisations.id),
+  systemId: text("system_id").notNull().references(() => aiSystems.id),
+  name: text("name").notNull(),
+  cadenceHours: integer("cadence_hours").notNull().default(24),
+  enabled: boolean("enabled").notNull().default(true),
+  lastRunAt: timestamp("last_run_at", { withTimezone: true }),
+  nextRunAt: timestamp("next_run_at", { withTimezone: true }),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export const monitoringRuns = pgTable("monitoring_runs", {
+  id: text("id").primaryKey(),
+  scheduleId: text("schedule_id").notNull().references(() => monitoringSchedules.id),
+  orgId: text("org_id").notNull().references(() => organisations.id),
+  systemId: text("system_id").notNull().references(() => aiSystems.id),
+  status: text("status").notNull().default("ok"),
+  summaryJson: text("summary_json").notNull().default("{}"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export const monitoringAlerts = pgTable("monitoring_alerts", {
+  id: text("id").primaryKey(),
+  orgId: text("org_id").notNull().references(() => organisations.id),
+  systemId: text("system_id").notNull().references(() => aiSystems.id),
+  runId: text("run_id").references(() => monitoringRuns.id),
+  severity: text("severity").notNull().default("medium"),
+  kind: text("kind").notNull(),
+  message: text("message").notNull(),
+  acknowledged: boolean("acknowledged").notNull().default(false),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});

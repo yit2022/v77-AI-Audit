@@ -126,6 +126,28 @@ CREATE TABLE IF NOT EXISTS auditor_signoffs (
   auditor_user_id text NOT NULL REFERENCES users(id), opinion text NOT NULL,
   summary text NOT NULL DEFAULT '', signed_at timestamptz NOT NULL DEFAULT now()
 );
+CREATE TABLE IF NOT EXISTS monitoring_schedules (
+  id text PRIMARY KEY, org_id text NOT NULL REFERENCES organisations(id),
+  system_id text NOT NULL REFERENCES ai_systems(id), name text NOT NULL,
+  cadence_hours integer NOT NULL DEFAULT 24, enabled boolean NOT NULL DEFAULT true,
+  last_run_at timestamptz, next_run_at timestamptz,
+  created_at timestamptz NOT NULL DEFAULT now()
+);
+CREATE TABLE IF NOT EXISTS monitoring_runs (
+  id text PRIMARY KEY, schedule_id text NOT NULL REFERENCES monitoring_schedules(id),
+  org_id text NOT NULL REFERENCES organisations(id),
+  system_id text NOT NULL REFERENCES ai_systems(id),
+  status text NOT NULL DEFAULT 'ok', summary_json text NOT NULL DEFAULT '{}',
+  created_at timestamptz NOT NULL DEFAULT now()
+);
+CREATE TABLE IF NOT EXISTS monitoring_alerts (
+  id text PRIMARY KEY, org_id text NOT NULL REFERENCES organisations(id),
+  system_id text NOT NULL REFERENCES ai_systems(id),
+  run_id text REFERENCES monitoring_runs(id),
+  severity text NOT NULL DEFAULT 'medium', kind text NOT NULL,
+  message text NOT NULL, acknowledged boolean NOT NULL DEFAULT false,
+  created_at timestamptz NOT NULL DEFAULT now()
+);
 `;
 
 export async function ensureDb() {

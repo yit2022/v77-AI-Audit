@@ -12,6 +12,7 @@ const links = [
   { href: "/tests/fairness", label: "Fairness Tests" },
   { href: "/tests/redteam", label: "LLM Red-Team" },
   { href: "/impact", label: "FRIA / DPIA" },
+  { href: "/monitoring", label: "Monitoring" },
   { href: "/auditor", label: "Auditor Workspace" },
 ];
 
