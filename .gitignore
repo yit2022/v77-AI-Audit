@@ -44,3 +44,5 @@ data/
 uploads/
 *.db
 .pglite/
+
+data-e2e/

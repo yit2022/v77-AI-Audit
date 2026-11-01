@@ -66,7 +66,9 @@ export async function GET(
     .where(eq(schema.auditorSignoffs.assessmentId, assessment.id))
     .limit(1);
 
-  const pdf = await buildAuditReportPdf({
+  let pdf: Uint8Array;
+  try {
+  pdf = await buildAuditReportPdf({
     orgName: session.orgName,
     systemName: system.name,
     systemDescription: system.description,
@@ -91,6 +93,10 @@ export async function GET(
     auditorSummary: so[0]?.summary ?? null,
     generatedAt: new Date(),
   });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "PDF generation failed";
+    return NextResponse.json({ error: message }, { status: 500 });
+  }
 
   const filename = `v77-audit-${system.name.replace(/[^a-z0-9]+/gi, "-").toLowerCase()}.pdf`;
   return new NextResponse(Buffer.from(pdf), {

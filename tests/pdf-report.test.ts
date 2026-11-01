@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildAuditReportPdf } from "../src/lib/reports/pdf";
+import { buildAuditReportPdf, sanitizePdfText } from "../src/lib/reports/pdf";
 
 describe("buildAuditReportPdf", () => {
   it("produces a valid PDF with %PDF header", async () => {
@@ -34,5 +34,30 @@ describe("buildAuditReportPdf", () => {
     expect(bytes.byteLength).toBeGreaterThan(500);
     const header = Buffer.from(bytes.slice(0, 5)).toString("utf8");
     expect(header).toBe("%PDF-");
+  });
+
+  it("sanitizes winansi-unsafe glyphs", async () => {
+    expect(sanitizePdfText("HireSense — Q4")).toBe("HireSense - Q4");
+    expect(sanitizePdfText("A → B")).toBe("A -> B");
+    const bytes = await buildAuditReportPdf({
+      orgName: "Acme",
+      systemName: "HireSense — Ranking",
+      systemDescription: "Uses “smart” quotes and bullets • here",
+      riskTier: "high_risk",
+      intendedPurpose: "Shortlist",
+      roleInValueChain: "provider",
+      gpai: false,
+      classificationNotes: "",
+      assessmentName: "Q4 — readiness",
+      assessmentStatus: "in_review",
+      controls: [],
+      fairnessRunCount: 0,
+      redteamSummary: "none",
+      evidence: [],
+      auditorOpinion: null,
+      auditorSummary: null,
+      generatedAt: new Date("2026-11-01T07:00:00.000Z"),
+    });
+    expect(Buffer.from(bytes.slice(0, 5)).toString("utf8")).toBe("%PDF-");
   });
 });
