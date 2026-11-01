@@ -1,0 +1,5 @@
+{
+  "customDomain": "v77.isaacmuthui.com",
+  "workerName": "v77-ai-auditor",
+  "note": "Change customDomain here, run npm run sync-domain, then redeploy. Isaac will swap to a new Cloudflare domain later."
+}
