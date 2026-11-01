@@ -231,3 +231,16 @@ export const monitoringAlerts = pgTable("monitoring_alerts", {
   acknowledged: boolean("acknowledged").notNull().default(false),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
+
+export const evalRuns = pgTable("eval_runs", {
+  id: text("id").primaryKey(),
+  orgId: text("org_id").notNull().references(() => organisations.id),
+  systemId: text("system_id").notNull().references(() => aiSystems.id),
+  provider: text("provider").notNull().default("mock"),
+  overallScore: text("overall_score").notNull().default("0"),
+  resultsJson: text("results_json").notNull(),
+  passCount: integer("pass_count").notNull().default(0),
+  failCount: integer("fail_count").notNull().default(0),
+  createdBy: text("created_by").references(() => users.id),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});

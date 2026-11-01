@@ -125,4 +125,11 @@ CREATE TABLE IF NOT EXISTS monitoring_alerts (
   message text NOT NULL, acknowledged boolean NOT NULL DEFAULT false,
   created_at timestamptz NOT NULL DEFAULT now()
 );
+CREATE TABLE IF NOT EXISTS eval_runs (
+  id text PRIMARY KEY, org_id text NOT NULL REFERENCES organisations(id),
+  system_id text NOT NULL REFERENCES ai_systems(id), provider text NOT NULL DEFAULT 'mock',
+  overall_score text NOT NULL DEFAULT '0', results_json text NOT NULL,
+  pass_count integer NOT NULL DEFAULT 0, fail_count integer NOT NULL DEFAULT 0,
+  created_by text REFERENCES users(id), created_at timestamptz NOT NULL DEFAULT now()
+);
 `;
