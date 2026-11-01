@@ -1,8 +1,12 @@
 import { NextResponse } from "next/server";
 import { randomBytes } from "crypto";
 import { buildAuthorizationUrl, loadOidcConfig } from "@/lib/auth/oidc";
+import { isSsoFlagEnabled } from "@/lib/auth/sso";
 
 export async function GET() {
+  if (!isSsoFlagEnabled()) {
+    return NextResponse.json({ error: "SSO disabled (V77_SSO_ENABLED)." }, { status: 503 });
+  }
   const cfg = loadOidcConfig();
   if (!cfg) {
     return NextResponse.json(

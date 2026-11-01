@@ -24,6 +24,7 @@ export function SettingsClient({
   invites,
   currentOrgId,
   isAdmin,
+  trust,
 }: {
   keys: KeyRow[];
   orgs: OrgRow[];
@@ -31,6 +32,7 @@ export function SettingsClient({
   invites: InviteRow[];
   currentOrgId: string;
   isAdmin: boolean;
+  trust?: { trustPublic: boolean; trustSummary: string; trustContactEmail: string; publicUrl: string; slug: string };
 }) {
   const router = useRouter();
   const [revealed, setRevealed] = useState<string | null>(null);
@@ -179,9 +181,10 @@ export function SettingsClient({
           <div className="mt-4 flex flex-wrap gap-2">
             <input id="invite-email" className="input flex-1" type="email" placeholder="colleague@company.com" />
             <select id="invite-role" className="select w-40" defaultValue="ai_owner">
-              <option value="admin">admin</option>
-              <option value="ai_owner">ai_owner</option>
-              <option value="auditor">auditor</option>
+              <option value="admin">owner (admin)</option>
+              <option value="ai_owner">owner</option>
+              <option value="reviewer">reviewer</option>
+              <option value="auditor">auditor (read-only)</option>
             </select>
             <button type="button" className="btn btn-primary" onClick={createInvite}>
               Create invite
@@ -257,9 +260,10 @@ export function SettingsClient({
           <div className="mt-4 flex flex-wrap gap-2">
             <input id="key-name" className="input flex-1" placeholder="Key name" defaultValue="CI integration" />
             <select id="key-role" className="select w-40" defaultValue="ai_owner">
-              <option value="admin">admin</option>
-              <option value="ai_owner">ai_owner</option>
-              <option value="auditor">auditor</option>
+              <option value="admin">owner (admin)</option>
+              <option value="ai_owner">owner</option>
+              <option value="reviewer">reviewer</option>
+              <option value="auditor">auditor (read-only)</option>
             </select>
             <button type="button" className="btn btn-primary" onClick={createKey}>
               Create key
@@ -289,6 +293,55 @@ export function SettingsClient({
         <p className="text-sm text-slate-500">API key management is available to admins.</p>
       )}
       {error ? <p className="text-sm text-red-700">{error}</p> : null}
-    </div>
+    
+      {isAdmin && trust ? (
+        <section className="card mt-8 space-y-3 p-5">
+          <h2 className="text-lg font-semibold text-[#0F2A4A]">Trust Center</h2>
+          <p className="text-sm text-slate-600">
+            Publish a shareable public compliance page at{" "}
+            <a className="font-semibold text-sky-700 hover:underline" href={trust.publicUrl}>
+              {trust.publicUrl}
+            </a>
+            .
+          </p>
+          <label className="flex items-center gap-2 text-sm">
+            <input id="trust-public" type="checkbox" defaultChecked={trust.trustPublic} />
+            Make Trust Center public
+          </label>
+          <div>
+            <label className="mb-1 block text-xs font-semibold text-slate-600" htmlFor="trust-summary">
+              Public summary
+            </label>
+            <textarea id="trust-summary" className="textarea" defaultValue={trust.trustSummary} rows={4} />
+          </div>
+          <div>
+            <label className="mb-1 block text-xs font-semibold text-slate-600" htmlFor="trust-email">
+              Public contact email
+            </label>
+            <input id="trust-email" className="input" defaultValue={trust.trustContactEmail} />
+          </div>
+          <button
+            type="button"
+            className="btn btn-primary"
+            onClick={async () => {
+              setError("");
+              const res = await fetch("/api/trust", {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  trustPublic: (document.getElementById("trust-public") as HTMLInputElement).checked,
+                  trustSummary: (document.getElementById("trust-summary") as HTMLTextAreaElement).value,
+                  trustContactEmail: (document.getElementById("trust-email") as HTMLInputElement).value,
+                }),
+              });
+              if (!res.ok) setError((await res.json().catch(() => ({}))).error || "Trust update failed");
+              else router.refresh();
+            }}
+          >
+            Save Trust Center
+          </button>
+        </section>
+      ) : null}
+</div>
   );
 }

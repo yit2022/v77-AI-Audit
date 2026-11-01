@@ -23,7 +23,7 @@ export async function createOrgInvite(opts: {
   await ensureDb();
   const email = opts.email.trim().toLowerCase();
   if (!email.includes("@")) throw new Error("Invalid email");
-  if (!["admin", "ai_owner", "auditor"].includes(opts.role)) throw new Error("Invalid role");
+  if (!["admin", "ai_owner", "reviewer", "auditor"].includes(opts.role)) throw new Error("Invalid role");
 
   // Revoke prior open invite for same email/org
   const existing = await db

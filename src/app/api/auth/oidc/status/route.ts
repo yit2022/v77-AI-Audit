@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
-import { getPublicOidcStatus } from "@/lib/auth/oidc";
+import { getPublicSsoStatus } from "@/lib/auth/sso";
 
+/** @deprecated Prefer /api/auth/sso/status — kept for compatibility. */
 export async function GET() {
-  return NextResponse.json(getPublicOidcStatus());
+  return NextResponse.json(getPublicSsoStatus());
 }

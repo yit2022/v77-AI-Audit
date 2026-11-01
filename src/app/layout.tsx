@@ -3,6 +3,7 @@ import { cookies } from "next/headers";
 import "./globals.css";
 import { getAppOrigin } from "@/lib/site";
 import { CookieConsent } from "@/components/cookie-consent";
+import { ErrorMonitor } from "@/components/error-monitor";
 import { isLocale } from "@/lib/i18n/dictionaries";
 
 const origin = getAppOrigin();
@@ -72,6 +73,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
         </a>
         {children}
         <CookieConsent />
+        <ErrorMonitor />
       </body>
     </html>
   );

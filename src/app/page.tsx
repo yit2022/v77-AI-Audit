@@ -7,6 +7,9 @@ import { seedIfEmpty } from "@/lib/db/seed";
 import { LogoMark } from "@/components/logo-mark";
 import { PilotRequestForm } from "@/components/pilot-request-form";
 import { COMPANY } from "@/lib/company";
+import { getRequestLocale } from "@/lib/i18n/locale";
+import { t } from "@/lib/i18n/dictionaries";
+import { LocaleSwitcher } from "@/components/locale-switcher";
 
 const pillars = [
   {
@@ -42,29 +45,34 @@ export default async function HomePage() {
   await seedIfEmpty();
   const session = await getSession();
   if (session) redirect("/dashboard");
+  const locale = await getRequestLocale();
 
   return (
     <main id="main-content" tabIndex={-1} className="min-h-screen bg-[radial-gradient(ellipse_at_top,_#e8f7fd_0%,_#ffffff_48%,_#ffffff_100%)]">
       <header className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-5 sm:px-6 sm:py-6">
         <LogoMark />
         <nav className="flex flex-wrap items-center justify-end gap-2 sm:gap-3">
+          <LocaleSwitcher value={locale} />
           <Link href="/how-it-works" className="hidden text-sm font-medium text-slate-600 hover:text-[#0F2A4A] sm:inline">
-            How it works
+            {t(locale, "mkt.nav.how")}
           </Link>
           <Link href="/frameworks" className="hidden text-sm font-medium text-slate-600 hover:text-[#0F2A4A] md:inline">
-            Frameworks
+            {t(locale, "mkt.nav.frameworks")}
+          </Link>
+          <Link href="/developers" className="hidden text-sm font-medium text-slate-600 hover:text-[#0F2A4A] lg:inline">
+            {t(locale, "mkt.nav.developers")}
           </Link>
           <Link href="/contact" className="hidden text-sm font-medium text-slate-600 hover:text-[#0F2A4A] lg:inline">
-            Contact
+            {t(locale, "mkt.nav.contact")}
           </Link>
           <a href="#pricing" className="hidden text-sm font-medium text-slate-600 hover:text-[#0F2A4A] lg:inline">
-            Pricing
+            {t(locale, "mkt.pricing.title")}
           </a>
           <Link href="/login" className="btn btn-secondary px-3 py-2 sm:px-5">
-            Sign in
+            {t(locale, "mkt.nav.signin")}
           </Link>
           <Link href="/signup" className="btn btn-primary px-3 py-2 sm:px-5">
-            Start free
+            {t(locale, "mkt.nav.signup")}
           </Link>
         </nav>
       </header>
@@ -83,7 +91,7 @@ export default async function HomePage() {
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <a href="#request-pilot" className="btn btn-primary">
-                Request a pilot
+                {t(locale, "mkt.hero.ctaPilot")}
               </a>
               <Link href="/signup" className="btn btn-secondary">
                 Create organisation
@@ -150,10 +158,10 @@ export default async function HomePage() {
           <div className="grid lg:grid-cols-2">
             <div className="border-b border-[#d7e6ef] bg-[#6FCDF5]/15 p-8 lg:border-b-0 lg:border-r">
               <p className="text-xs font-bold uppercase tracking-[0.16em] text-sky-700">Pricing</p>
-              <h2 className="mt-2 text-2xl font-semibold text-[#0F2A4A]">Pricing on request</h2>
+              <h2 className="mt-2 text-2xl font-semibold text-[#0F2A4A]">{t(locale, "mkt.pricing.title")}</h2>
               <p className="mt-3 text-sm leading-relaxed text-slate-600">
                 Pilots and enterprise plans are scoped to your AI inventory, frameworks and assurance depth.
-                Pricing on request — we quote in EUR after a short discovery call. Sales:{" "}
+                Pricing on request — we quote in EUR after a short discovery call. {t(locale, "mkt.footer.sales")}:{" "}
                 <a className="font-semibold text-sky-800 hover:underline" href={`mailto:${COMPANY.salesEmail}`}>
                   {COMPANY.salesEmail}
                 </a>
@@ -166,7 +174,7 @@ export default async function HomePage() {
               </ul>
             </div>
             <div className="p-8">
-              <h3 className="text-lg font-semibold text-[#0F2A4A]">Request a pilot</h3>
+              <h3 className="text-lg font-semibold text-[#0F2A4A]">{t(locale, "mkt.pilot.title")}</h3>
               <p className="mt-1 text-sm text-slate-500">
                 Tell us about your programme. We&apos;ll be in touch within 2 business days — or email{" "}
                 <a className="font-semibold text-sky-700 hover:underline" href={`mailto:${COMPANY.salesEmail}`}>
@@ -188,12 +196,12 @@ export default async function HomePage() {
             <LogoMark />
             <p className="text-xs text-slate-500">{COMPANY.footerCopyright}</p>
             <p className="text-xs text-slate-500">
-              Sales:{" "}
+              {t(locale, "mkt.footer.sales")}:{" "}
               <a className="text-sky-700 hover:underline" href={`mailto:${COMPANY.salesEmail}`}>
                 {COMPANY.salesEmail}
               </a>
               {" · "}
-              General:{" "}
+              {t(locale, "mkt.footer.general")}:{" "}
               <a className="text-sky-700 hover:underline" href={`mailto:${COMPANY.email}`}>
                 {COMPANY.email}
               </a>

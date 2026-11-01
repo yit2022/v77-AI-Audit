@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { COMPANY } from "@/lib/company";
+import { isLocale, t, type Locale } from "@/lib/i18n/dictionaries";
 
 const KEY = "v77_cookie_consent";
 
@@ -11,11 +12,15 @@ type Consent = "essential" | "all" | null;
 export function CookieConsent() {
   const [consent, setConsent] = useState<Consent>(null);
   const [ready, setReady] = useState(false);
+  const [locale, setLocale] = useState<Locale>("en");
 
   useEffect(() => {
     try {
       const raw = localStorage.getItem(KEY) as Consent;
       setConsent(raw === "essential" || raw === "all" ? raw : null);
+      const m = document.cookie.match(/(?:^|; )v77_locale=([^;]+)/);
+      const loc = m ? decodeURIComponent(m[1]) : "en";
+      setLocale(isLocale(loc) ? loc : "en");
     } catch {
       setConsent(null);
     }
@@ -46,23 +51,22 @@ export function CookieConsent() {
       <div className="mx-auto flex max-w-6xl flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div className="max-w-3xl">
           <h2 id="cookie-title" className="text-sm font-semibold text-[#0F2A4A]">
-            Cookies &amp; privacy
+            {t(locale, "cookie.title")}
           </h2>
           <p id="cookie-desc" className="mt-1 text-sm text-slate-600">
-            {COMPANY.productName} uses essential cookies to keep you signed in and secure the service. Analytics and
-            marketing cookies stay off unless you opt in. See our{" "}
+            {t(locale, "cookie.body")}{" "}
             <Link href="/privacy" className="font-medium text-sky-700 hover:underline">
-              Privacy notice
+              {t(locale, "cookie.privacyLink")}
             </Link>
             .
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
           <button type="button" className="btn btn-secondary" onClick={() => choose("essential")}>
-            Essential only
+            {t(locale, "cookie.acceptEssential")}
           </button>
           <button type="button" className="btn btn-primary" onClick={() => choose("all")}>
-            Accept all
+            {t(locale, "cookie.acceptAll")}
           </button>
         </div>
       </div>

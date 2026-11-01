@@ -58,8 +58,4 @@ export async function authenticateApiKey(raw: string | null | undefined): Promis
   return { keyId: row.id, orgId: row.orgId, role: row.role as Role };
 }
 
-export function roleAtLeast(role: Role, minimum: Role): boolean {
-  // admin > ai_owner > auditor for write privileges; auditor can read
-  const rank: Record<Role, number> = { auditor: 1, ai_owner: 2, admin: 3 };
-  return rank[role] >= rank[minimum];
-}
+export { roleAtLeast } from "@/lib/auth/rbac";

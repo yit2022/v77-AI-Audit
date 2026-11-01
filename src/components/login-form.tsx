@@ -18,7 +18,7 @@ export function LoginForm() {
   useEffect(() => {
     const err = search.get("error");
     if (err) setError(`SSO error: ${err.replaceAll("_", " ")}`);
-    fetch("/api/auth/oidc/status")
+    fetch("/api/auth/sso/status")
       .then((r) => r.json())
       .then((data) => setSsoEnabled(Boolean(data.enabled)))
       .catch(() => undefined);
@@ -81,7 +81,7 @@ export function LoginForm() {
         </form>
         {ssoEnabled ? (
           <a className="btn btn-secondary mt-4 w-full text-center" href="/api/auth/oidc/start">
-            Continue with SSO
+            Continue with SSO (OIDC)
           </a>
         ) : (
           <p className="mt-4 text-center text-xs text-slate-400">

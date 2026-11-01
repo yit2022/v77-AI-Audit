@@ -51,11 +51,27 @@ export default async function SettingsPage() {
         }))
       : [];
 
+  const orgRow = await db
+    .select()
+    .from(schema.organisations)
+    .where(eq(schema.organisations.id, session.orgId))
+    .limit(1);
+  const org = orgRow[0];
+  const trust = org
+    ? {
+        slug: org.slug,
+        trustPublic: Boolean(org.trustPublic),
+        trustSummary: org.trustSummary || "",
+        trustContactEmail: org.trustContactEmail || "",
+        publicUrl: `/trust/${org.slug}`,
+      }
+    : undefined;
+
   return (
     <div>
       <PageHeader
         title="Settings"
-        subtitle="Team invites, multi-tenant organisations, RBAC roles, and API keys."
+        subtitle="Team invites, multi-tenant organisations, RBAC roles, Trust Center, and API keys."
       />
       <SettingsClient
         keys={keys}
@@ -64,6 +80,7 @@ export default async function SettingsPage() {
         invites={invites}
         currentOrgId={session.orgId}
         isAdmin={session.role === "admin"}
+        trust={trust}
       />
     </div>
   );

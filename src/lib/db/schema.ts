@@ -13,13 +13,16 @@ const timestamp = (name: string, _opts?: { withTimezone?: boolean }) => {
 };
 const pgTable = sqliteTable;
 
-export const ROLES = ["admin", "ai_owner", "auditor"] as const;
+export const ROLES = ["admin", "ai_owner", "reviewer", "auditor"] as const;
 export type Role = (typeof ROLES)[number];
 
 export const organisations = pgTable("organisations", {
   id: text("id").primaryKey(),
   name: text("name").notNull(),
   slug: text("slug").notNull().unique(),
+  trustPublic: boolean("trust_public").notNull().default(false),
+  trustSummary: text("trust_summary").notNull().default(""),
+  trustContactEmail: text("trust_contact_email").notNull().default(""),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().$defaultFn(() => new Date()),
 });
 
@@ -350,4 +353,53 @@ export const euConformitySteps = pgTable("eu_conformity_steps", {
   status: text("status").notNull().default("not_started"),
   notes: text("notes").notNull().default(""),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().$defaultFn(() => new Date()),
+});
+
+
+export const approvalRequests = pgTable("approval_requests", {
+  id: text("id").primaryKey(),
+  orgId: text("org_id").notNull().references(() => organisations.id),
+  entityType: text("entity_type").notNull(),
+  entityId: text("entity_id").notNull(),
+  title: text("title").notNull(),
+  status: text("status").notNull().default("pending"),
+  requestedBy: text("requested_by").references(() => users.id),
+  reviewedBy: text("reviewed_by").references(() => users.id),
+  decisionNote: text("decision_note").notNull().default(""),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().$defaultFn(() => new Date()),
+  decidedAt: timestamp("decided_at", { withTimezone: true }),
+});
+
+export const reassessmentSchedules = pgTable("reassessment_schedules", {
+  id: text("id").primaryKey(),
+  orgId: text("org_id").notNull().references(() => organisations.id),
+  systemId: text("system_id").notNull().references(() => aiSystems.id),
+  cadenceDays: integer("cadence_days").notNull().default(90),
+  nextDueAt: timestamp("next_due_at", { withTimezone: true }).notNull(),
+  lastCompletedAt: timestamp("last_completed_at", { withTimezone: true }),
+  enabled: boolean("enabled").notNull().default(true),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().$defaultFn(() => new Date()),
+});
+
+export const inAppReminders = pgTable("in_app_reminders", {
+  id: text("id").primaryKey(),
+  orgId: text("org_id").notNull().references(() => organisations.id),
+  userId: text("user_id").references(() => users.id),
+  kind: text("kind").notNull(),
+  title: text("title").notNull(),
+  body: text("body").notNull().default(""),
+  href: text("href").notNull().default(""),
+  dueAt: timestamp("due_at", { withTimezone: true }),
+  acknowledgedAt: timestamp("acknowledged_at", { withTimezone: true }),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().$defaultFn(() => new Date()),
+});
+
+export const clientErrorEvents = pgTable("client_error_events", {
+  id: text("id").primaryKey(),
+  orgId: text("org_id"),
+  message: text("message").notNull(),
+  stack: text("stack").notNull().default(""),
+  url: text("url").notNull().default(""),
+  userAgent: text("user_agent").notNull().default(""),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().$defaultFn(() => new Date()),
 });
