@@ -9,7 +9,8 @@
     "lint": "eslint",
     "test": "vitest run",
     "test:watch": "vitest",
-    "db:seed": "tsx scripts/seed.ts"
+    "db:seed": "tsx scripts/seed.ts",
+    "e2e": "bash scripts/e2e-smoke.sh"
   },
   "dependencies": {
     "@electric-sql/pglite": "^0.3.14",
