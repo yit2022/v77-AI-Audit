@@ -53,7 +53,7 @@ export function LoginForm() {
   return (
     <main className="mx-auto flex min-h-screen max-w-md flex-col justify-center px-6">
       <div className="card p-8">
-        <Link href="/" className="text-xs font-bold uppercase tracking-[0.14em] text-teal-700">
+        <Link href="/" className="text-xs font-bold uppercase tracking-[0.14em] text-sky-700">
           V77 AI Auditor
         </Link>
         <h1 className="mt-3 text-2xl font-semibold text-slate-900">Sign in</h1>

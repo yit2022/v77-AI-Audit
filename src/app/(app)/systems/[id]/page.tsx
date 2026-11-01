@@ -83,7 +83,7 @@ export default async function SystemDetailPage({
           <ul className="mt-2 space-y-2 text-sm">
             {assessments.map((a) => (
               <li key={a.id}>
-                <Link className="text-teal-800 hover:underline" href={`/assessments/${a.id}`}>
+                <Link className="text-sky-900 hover:underline" href={`/assessments/${a.id}`}>
                   {a.name}
                 </Link>
                 <span className="ml-2 text-xs text-slate-500">{a.status}</span>

@@ -76,7 +76,7 @@ export default async function ReportPage({
     <div className="mx-auto max-w-4xl bg-white p-10 print:p-0">
       <div className="flex items-start justify-between gap-4 border-b border-slate-200 pb-6">
         <div>
-          <p className="text-xs font-bold uppercase tracking-[0.14em] text-teal-700">
+          <p className="text-xs font-bold uppercase tracking-[0.14em] text-sky-700">
             V77 AI Auditor · Audit report
           </p>
           <h1 className="mt-2 text-3xl font-semibold text-slate-900">{system.name}</h1>
@@ -117,7 +117,7 @@ export default async function ReportPage({
             {controlRows.map((c) => (
               <tr key={c.code} className="border-b border-slate-100 align-top">
                 <td className="py-2">
-                  <div className="font-mono text-xs text-teal-700">{c.code}</div>
+                  <div className="font-mono text-xs text-sky-700">{c.code}</div>
                   <div>{c.title}</div>
                 </td>
                 <td className="py-2 capitalize">{c.status.replaceAll("_", " ")}</td>

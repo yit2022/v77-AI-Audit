@@ -31,7 +31,7 @@ export default async function ImpactListPage() {
       <ImpactCreateForm systems={systems} templates={IMPACT_TEMPLATES.map((t) => ({ id: t.id, name: t.name }))} />
       <div className="mt-6 space-y-3">
         {items.map((item) => (
-          <Link key={item.id} href={`/impact/${item.id}`} className="card block p-4 hover:border-teal-300">
+          <Link key={item.id} href={`/impact/${item.id}`} className="card block p-4 hover:border-sky-300">
             <div className="flex items-center justify-between gap-3">
               <div>
                 <div className="font-medium text-slate-900">{item.title}</div>
@@ -39,7 +39,7 @@ export default async function ImpactListPage() {
                   {item.templateId} · {item.status.replaceAll("_", " ")}
                 </div>
               </div>
-              <span className="text-sm text-teal-700">Open →</span>
+              <span className="text-sm text-sky-700">Open →</span>
             </div>
           </Link>
         ))}

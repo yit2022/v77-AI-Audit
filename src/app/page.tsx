@@ -41,10 +41,10 @@ export default async function HomePage() {
   if (session) redirect("/dashboard");
 
   return (
-    <main className="min-h-screen bg-[radial-gradient(ellipse_at_top,_#ecfdf5_0%,_#f8fafc_45%,_#f8fafc_100%)]">
+    <main className="min-h-screen bg-[radial-gradient(ellipse_at_top,_#e8f7fd_0%,_#ffffff_50%,_#ffffff_100%)]">
       <header className="mx-auto flex max-w-6xl items-center justify-between px-6 py-6">
         <div>
-          <div className="text-xs font-bold uppercase tracking-[0.16em] text-teal-700">V77</div>
+          <div className="text-xs font-bold uppercase tracking-[0.16em] text-sky-700">V77</div>
           <div className="text-sm font-semibold text-slate-900">AI Auditor</div>
         </div>
         <div className="flex items-center gap-3">
@@ -56,7 +56,7 @@ export default async function HomePage() {
       <section className="mx-auto max-w-6xl px-6 pb-10 pt-8">
         <div className="grid items-center gap-10 lg:grid-cols-[1.2fr_0.8fr]">
           <div>
-            <p className="text-xs font-bold uppercase tracking-[0.18em] text-teal-700">
+            <p className="text-xs font-bold uppercase tracking-[0.18em] text-sky-700">
               Global AI audit platform
             </p>
             <h1 className="mt-3 max-w-2xl text-4xl font-semibold tracking-tight text-slate-900 sm:text-5xl">
@@ -76,7 +76,7 @@ export default async function HomePage() {
             </p>
           </div>
           <div className="card relative overflow-hidden p-6">
-            <div className="absolute -right-8 -top-8 h-32 w-32 rounded-full bg-teal-100/80" />
+            <div className="absolute -right-8 -top-8 h-32 w-32 rounded-full bg-sky-100/80" />
             <div className="relative space-y-3">
               <div className="rounded-lg border border-slate-200 bg-slate-50 px-4 py-3">
                 <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">Risk tiers</div>
@@ -93,7 +93,7 @@ export default async function HomePage() {
               <div className="rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700">
                 Eval suites: fairness · robustness · injection · PII · hallucination
               </div>
-              <div className="rounded-lg border border-teal-100 bg-teal-50 px-4 py-3 text-sm font-medium text-teal-900">
+              <div className="rounded-lg border border-sky-100 bg-sky-50 px-4 py-3 text-sm font-medium text-sky-950">
                 Hash-chained evidence + audit log for auditor trust
               </div>
             </div>

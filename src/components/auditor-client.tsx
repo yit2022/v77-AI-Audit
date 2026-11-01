@@ -75,11 +75,11 @@ export function AuditorClient({
           ))}
         </select>
         {signoff ? (
-          <div className="rounded-lg bg-teal-50 p-3 text-sm text-teal-900">
+          <div className="rounded-lg bg-sky-50 p-3 text-sm text-sky-950">
             <div className="font-semibold capitalize">
               Opinion: {signoff.opinion.replaceAll("_", " ")}
             </div>
-            <p className="mt-1 text-teal-800">{signoff.summary}</p>
+            <p className="mt-1 text-sky-900">{signoff.summary}</p>
           </div>
         ) : (
           <p className="text-sm text-slate-500">No sign-off yet.</p>

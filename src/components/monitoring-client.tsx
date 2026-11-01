@@ -109,7 +109,7 @@ export function MonitoringClient({
         <button className="btn btn-secondary" type="button" disabled={busy} onClick={runDue}>
           Run due checks
         </button>
-        {msg ? <span className="text-sm text-teal-800">{msg}</span> : null}
+        {msg ? <span className="text-sm text-sky-900">{msg}</span> : null}
       </div>
 
       <section>

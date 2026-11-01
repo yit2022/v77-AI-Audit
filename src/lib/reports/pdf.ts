@@ -90,8 +90,8 @@ export async function buildAuditReportPdf(input: AuditReportInput): Promise<Uint
   const margin = 50;
   const pageWidth = 595.28;
   const pageHeight = 841.89;
-  const brand = rgb(0.05, 0.45, 0.42);
-  const ink = rgb(0.1, 0.12, 0.16);
+  const brand = rgb(0.435, 0.804, 0.961); // #6FCDF5
+  const ink = rgb(0.059, 0.165, 0.290); // #0F2A4A
   const muted = rgb(0.4, 0.45, 0.5);
 
   const scores =
@@ -118,8 +118,8 @@ export async function buildAuditReportPdf(input: AuditReportInput): Promise<Uint
   {
     const page = doc.addPage([pageWidth, pageHeight]);
     page.drawRectangle({ x: 0, y: pageHeight - 160, width: pageWidth, height: 160, color: brand });
-    page.drawText("V77", { x: margin, y: pageHeight - 70, size: 28, font: fontBold, color: rgb(1, 1, 1) });
-    page.drawText("AI Auditor", { x: margin, y: pageHeight - 100, size: 18, font, color: rgb(0.85, 0.95, 0.93) });
+    page.drawText("V77", { x: margin, y: pageHeight - 70, size: 28, font: fontBold, color: ink });
+    page.drawText("AI Auditor", { x: margin, y: pageHeight - 100, size: 18, font, color: ink });
     page.drawText(sanitizePdfText("Audit Report"), {
       x: margin,
       y: pageHeight - 220,

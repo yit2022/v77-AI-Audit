@@ -49,7 +49,7 @@ export function AssessmentControlsClient({ items }: { items: Item[] }) {
           {rows.map((r) => (
             <tr key={r.id} className="border-t border-slate-100 align-top">
               <td className="px-4 py-3">
-                <div className="font-mono text-xs text-teal-700">{r.code}</div>
+                <div className="font-mono text-xs text-sky-700">{r.code}</div>
                 <div className="font-medium text-slate-900">{r.title}</div>
               </td>
               <td className="px-4 py-3 text-xs text-slate-500">

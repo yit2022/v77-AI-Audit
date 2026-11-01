@@ -33,7 +33,7 @@ export default function AcceptInvitePage() {
   return (
     <main className="mx-auto flex min-h-screen max-w-md flex-col justify-center px-6 py-12">
       <div className="card p-6">
-        <div className="text-xs font-bold uppercase tracking-[0.16em] text-teal-700">V77</div>
+        <div className="text-xs font-bold uppercase tracking-[0.16em] text-sky-700">V77</div>
         <h1 className="mt-2 text-xl font-semibold text-slate-900">Accept team invite</h1>
         <p className="mt-2 text-sm text-slate-600">
           Create your password to join the organisation. No email is sent — use the link your admin shared.

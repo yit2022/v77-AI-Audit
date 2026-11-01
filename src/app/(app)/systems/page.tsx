@@ -95,7 +95,7 @@ export default async function SystemsPage({
       ) : (
         <div className="mt-4 grid gap-4">
           {visible.map((s) => (
-            <Link key={s.id} href={`/systems/${s.id}`} className="card block p-5 hover:border-teal-300">
+            <Link key={s.id} href={`/systems/${s.id}`} className="card block p-5 hover:border-sky-300">
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
                   <h2 className="text-lg font-semibold text-slate-900">{s.name}</h2>
@@ -111,8 +111,8 @@ export default async function SystemsPage({
                 {s.vendorName ? <span>Vendor: {s.vendorName}</span> : null}
                 {s.gpai ? <span>GPAI flagged</span> : null}
                 <span>
-                  <span className="text-teal-700">Classify →</span>{" "}
-                  <span className="underline decoration-teal-600/40">/classification/{s.id}</span>
+                  <span className="text-sky-700">Classify →</span>{" "}
+                  <span className="underline decoration-sky-400/40">/classification/{s.id}</span>
                 </span>
               </div>
             </Link>

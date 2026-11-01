@@ -47,7 +47,7 @@ export function ImpactEditor({
             <label className="text-sm font-semibold text-slate-900" htmlFor={q.id}>
               {q.prompt}{q.required ? " *" : ""}
             </label>
-            <span className="shrink-0 text-xs text-teal-700">{q.euRef}</span>
+            <span className="shrink-0 text-xs text-sky-700">{q.euRef}</span>
           </div>
           <p className="mt-1 text-xs text-slate-500">{q.guidance}</p>
           <textarea
@@ -70,7 +70,7 @@ export function ImpactEditor({
           Mark complete
         </button>
         <span className="self-center text-sm text-slate-500">Current: {status.replaceAll("_", " ")}</span>
-        {message ? <span className="self-center text-sm text-teal-800">{message}</span> : null}
+        {message ? <span className="self-center text-sm text-sky-900">{message}</span> : null}
       </div>
     </div>
   );

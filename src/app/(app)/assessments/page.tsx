@@ -44,7 +44,7 @@ export default async function AssessmentsPage() {
               {rows.map(({ assessment, systemName, riskTier }) => (
                 <tr key={assessment.id} className="border-t border-slate-100">
                   <td className="px-5 py-3">
-                    <Link className="font-medium text-teal-800 hover:underline" href={`/assessments/${assessment.id}`}>
+                    <Link className="font-medium text-sky-900 hover:underline" href={`/assessments/${assessment.id}`}>
                       {assessment.name}
                     </Link>
                   </td>

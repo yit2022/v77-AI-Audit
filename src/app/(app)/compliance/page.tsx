@@ -84,14 +84,14 @@ export default async function ComplianceDashboardPage() {
       <div className="mb-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
         <div className="card p-4 lg:col-span-1">
           <div className="text-xs uppercase tracking-wide text-slate-500">Overall readiness</div>
-          <div className="mt-2 text-3xl font-semibold text-teal-800">{overall}%</div>
+          <div className="mt-2 text-3xl font-semibold text-sky-900">{overall}%</div>
         </div>
         {(Object.keys(FRAMEWORK_LABELS) as FrameworkKey[]).map((k) => (
           <div key={k} className="card p-4">
             <div className="text-xs uppercase tracking-wide text-slate-500">{FRAMEWORK_LABELS[k]}</div>
             <div className="mt-2 text-2xl font-semibold text-slate-900">{scores[k]}%</div>
             <div className="mt-2 h-2 overflow-hidden rounded bg-slate-100">
-              <div className="h-full bg-teal-600" style={{ width: `${scores[k]}%` }} />
+              <div className="h-full bg-sky-400" style={{ width: `${scores[k]}%` }} />
             </div>
           </div>
         ))}

@@ -168,7 +168,7 @@ export function SettingsClient({
             Creates a copyable accept link. Email is not sent — share the link yourself.
           </p>
           {inviteUrl ? (
-            <div className="mt-3 rounded-lg border border-teal-200 bg-teal-50 px-3 py-2 text-sm text-teal-900">
+            <div className="mt-3 rounded-lg border border-sky-200 bg-sky-50 px-3 py-2 text-sm text-sky-950">
               <div className="font-medium">Invite link (copy and share)</div>
               <code className="mt-1 block break-all text-xs">{inviteUrl}</code>
               <button type="button" className="btn btn-secondary mt-2" onClick={() => copyLink(inviteUrl)}>

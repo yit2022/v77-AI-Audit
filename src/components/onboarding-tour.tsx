@@ -48,7 +48,7 @@ export function OnboardingTour({ userName }: { userName: string }) {
     return (
       <button
         type="button"
-        className="fixed bottom-5 right-5 z-40 rounded-full border border-teal-200 bg-white px-3 py-2 text-xs font-semibold text-teal-800 shadow-md hover:bg-teal-50"
+        className="fixed bottom-5 right-5 z-40 rounded-full border border-sky-200 bg-white px-3 py-2 text-xs font-semibold text-sky-900 shadow-md hover:bg-sky-50"
         onClick={() => {
           setIndex(0);
           setOpen(true);
@@ -67,7 +67,7 @@ export function OnboardingTour({ userName }: { userName: string }) {
       <div className="card w-full max-w-lg p-6 shadow-xl">
         <div className="flex items-start justify-between gap-3">
           <div>
-            <p className="text-xs font-bold uppercase tracking-[0.14em] text-teal-700">
+            <p className="text-xs font-bold uppercase tracking-[0.14em] text-sky-700">
               Welcome{userName ? `, ${userName.split(" ")[0]}` : ""}
             </p>
             <h2 className="mt-1 text-xl font-semibold text-slate-900">
@@ -81,7 +81,7 @@ export function OnboardingTour({ userName }: { userName: string }) {
         <p className="mt-3 text-sm leading-relaxed text-slate-600">{step.body}</p>
         <div className="mt-4 flex h-1.5 overflow-hidden rounded-full bg-slate-100">
           <div
-            className="rounded-full bg-teal-600 transition-all"
+            className="rounded-full bg-sky-400 transition-all"
             style={{ width: `${((index + 1) / ONBOARDING_STEPS.length) * 100}%` }}
           />
         </div>

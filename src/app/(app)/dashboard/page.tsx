@@ -45,7 +45,7 @@ export default async function DashboardPage() {
       />
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {stats.map((s) => (
-          <Link key={s.label} href={s.href} className="card p-5 hover:border-teal-300">
+          <Link key={s.label} href={s.href} className="card p-5 hover:border-sky-300">
             <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">
               {s.label}
             </div>
@@ -73,7 +73,7 @@ export default async function DashboardPage() {
             {systems.slice(0, 8).map((s) => (
               <tr key={s.id} className="border-t border-slate-100">
                 <td className="px-5 py-3">
-                  <Link className="font-medium text-teal-800 hover:underline" href={`/systems/${s.id}`}>
+                  <Link className="font-medium text-sky-900 hover:underline" href={`/systems/${s.id}`}>
                     {s.name}
                   </Link>
                 </td>

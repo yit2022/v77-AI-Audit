@@ -27,7 +27,7 @@ export default async function ControlsPage() {
               {list.map((c) => (
                 <div key={c.id} className="px-5 py-4">
                   <div className="flex flex-wrap items-baseline gap-2">
-                    <span className="font-mono text-xs text-teal-700">{c.code}</span>
+                    <span className="font-mono text-xs text-sky-700">{c.code}</span>
                     <h3 className="text-sm font-semibold text-slate-900">{c.title}</h3>
                   </div>
                   <p className="mt-1 text-sm text-slate-600">{c.description}</p>
