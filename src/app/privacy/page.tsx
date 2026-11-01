@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import { MarketingChrome } from "@/components/marketing-chrome";
 
 export const metadata: Metadata = {
+  description: "Privacy notice for V77 Trust.",
   title: "Privacy — V77 Trust",
-  description: "Privacy notice for V77 Trust operated by Tamalaki Business Network Ltd.",
 };
 
 export default function PrivacyPage() {
@@ -15,8 +15,8 @@ export default function PrivacyPage() {
         <p className="mt-2 text-sm text-slate-500">Last updated: 1 November 2026</p>
         <div className="prose-slate mt-8 space-y-5 text-sm leading-relaxed text-slate-700">
           <p>
-            V77 Trust is operated by Tamalaki Business Network Ltd (&quot;we&quot;, &quot;us&quot;). This notice explains how we
-            handle personal data when you visit v77trust.com, request a pilot, or use the product.
+            V77 Trust (&quot;we&quot;, &quot;us&quot;) operates this platform. This notice explains how we handle personal data when
+            you visit v77trust.com, request a pilot, or use the product.
           </p>
           <h2 className="text-lg font-semibold text-[#0F2A4A]">What we collect</h2>
           <ul className="list-disc space-y-1 pl-5">
@@ -40,11 +40,11 @@ export default function PrivacyPage() {
           <p>
             Account and workspace data are retained while your organisation uses V77 Trust and for a reasonable period
             afterward for legal and security purposes. Depending on applicable law you may have rights to access, correct,
-            delete or restrict processing of your personal data. Contact privacy@v77trust.com (or your account admin) to
-            exercise those rights.
+            delete or restrict processing of your personal data. Contact us via the pilot request form on this site, or ask
+            your organisation administrator, to exercise those rights.
           </p>
           <h2 className="text-lg font-semibold text-[#0F2A4A]">Contact</h2>
-          <p>Tamalaki Business Network Ltd — privacy enquiries via the pilot form or your organisation administrator.</p>
+          <p>Privacy enquiries: use the pilot request form on v77trust.com or your organisation administrator.</p>
         </div>
       </article>
     </MarketingChrome>

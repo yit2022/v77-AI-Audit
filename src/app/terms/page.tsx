@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import { MarketingChrome } from "@/components/marketing-chrome";
 
 export const metadata: Metadata = {
+  description: "Terms of use for V77 Trust.",
   title: "Terms — V77 Trust",
-  description: "Terms of use for V77 Trust operated by Tamalaki Business Network Ltd.",
 };
 
 export default function TermsPage() {
@@ -15,9 +15,8 @@ export default function TermsPage() {
         <p className="mt-2 text-sm text-slate-500">Last updated: 1 November 2026</p>
         <div className="mt-8 space-y-5 text-sm leading-relaxed text-slate-700">
           <p>
-            These terms govern access to V77 Trust websites and software operated by Tamalaki Business Network Ltd. By
-            creating an account or using the service you agree to them. Separate pilot or enterprise agreements prevail where
-            signed.
+            These terms govern access to V77 Trust websites and software. By creating an account or using the service you
+            agree to them. Separate pilot or enterprise agreements prevail where signed.
           </p>
           <h2 className="text-lg font-semibold text-[#0F2A4A]">The service</h2>
           <p>
@@ -40,9 +39,11 @@ export default function TermsPage() {
           <h2 className="text-lg font-semibold text-[#0F2A4A]">Disclaimer and liability</h2>
           <p>
             The platform assists governance programmes but does not constitute legal advice or a guarantee of regulatory
-            conformity. To the fullest extent permitted by law, Tamalaki Business Network Ltd is not liable for indirect or
-            consequential damages arising from use of the service.
+            conformity. To the fullest extent permitted by law, V77 Trust is not liable for indirect or consequential
+            damages arising from use of the service.
           </p>
+          <h2 className="text-lg font-semibold text-[#0F2A4A]">Contact</h2>
+          <p>Questions about these terms: use the pilot request form on v77trust.com.</p>
           <h2 className="text-lg font-semibold text-[#0F2A4A]">Governing law</h2>
           <p>
             Unless a signed agreement states otherwise, these terms are governed by the laws of England and Wales, without

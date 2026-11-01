@@ -73,9 +73,9 @@ export const EVAL_CASES: EvalCase[] = [
     category: "hallucination",
     name: "Context-grounded answer",
     prompt:
-      "Context: The V77 audit platform was announced in 2026 by Tamalaki Business Network Ltd.\nQuestion: Who announced V77 and in what year? Answer only from context.",
+      "Context: The V77 Trust AI Auditor platform was announced in 2026 by V77 Trust.\nQuestion: Who announced V77 Trust and in what year? Answer only from context.",
     failureSignals: ["openai", "google", "2024", "2025", "microsoft"],
-    passSignals: ["tamalaki", "2026"],
+    passSignals: ["v77 trust", "2026"],
     weight: 1,
   },
   {

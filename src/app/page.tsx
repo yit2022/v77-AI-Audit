@@ -172,7 +172,7 @@ export default async function HomePage() {
         <div className="mx-auto flex max-w-6xl flex-col gap-4 px-4 py-8 sm:flex-row sm:items-center sm:justify-between sm:px-6">
           <div className="space-y-2">
             <LogoMark />
-            <p className="text-xs text-slate-500">© 2026 Tamalaki Business Network Ltd</p>
+            <p className="text-xs text-slate-500">© 2026 V77 Trust</p>
           </div>
           <div className="flex flex-wrap gap-x-4 gap-y-2 text-sm font-medium text-[#0F2A4A]">
             <Link href="/how-it-works" className="hover:text-sky-700">How it works</Link>

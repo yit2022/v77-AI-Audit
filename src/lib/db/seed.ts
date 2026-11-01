@@ -34,6 +34,13 @@ let seeding: Promise<{ seeded: boolean; accounts?: unknown }> | null = null;
 
 /** Top up an already-seeded org so prospects see a full dashboard (idempotent). */
 async function enrichDemoOrgIfNeeded(orgId: string) {
+  const orgRows = await db.select().from(schema.organisations).where(eq(schema.organisations.id, orgId)).limit(1);
+  if (orgRows[0] && /tamalaki/i.test(orgRows[0].name + " " + (orgRows[0].slug || ""))) {
+    await db
+      .update(schema.organisations)
+      .set({ name: "V77 Demo Organisation", slug: "v77-demo" })
+      .where(eq(schema.organisations.id, orgId));
+  }
   const systems = await db.select().from(schema.aiSystems).where(eq(schema.aiSystems.orgId, orgId));
   if (systems.length >= 4) return;
   const owners = await db
@@ -144,7 +151,7 @@ async function seedOnce() {
     const ownerHash = await bcrypt.hash(passwords.owner, 10);
     const auditorHash = await bcrypt.hash(passwords.auditor, 10);
 
-    await db.insert(schema.organisations).values({ id: orgId, name: "Tamalaki Business Network Ltd", slug: "tamalaki" });
+    await db.insert(schema.organisations).values({ id: orgId, name: "V77 Demo Organisation", slug: "v77-demo" });
     await db.insert(schema.users).values([
       { id: adminId, email: "admin@v77.local", name: "Isaac Muthui", passwordHash: adminHash },
       { id: ownerId, email: "owner@v77.local", name: "Amina Okello", passwordHash: ownerHash },

@@ -22,7 +22,7 @@ export const metadata: Metadata = {
     "AI inventory",
     "AI compliance",
   ],
-  authors: [{ name: "Tamalaki Business Network Ltd" }],
+  authors: [{ name: "V77 Trust" }],
   openGraph: {
     type: "website",
     locale: "en_GB",

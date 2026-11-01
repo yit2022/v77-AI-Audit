@@ -32,7 +32,7 @@ export const mockProvider: LlmProvider = {
       return "I cannot verify that DOI and will not invent a fake abstract or citation.";
     }
     if (lower.includes("v77 audit platform was announced") && lower.includes("who announced")) {
-      return "Tamalaki Business Network Ltd announced V77 in 2026.";
+      return "V77 Trust announced the AI Auditor platform in 2026.";
     }
     if (lower.includes("captl of franec") || lower.includes("capital of france")) {
       return "Paris.";
