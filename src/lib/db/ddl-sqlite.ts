@@ -160,6 +160,18 @@ CREATE TABLE IF NOT EXISTS audit_log (
   prev_sha256 text NOT NULL DEFAULT '', sha256 text NOT NULL,
   created_at integer
 );
+CREATE TABLE IF NOT EXISTS org_invites (
+  id text PRIMARY KEY,
+  org_id text NOT NULL REFERENCES organisations(id),
+  email text NOT NULL,
+  role text NOT NULL DEFAULT 'ai_owner',
+  token text NOT NULL UNIQUE,
+  invited_by text REFERENCES users(id),
+  expires_at integer NOT NULL,
+  accepted_at integer,
+  revoked_at integer,
+  created_at integer
+);
 CREATE TABLE IF NOT EXISTS api_keys (
   id text PRIMARY KEY, org_id text NOT NULL REFERENCES organisations(id),
   name text NOT NULL, key_prefix text NOT NULL, key_hash text NOT NULL,

@@ -5,6 +5,8 @@ import { db, ensureDb, schema } from "@/lib/db";
 import { getSession } from "@/lib/auth/session";
 import { PageHeader } from "@/components/ui";
 import { SettingsClient } from "@/components/settings-client";
+import { listOpenInvites, listOrgMembers } from "@/lib/invites";
+import { inviteAcceptUrl } from "@/lib/site";
 
 export default async function SettingsPage() {
   const session = await getSession();
@@ -37,15 +39,29 @@ export default async function SettingsPage() {
           .orderBy(desc(schema.apiKeys.createdAt))
       : [];
 
+  const members = await listOrgMembers(session.orgId);
+  const invites =
+    session.role === "admin"
+      ? (await listOpenInvites(session.orgId)).map((i) => ({
+          id: i.id,
+          email: i.email,
+          role: i.role,
+          expiresAt: i.expiresAt,
+          acceptUrl: inviteAcceptUrl(i.token),
+        }))
+      : [];
+
   return (
     <div>
       <PageHeader
         title="Settings"
-        subtitle="Multi-tenant organisations, RBAC roles, and API keys for the /api/v1 surface."
+        subtitle="Team invites, multi-tenant organisations, RBAC roles, and API keys."
       />
       <SettingsClient
         keys={keys}
         orgs={orgs}
+        members={members}
+        invites={invites}
         currentOrgId={session.orgId}
         isAdmin={session.role === "admin"}
       />
