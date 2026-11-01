@@ -23,6 +23,8 @@ export const organisations = pgTable("organisations", {
   trustPublic: boolean("trust_public").notNull().default(false),
   trustSummary: text("trust_summary").notNull().default(""),
   trustContactEmail: text("trust_contact_email").notNull().default(""),
+  planTier: text("plan_tier").notNull().default("pilot"),
+  seatLimit: integer("seat_limit").notNull().default(5),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().$defaultFn(() => new Date()),
 });
 
@@ -402,4 +404,102 @@ export const clientErrorEvents = pgTable("client_error_events", {
   url: text("url").notNull().default(""),
   userAgent: text("user_agent").notNull().default(""),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().$defaultFn(() => new Date()),
+});
+
+export const PLAN_TIERS = ["pilot", "team", "enterprise"] as const;
+export type PlanTier = (typeof PLAN_TIERS)[number];
+
+export const planCatalog = pgTable("plan_catalog", {
+  id: text("id").primaryKey(),
+  tier: text("tier").notNull().unique(),
+  name: text("name").notNull(),
+  seatLimit: integer("seat_limit").notNull().default(5),
+  priceNote: text("price_note").notNull().default("Pricing on request"),
+  featuresJson: text("features_json").notNull().default("[]"),
+});
+
+export const gapAnalyses = pgTable("gap_analyses", {
+  id: text("id").primaryKey(),
+  orgId: text("org_id").notNull().references(() => organisations.id),
+  systemId: text("system_id").notNull().references(() => aiSystems.id),
+  assessmentId: text("assessment_id").references(() => assessments.id),
+  provider: text("provider").notNull().default("mock"),
+  summary: text("summary").notNull().default(""),
+  gapsJson: text("gaps_json").notNull().default("[]"),
+  createdBy: text("created_by").references(() => users.id),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().$defaultFn(() => new Date()),
+});
+
+export const policyDocuments = pgTable("policy_documents", {
+  id: text("id").primaryKey(),
+  orgId: text("org_id").notNull().references(() => organisations.id),
+  templateId: text("template_id").notNull(),
+  title: text("title").notNull(),
+  bodyMarkdown: text("body_markdown").notNull().default(""),
+  status: text("status").notNull().default("draft"),
+  updatedBy: text("updated_by").references(() => users.id),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().$defaultFn(() => new Date()),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().$defaultFn(() => new Date()),
+});
+
+export const vendorQuestionnaires = pgTable("vendor_questionnaires", {
+  id: text("id").primaryKey(),
+  orgId: text("org_id").notNull().references(() => organisations.id),
+  vendorName: text("vendor_name").notNull(),
+  token: text("token").notNull().unique(),
+  status: text("status").notNull().default("open"),
+  answersJson: text("answers_json").notNull().default("{}"),
+  riskScore: text("risk_score").notNull().default(""),
+  createdBy: text("created_by").references(() => users.id),
+  submittedAt: timestamp("submitted_at", { withTimezone: true }),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().$defaultFn(() => new Date()),
+});
+
+export const incidents = pgTable("incidents", {
+  id: text("id").primaryKey(),
+  orgId: text("org_id").notNull().references(() => organisations.id),
+  systemId: text("system_id").references(() => aiSystems.id),
+  title: text("title").notNull(),
+  severity: text("severity").notNull().default("medium"),
+  status: text("status").notNull().default("open"),
+  discoveredAt: text("discovered_at").notNull().default(""),
+  occurredAt: text("occurred_at").notNull().default(""),
+  description: text("description").notNull().default(""),
+  impactSummary: text("impact_summary").notNull().default(""),
+  rootCause: text("root_cause").notNull().default(""),
+  correctiveActions: text("corrective_actions").notNull().default(""),
+  authorityNotified: boolean("authority_notified").notNull().default(false),
+  authorityNotifiedAt: text("authority_notified_at").notNull().default(""),
+  seriousIncident: boolean("serious_incident").notNull().default(false),
+  euArticleRef: text("eu_article_ref").notNull().default("Art. 73"),
+  createdBy: text("created_by").references(() => users.id),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().$defaultFn(() => new Date()),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().$defaultFn(() => new Date()),
+});
+
+export const modelCards = pgTable("model_cards", {
+  id: text("id").primaryKey(),
+  orgId: text("org_id").notNull().references(() => organisations.id),
+  systemId: text("system_id").notNull().references(() => aiSystems.id),
+  version: text("version").notNull().default("1.0"),
+  intendedUse: text("intended_use").notNull().default(""),
+  outOfScope: text("out_of_scope").notNull().default(""),
+  trainingDataSummary: text("training_data_summary").notNull().default(""),
+  evaluationSummary: text("evaluation_summary").notNull().default(""),
+  ethicalConsiderations: text("ethical_considerations").notNull().default(""),
+  limitations: text("limitations").notNull().default(""),
+  caveats: text("caveats").notNull().default(""),
+  contact: text("contact").notNull().default(""),
+  updatedBy: text("updated_by").references(() => users.id),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().$defaultFn(() => new Date()),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().$defaultFn(() => new Date()),
+});
+
+export const platformUsageDaily = pgTable("platform_usage_daily", {
+  id: text("id").primaryKey(),
+  orgId: text("org_id").notNull().references(() => organisations.id),
+  day: text("day").notNull(),
+  apiCalls: integer("api_calls").notNull().default(0),
+  aiCalls: integer("ai_calls").notNull().default(0),
+  evidenceUploads: integer("evidence_uploads").notNull().default(0),
 });

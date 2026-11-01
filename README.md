@@ -1,20 +1,22 @@
-# V77 AI Auditor
+# V77 Trust
 
-Global AI audit platform by **Tamalaki Business Network Ltd** (Founder & CEO: Isaac Muthui).
+Global AI audit and governance platform by **Vertex77 sp. z o.o.** (Warsaw, Poland).
 
-V77 is the system of record and system of proof for AI: inventory, EU AI Act risk classification, a control crosswalk spanning the EU AI Act / NIST AI RMF / ISO/IEC 42001, assessments, evidence vault, fairness tests, LLM red-teaming, auditor workspace, and HTML report export.
+V77 Trust is the system of record and system of proof for AI: inventory, EU AI Act risk classification, a control crosswalk spanning the EU AI Act / NIST AI RMF / ISO/IEC 42001, assessments, evidence vault, fairness tests, LLM red-teaming, auditor workspace, policy templates, vendor questionnaires, incident register, model cards, and HTML/PDF/DOCX exports.
 
-> Positioning: global product. Do not describe V77 as an African or Kenya-built product in customer materials.
+Public site: [v77trust.com](https://v77trust.com) · Contact: contact@vertex77.com · Sales: sales@vertex77.com
+
+> Buyer handover (architecture, deploy, env vars, no secrets): see **[HANDOVER.md](./HANDOVER.md)**.
 
 ## Stack
 
-- Next.js 15 (App Router) + TypeScript + Tailwind CSS v4
-- Drizzle ORM + **PGlite** (embedded Postgres) by default; set `DATABASE_URL` (postgres://…) to use real Postgres
-- Docker Compose includes Postgres 16 and wires `DATABASE_URL` for production-parity networking
-- Cookie sessions, org memberships, roles: `admin` | `ai_owner` | `auditor`
-- Vitest for classification / crosswalk / fairness unit tests
+- Next.js 15 (App Router) + TypeScript + Tailwind CSS
+- Drizzle ORM + Cloudflare **D1** (SQLite) in production; local seed/dev supported
+- OpenNext → Cloudflare Workers (`v77-ai-auditor`) with D1 + R2 + Workers AI bindings
+- Cookie sessions, org memberships, roles: `admin` | `ai_owner` | `reviewer` | `auditor`
+- Vitest unit tests; i18n EN / DE / FR
 
-## Quick start (local, no Docker)
+## Quick start (local)
 
 ```bash
 npm install --legacy-peer-deps
@@ -32,19 +34,17 @@ Open http://localhost:3000
 | owner@v77.local | ai_owner | demo1234 |
 | auditor@v77.local | auditor | demo1234 |
 
-## Docker Compose
+## Cloudflare deploy
+
+See `wrangler.jsonc` (Worker name, D1, R2, AI binding, custom domains) and `HANDOVER.md`.
 
 ```bash
-cp .env.example .env   # set V77_ADMIN_PASSWORD + POSTGRES_PASSWORD
-docker compose up --build
+npm test
+# build + deploy via project scripts / wrangler (OpenNext output)
+npx wrangler deploy
 ```
 
-Requires Docker. If Docker is unavailable, use the local PGlite path above.
-
-### Contabo production (`v77aiaudit.tamalakibn.com`)
-
-See `deploy/README.md`, `deploy/Caddyfile`, and `scripts/deploy-contabo.sh`.
-DNS for `tamalakibn.com` is at **Name.com**; add `A v77aiaudit → 169.58.28.132`. Production disables `demo1234` and requires `V77_ADMIN_PASSWORD`.
+`V77_ENABLE_REAL_PROVIDERS` defaults to `false` (mock providers). Set `true` to use the Workers AI binding for gap analysis and other flagged features.
 
 ## Scripts
 
@@ -56,18 +56,10 @@ DNS for `tamalakibn.com` is at **Name.com**; add `A v77aiaudit → 169.58.28.132
 | `npm run lint` | ESLint |
 | `npm run db:seed` | Seed org, users, controls, sample systems |
 
-## Architecture
+## Billing note
 
-Browser → Next.js (UI + Route Handlers) → Auth/RBAC → domain modules → PGlite (`data/v77-pglite`) + `uploads/evidence/`.
-
-Control descriptions are short original paraphrases with article/clause references only (no copyrighted ISO normative text).
-
-## MVP vs plan gaps
-
-**Included:** multi-tenant org + roles, inventory, EU risk wizard, crosswalk v0, assessments, evidence vault, fairness + mock LLM red-team (16 scenarios), auditor workspace, HTML report, seed data, tests, CI, Docker Compose.
-
-**Not yet:** EN 18286 checklist, NYC LL144 format, WORM object lock, notified-body workflows, multi-region residency. SSO/OIDC groundwork is env-configured.
+Plan tiers and seat limits are stored in D1 (`plan_catalog`, org `plan_tier` / `seat_limit`). There is **no payment provider**. All tiers show **pricing on request** — contact sales@vertex77.com.
 
 ## Ownership
 
-Copyright © Tamalaki Business Network Ltd. All rights reserved for this MVP codebase.
+Copyright © Vertex77 sp. z o.o. All rights reserved.

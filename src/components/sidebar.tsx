@@ -13,8 +13,13 @@ const linkDefs: Array<{ href: string; key: string }> = [
   { href: "/eu-ai-act", key: "nav.euAiAct" },
   { href: "/systems", key: "nav.inventory" },
   { href: "/controls", key: "nav.controls" },
+  { href: "/gap-analysis", key: "nav.gapAnalysis" },
   { href: "/assessments", key: "nav.assessments" },
   { href: "/evidence", key: "nav.evidence" },
+  { href: "/policies", key: "nav.policies" },
+  { href: "/model-cards", key: "nav.modelCards" },
+  { href: "/vendors", key: "nav.vendors" },
+  { href: "/incidents", key: "nav.incidents" },
   { href: "/tests/fairness", key: "nav.fairness" },
   { href: "/tests/redteam", key: "nav.redteam" },
   { href: "/tests/evals", key: "nav.evals" },
@@ -24,6 +29,7 @@ const linkDefs: Array<{ href: string; key: string }> = [
   { href: "/findings", key: "nav.findings" },
   { href: "/approvals", key: "nav.approvals" },
   { href: "/auditor", key: "nav.auditor" },
+  { href: "/billing", key: "nav.billing" },
   { href: "/activity", key: "nav.activity" },
   { href: "/settings", key: "nav.settings" },
 ];
@@ -45,7 +51,12 @@ export function Sidebar({
   const links = linkDefs.map((l) => ({ href: l.href, label: t(locale, l.key) }));
   const navLinks =
     role === "admin"
-      ? [...links.slice(0, -1), { href: "/leads", label: t(locale, "nav.leads") }, links[links.length - 1]]
+      ? [
+          ...links.slice(0, -1),
+          { href: "/leads", label: t(locale, "nav.leads") },
+          { href: "/platform", label: t(locale, "nav.platform") },
+          links[links.length - 1],
+        ]
       : links;
 
   async function logout() {

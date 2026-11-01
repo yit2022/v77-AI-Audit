@@ -4,6 +4,8 @@ CREATE TABLE IF NOT EXISTS organisations (
   trust_public integer NOT NULL DEFAULT 0,
   trust_summary text NOT NULL DEFAULT '',
   trust_contact_email text NOT NULL DEFAULT '',
+  plan_tier text NOT NULL DEFAULT 'pilot',
+  seat_limit integer NOT NULL DEFAULT 5,
   created_at timestamptz NOT NULL DEFAULT now()
 );
 CREATE TABLE IF NOT EXISTS users (
@@ -251,4 +253,94 @@ CREATE TABLE IF NOT EXISTS client_error_events (
 );
 CREATE INDEX IF NOT EXISTS reminders_org_idx ON in_app_reminders(org_id);
 CREATE INDEX IF NOT EXISTS approvals_org_idx ON approval_requests(org_id);
-`;
+
+CREATE TABLE IF NOT EXISTS plan_catalog (
+  id text PRIMARY KEY,
+  tier text NOT NULL UNIQUE,
+  name text NOT NULL,
+  seat_limit integer NOT NULL DEFAULT 5,
+  price_note text NOT NULL DEFAULT 'Pricing on request',
+  features_json text NOT NULL DEFAULT '[]'
+);
+CREATE TABLE IF NOT EXISTS gap_analyses (
+  id text PRIMARY KEY,
+  org_id text NOT NULL REFERENCES organisations(id),
+  system_id text NOT NULL REFERENCES ai_systems(id),
+  assessment_id text REFERENCES assessments(id),
+  provider text NOT NULL DEFAULT 'mock',
+  summary text NOT NULL DEFAULT '',
+  gaps_json text NOT NULL DEFAULT '[]',
+  created_by text REFERENCES users(id),
+  created_at integer
+);
+CREATE TABLE IF NOT EXISTS policy_documents (
+  id text PRIMARY KEY,
+  org_id text NOT NULL REFERENCES organisations(id),
+  template_id text NOT NULL,
+  title text NOT NULL,
+  body_markdown text NOT NULL DEFAULT '',
+  status text NOT NULL DEFAULT 'draft',
+  updated_by text REFERENCES users(id),
+  updated_at integer,
+  created_at integer
+);
+CREATE TABLE IF NOT EXISTS vendor_questionnaires (
+  id text PRIMARY KEY,
+  org_id text NOT NULL REFERENCES organisations(id),
+  vendor_name text NOT NULL,
+  token text NOT NULL UNIQUE,
+  status text NOT NULL DEFAULT 'open',
+  answers_json text NOT NULL DEFAULT '{}',
+  risk_score text NOT NULL DEFAULT '',
+  created_by text REFERENCES users(id),
+  submitted_at integer,
+  created_at integer
+);
+CREATE TABLE IF NOT EXISTS incidents (
+  id text PRIMARY KEY,
+  org_id text NOT NULL REFERENCES organisations(id),
+  system_id text REFERENCES ai_systems(id),
+  title text NOT NULL,
+  severity text NOT NULL DEFAULT 'medium',
+  status text NOT NULL DEFAULT 'open',
+  discovered_at text NOT NULL DEFAULT '',
+  occurred_at text NOT NULL DEFAULT '',
+  description text NOT NULL DEFAULT '',
+  impact_summary text NOT NULL DEFAULT '',
+  root_cause text NOT NULL DEFAULT '',
+  corrective_actions text NOT NULL DEFAULT '',
+  authority_notified integer NOT NULL DEFAULT 0,
+  authority_notified_at text NOT NULL DEFAULT '',
+  serious_incident integer NOT NULL DEFAULT 0,
+  eu_article_ref text NOT NULL DEFAULT 'Art. 73',
+  created_by text REFERENCES users(id),
+  updated_at integer,
+  created_at integer
+);
+CREATE TABLE IF NOT EXISTS model_cards (
+  id text PRIMARY KEY,
+  org_id text NOT NULL REFERENCES organisations(id),
+  system_id text NOT NULL REFERENCES ai_systems(id),
+  version text NOT NULL DEFAULT '1.0',
+  intended_use text NOT NULL DEFAULT '',
+  out_of_scope text NOT NULL DEFAULT '',
+  training_data_summary text NOT NULL DEFAULT '',
+  evaluation_summary text NOT NULL DEFAULT '',
+  ethical_considerations text NOT NULL DEFAULT '',
+  limitations text NOT NULL DEFAULT '',
+  caveats text NOT NULL DEFAULT '',
+  contact text NOT NULL DEFAULT '',
+  updated_by text REFERENCES users(id),
+  updated_at integer,
+  created_at integer
+);
+CREATE TABLE IF NOT EXISTS platform_usage_daily (
+  id text PRIMARY KEY,
+  org_id text NOT NULL REFERENCES organisations(id),
+  day text NOT NULL,
+  api_calls integer NOT NULL DEFAULT 0,
+  ai_calls integer NOT NULL DEFAULT 0,
+  evidence_uploads integer NOT NULL DEFAULT 0
+);
+CREATE INDEX IF NOT EXISTS vendor_q_token_idx ON vendor_questionnaires(token);
+CREATE INDEX IF NOT EXISTS incidents_org_idx ON incidents(org_id);`;
