@@ -1,6 +1,6 @@
 import { describe, expect, it, beforeAll } from "vitest";
 import { computeOrgAccess, trialEndsAtFrom, TRIAL_DAYS } from "@/lib/billing/trial";
-import { PLAN_LIMITS, limitsForTier, assertUnderLimit } from "@/lib/billing/limits";
+import { PLAN_LIMITS, limitsForTier } from "@/lib/billing/limits-config";
 import { BILLABLE_PLANS, listPriceEur, displayPriceEur, chargeAmountMinor } from "@/lib/billing/currency";
 import { day3TipsEmail, trialEndingEmail, paymentReceiptEmail, paymentFailedEmail } from "@/lib/email/lifecycle-templates";
 import { resolveEmailRecipients, formatFromAddress } from "@/lib/email/send";

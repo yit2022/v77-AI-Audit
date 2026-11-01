@@ -1,22 +1,8 @@
 import { eq } from "drizzle-orm";
 import { db, ensureDb, schema } from "@/lib/db";
+import { PLAN_LIMITS, limitsForTier, type PlanLimits } from "./limits-config";
 
-export type PlanLimits = {
-  systems: number;
-  users: number;
-  frameworks: number;
-  storageBytes: number;
-};
-
-export const PLAN_LIMITS: Record<string, PlanLimits> = {
-  pilot: { systems: 3, users: 5, frameworks: 2, storageBytes: 500 * 1024 * 1024 },
-  team: { systems: 50, users: 25, frameworks: 8, storageBytes: 20 * 1024 * 1024 * 1024 },
-  enterprise: { systems: 500, users: 200, frameworks: 20, storageBytes: 200 * 1024 * 1024 * 1024 },
-};
-
-export function limitsForTier(tier: string): PlanLimits {
-  return PLAN_LIMITS[tier] || PLAN_LIMITS.pilot;
-}
+export { PLAN_LIMITS, limitsForTier, type PlanLimits };
 
 export type UsageSnapshot = {
   tier: string;

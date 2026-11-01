@@ -13,7 +13,8 @@ import { BillingCancelButton } from "@/components/billing-portal-actions";
 import { Suspense } from "react";
 import { CHECKOUT_DISPLAY_NAME } from "@/lib/billing/paystack";
 import { getOrgSubscription } from "@/lib/billing/service";
-import { getOrgUsage, PLAN_LIMITS } from "@/lib/billing/limits";
+import { getOrgUsage } from "@/lib/billing/limits";
+import { PLAN_LIMITS } from "@/lib/billing/limits-config";
 import { getOrgAccess } from "@/lib/billing/trial";
 import { BillingIntervalToggle } from "@/components/billing-interval-toggle";
 

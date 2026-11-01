@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { BILLABLE_PLANS, displayPriceEur, type BillingInterval } from "@/lib/billing/currency";
 import { COMPANY } from "@/lib/company";
-import { PLAN_LIMITS } from "@/lib/billing/limits";
+import { PLAN_LIMITS } from "@/lib/billing/limits-config";
 
 export function PricingPlans({
   showCheckoutHint = true,
