@@ -1,7 +1,7 @@
 import { test, expect } from "@playwright/test";
 
 const aliases: Array<[string, string | RegExp]> = [
-  ["/inventory", /\/systems/],
+  ["/inventory", /\/(systems|login)/],
   ["/register", /\/signup/],
   ["/app", /\/(dashboard|login)/],
   ["/account", /\/(settings|login)/],
