@@ -46,7 +46,9 @@ CREATE TABLE IF NOT EXISTS controls (
   id text PRIMARY KEY, code text NOT NULL UNIQUE, title text NOT NULL,
   description text NOT NULL, area text NOT NULL,
   eu_ref text NOT NULL DEFAULT '', nist_ref text NOT NULL DEFAULT '',
-  iso_ref text NOT NULL DEFAULT '', gdpr_ref text NOT NULL DEFAULT '', applies_to text NOT NULL DEFAULT 'high_risk'
+  iso_ref text NOT NULL DEFAULT '', gdpr_ref text NOT NULL DEFAULT '',
+  dora_ref text NOT NULL DEFAULT '', iso27001_ref text NOT NULL DEFAULT '',
+  applies_to text NOT NULL DEFAULT 'high_risk'
 );
 CREATE TABLE IF NOT EXISTS assessments (
   id text PRIMARY KEY, org_id text NOT NULL REFERENCES organisations(id),

@@ -8,6 +8,7 @@ import { PageHeader } from "@/components/ui";
 import {
   buildTrend,
   overdueRemediation,
+  activeFrameworks,
   overallReadiness,
   readinessByFramework,
   topRisks,
@@ -19,6 +20,8 @@ const FRAMEWORK_LABELS: Record<FrameworkKey, string> = {
   nist: "NIST AI RMF",
   iso42001: "ISO/IEC 42001",
   gdpr: "GDPR",
+  dora: "DORA",
+  iso27001: "ISO/IEC 27001",
 };
 
 export default async function ComplianceDashboardPage() {
@@ -33,6 +36,8 @@ export default async function ComplianceDashboardPage() {
       nistRef: schema.controls.nistRef,
       isoRef: schema.controls.isoRef,
       gdprRef: schema.controls.gdprRef,
+      doraRef: schema.controls.doraRef,
+      iso27001Ref: schema.controls.iso27001Ref,
     })
     .from(schema.assessmentControls)
     .innerJoin(schema.assessments, eq(schema.assessmentControls.assessmentId, schema.assessments.id))
@@ -46,7 +51,7 @@ export default async function ComplianceDashboardPage() {
     .where(eq(schema.remediationTasks.orgId, session.orgId));
 
   const scores = readinessByFramework(controlRows);
-  const overall = overallReadiness(scores);
+  const overall = overallReadiness(scores, activeFrameworks(controlRows));
   const risks = topRisks(
     findings.map((f) => ({
       id: f.id,
@@ -81,7 +86,7 @@ export default async function ComplianceDashboardPage() {
         }
       />
 
-      <div className="mb-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+      <div className="mb-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-7">
         <div className="card p-4 lg:col-span-1">
           <div className="text-xs uppercase tracking-wide text-slate-500">Overall readiness</div>
           <div className="mt-2 text-3xl font-semibold text-sky-900">{overall}%</div>

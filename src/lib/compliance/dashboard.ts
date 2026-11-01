@@ -1,4 +1,4 @@
-export type FrameworkKey = "eu_ai_act" | "nist" | "iso42001" | "gdpr";
+export type FrameworkKey = "eu_ai_act" | "nist" | "iso42001" | "gdpr" | "dora" | "iso27001";
 
 export type ControlStatusRow = {
   status: string;
@@ -6,6 +6,8 @@ export type ControlStatusRow = {
   nistRef: string;
   isoRef: string;
   gdprRef: string;
+  doraRef?: string;
+  iso27001Ref?: string;
 };
 
 export type FindingRiskRow = {
@@ -29,7 +31,7 @@ export type TrendPoint = { label: string; openFindings: number; readiness: numbe
 
 const IMPLEMENTED = new Set(["implemented", "complete", "done", "satisfied"]);
 
-function applies(ref: string): boolean {
+function applies(ref: string | undefined): boolean {
   return Boolean(ref && ref.trim() && ref.trim() !== "-");
 }
 
@@ -39,24 +41,24 @@ export function readinessByFramework(controls: ControlStatusRow[]): Record<Frame
     nist: { done: 0, total: 0 },
     iso42001: { done: 0, total: 0 },
     gdpr: { done: 0, total: 0 },
+    dora: { done: 0, total: 0 },
+    iso27001: { done: 0, total: 0 },
   };
   for (const c of controls) {
     const done = IMPLEMENTED.has(c.status.toLowerCase());
-    if (applies(c.euRef)) {
-      buckets.eu_ai_act.total++;
-      if (done) buckets.eu_ai_act.done++;
-    }
-    if (applies(c.nistRef)) {
-      buckets.nist.total++;
-      if (done) buckets.nist.done++;
-    }
-    if (applies(c.isoRef)) {
-      buckets.iso42001.total++;
-      if (done) buckets.iso42001.done++;
-    }
-    if (applies(c.gdprRef)) {
-      buckets.gdpr.total++;
-      if (done) buckets.gdpr.done++;
+    const pairs: Array<[FrameworkKey, string | undefined]> = [
+      ["eu_ai_act", c.euRef],
+      ["nist", c.nistRef],
+      ["iso42001", c.isoRef],
+      ["gdpr", c.gdprRef],
+      ["dora", c.doraRef],
+      ["iso27001", c.iso27001Ref],
+    ];
+    for (const [key, ref] of pairs) {
+      if (applies(ref)) {
+        buckets[key].total++;
+        if (done) buckets[key].done++;
+      }
     }
   }
   const out = {} as Record<FrameworkKey, number>;
@@ -99,8 +101,33 @@ export function buildTrend(opts: {
   ];
 }
 
-export function overallReadiness(scores: Record<FrameworkKey, number>): number {
-  const vals = Object.values(scores);
+export function overallReadiness(
+  scores: Record<FrameworkKey, number>,
+  active?: FrameworkKey[],
+): number {
+  const keys = active && active.length ? active : (Object.keys(scores) as FrameworkKey[]);
+  const vals = keys.map((k) => scores[k] ?? 0);
   if (!vals.length) return 0;
   return Math.round(vals.reduce((a, b) => a + b, 0) / vals.length);
+}
+
+/** Frameworks that have at least one mapped control reference in the rows. */
+export function activeFrameworks(controls: ControlStatusRow[]): FrameworkKey[] {
+  const probe: Record<FrameworkKey, boolean> = {
+    eu_ai_act: false,
+    nist: false,
+    iso42001: false,
+    gdpr: false,
+    dora: false,
+    iso27001: false,
+  };
+  for (const c of controls) {
+    if (applies(c.euRef)) probe.eu_ai_act = true;
+    if (applies(c.nistRef)) probe.nist = true;
+    if (applies(c.isoRef)) probe.iso42001 = true;
+    if (applies(c.gdprRef)) probe.gdpr = true;
+    if (applies(c.doraRef)) probe.dora = true;
+    if (applies(c.iso27001Ref)) probe.iso27001 = true;
+  }
+  return (Object.keys(probe) as FrameworkKey[]).filter((k) => probe[k]);
 }

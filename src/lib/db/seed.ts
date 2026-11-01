@@ -2,6 +2,7 @@ import bcrypt from "bcryptjs";
 import { eq } from "drizzle-orm";
 import { db, ensureDb, schema } from "./index";
 import { CONTROL_SEEDS } from "@/lib/crosswalk";
+import { syncControlCatalogue } from "@/lib/db/sync-controls";
 import { id } from "@/lib/ids";
 import { insertInChunks } from "./chunk-insert";
 
@@ -125,6 +126,7 @@ async function enrichDemoOrgIfNeeded(orgId: string) {
 
 async function seedOnce() {
   await ensureDb();
+  await syncControlCatalogue();
   const existing = await db.select().from(schema.organisations).limit(1);
   if (existing.length > 0) {
     const ctrl = await db.select().from(schema.controls).limit(1);
@@ -133,7 +135,7 @@ async function seedOnce() {
         schema.controls,
         CONTROL_SEEDS.map((c) => ({
           id: c.id, code: c.code, title: c.title, description: c.description,
-          area: c.area, euRef: c.euRef, nistRef: c.nistRef, isoRef: c.isoRef, gdprRef: c.gdprRef, appliesTo: c.appliesTo,
+          area: c.area, euRef: c.euRef, nistRef: c.nistRef, isoRef: c.isoRef, gdprRef: c.gdprRef, doraRef: c.doraRef, iso27001Ref: c.iso27001Ref, appliesTo: c.appliesTo,
         })),
       );
     }
@@ -166,7 +168,7 @@ async function seedOnce() {
       schema.controls,
       CONTROL_SEEDS.map((c) => ({
         id: c.id, code: c.code, title: c.title, description: c.description,
-        area: c.area, euRef: c.euRef, nistRef: c.nistRef, isoRef: c.isoRef, gdprRef: c.gdprRef, appliesTo: c.appliesTo,
+        area: c.area, euRef: c.euRef, nistRef: c.nistRef, isoRef: c.isoRef, gdprRef: c.gdprRef, doraRef: c.doraRef, iso27001Ref: c.iso27001Ref, appliesTo: c.appliesTo,
       })),
     );
 

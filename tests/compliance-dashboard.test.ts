@@ -3,6 +3,7 @@ import {
   buildTrend,
   overdueRemediation,
   overallReadiness,
+  activeFrameworks,
   readinessByFramework,
   topRisks,
 } from "../src/lib/compliance/dashboard";
@@ -18,7 +19,11 @@ describe("executive compliance dashboard", () => {
     expect(scores.nist).toBe(50);
     expect(scores.iso42001).toBe(100);
     expect(scores.gdpr).toBe(50);
-    expect(overallReadiness(scores)).toBe(63);
+    expect(overallReadiness(scores, activeFrameworks([
+      { status: "implemented", euRef: "Art.9", nistRef: "MAP", isoRef: "6.1", gdprRef: "" },
+      { status: "not_started", euRef: "Art.10", nistRef: "MEASURE", isoRef: "", gdprRef: "Art.35" },
+      { status: "implemented", euRef: "", nistRef: "", isoRef: "8.2", gdprRef: "Art.32" },
+    ]))).toBe(63);
   });
 
   it("ranks top open risks by severity", () => {

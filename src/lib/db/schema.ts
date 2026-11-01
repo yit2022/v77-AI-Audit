@@ -25,6 +25,7 @@ export const organisations = pgTable("organisations", {
   trustContactEmail: text("trust_contact_email").notNull().default(""),
   planTier: text("plan_tier").notNull().default("pilot"),
   seatLimit: integer("seat_limit").notNull().default(5),
+  partnerId: text("partner_id"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().$defaultFn(() => new Date()),
 });
 
@@ -94,6 +95,8 @@ export const controls = pgTable("controls", {
   nistRef: text("nist_ref").notNull().default(""),
   isoRef: text("iso_ref").notNull().default(""),
   gdprRef: text("gdpr_ref").notNull().default(""),
+  doraRef: text("dora_ref").notNull().default(""),
+  iso27001Ref: text("iso27001_ref").notNull().default(""),
   appliesTo: text("applies_to").notNull().default("high_risk"),
 });
 
@@ -528,3 +531,43 @@ export const orgOnboarding = pgTable(
   },
   (t) => [uniqueIndex("org_onboarding_org_step").on(t.orgId, t.stepId)],
 );
+
+
+export const partners = pgTable("partners", {
+  id: text("id").primaryKey(),
+  name: text("name").notNull(),
+  slug: text("slug").notNull().unique(),
+  logoUrl: text("logo_url").notNull().default(""),
+  primaryColor: text("primary_color").notNull().default("#0F2A4A"),
+  accentColor: text("accent_color").notNull().default("#6FCDF5"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().$defaultFn(() => new Date()),
+});
+
+export const partnerMemberships = pgTable(
+  "partner_memberships",
+  {
+    id: text("id").primaryKey(),
+    partnerId: text("partner_id").notNull().references(() => partners.id),
+    userId: text("user_id").notNull().references(() => users.id),
+    role: text("role").notNull().default("owner"),
+  },
+  (t) => [uniqueIndex("partner_membership_unique").on(t.partnerId, t.userId)],
+);
+
+export const evidenceRequests = pgTable("evidence_requests", {
+  id: text("id").primaryKey(),
+  orgId: text("org_id").notNull().references(() => organisations.id),
+  systemId: text("system_id").references(() => aiSystems.id),
+  controlId: text("control_id").references(() => controls.id),
+  title: text("title").notNull(),
+  description: text("description").notNull().default(""),
+  assigneeUserId: text("assignee_user_id").references(() => users.id),
+  cadenceDays: integer("cadence_days").notNull().default(90),
+  nextDueAt: timestamp("next_due_at", { withTimezone: true }).notNull(),
+  expiresAt: timestamp("expires_at", { withTimezone: true }),
+  status: text("status").notNull().default("open"),
+  createdBy: text("created_by").references(() => users.id),
+  completedAt: timestamp("completed_at", { withTimezone: true }),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().$defaultFn(() => new Date()),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().$defaultFn(() => new Date()),
+});

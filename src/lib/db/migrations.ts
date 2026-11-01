@@ -186,5 +186,42 @@ CREATE TABLE IF NOT EXISTS org_onboarding (
   updated_at integer NOT NULL
 );
 CREATE UNIQUE INDEX IF NOT EXISTS org_onboarding_org_step ON org_onboarding(org_id, step_id);
-`;
 
+ALTER TABLE controls ADD COLUMN dora_ref text NOT NULL DEFAULT '';
+ALTER TABLE controls ADD COLUMN iso27001_ref text NOT NULL DEFAULT '';
+ALTER TABLE organisations ADD COLUMN partner_id text;
+CREATE TABLE IF NOT EXISTS partners (
+  id text PRIMARY KEY,
+  name text NOT NULL,
+  slug text NOT NULL UNIQUE,
+  logo_url text NOT NULL DEFAULT '',
+  primary_color text NOT NULL DEFAULT '#0F2A4A',
+  accent_color text NOT NULL DEFAULT '#6FCDF5',
+  created_at integer
+);
+CREATE TABLE IF NOT EXISTS partner_memberships (
+  id text PRIMARY KEY,
+  partner_id text NOT NULL REFERENCES partners(id),
+  user_id text NOT NULL REFERENCES users(id),
+  role text NOT NULL DEFAULT 'owner'
+);
+CREATE UNIQUE INDEX IF NOT EXISTS partner_membership_unique ON partner_memberships(partner_id, user_id);
+CREATE TABLE IF NOT EXISTS evidence_requests (
+  id text PRIMARY KEY,
+  org_id text NOT NULL REFERENCES organisations(id),
+  system_id text REFERENCES ai_systems(id),
+  control_id text REFERENCES controls(id),
+  title text NOT NULL,
+  description text NOT NULL DEFAULT '',
+  assignee_user_id text REFERENCES users(id),
+  cadence_days integer NOT NULL DEFAULT 90,
+  next_due_at integer NOT NULL,
+  expires_at integer,
+  status text NOT NULL DEFAULT 'open',
+  created_by text REFERENCES users(id),
+  completed_at integer,
+  created_at integer,
+  updated_at integer
+);
+CREATE INDEX IF NOT EXISTS evidence_requests_org_idx ON evidence_requests(org_id);
+`;

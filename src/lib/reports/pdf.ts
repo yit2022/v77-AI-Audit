@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import { PDFDocument, StandardFonts, rgb } from "pdf-lib";
-import { readinessByFramework, overallReadiness, type FrameworkKey } from "@/lib/compliance/dashboard";
+import { activeFrameworks, readinessByFramework, overallReadiness, type FrameworkKey } from "@/lib/compliance/dashboard";
 
 export type ReportControlRow = {
   code: string;
@@ -103,6 +103,8 @@ export async function buildAuditReportPdf(input: AuditReportInput): Promise<Uint
           nist: input.frameworkScores.nist ?? 0,
           iso42001: input.frameworkScores.iso42001 ?? 0,
           gdpr: input.frameworkScores.gdpr ?? 0,
+          dora: input.frameworkScores.dora ?? 0,
+          iso27001: input.frameworkScores.iso27001 ?? 0,
         }
       : readinessByFramework(
           input.controls.map((c) => ({
@@ -111,9 +113,20 @@ export async function buildAuditReportPdf(input: AuditReportInput): Promise<Uint
             nistRef: c.nistRef,
             isoRef: c.isoRef,
             gdprRef: c.gdprRef || "",
+            doraRef: (c as { doraRef?: string }).doraRef || "",
+            iso27001Ref: (c as { iso27001Ref?: string }).iso27001Ref || "",
           })),
         );
-  const overall = overallReadiness(scores);
+  const controlStatus = input.controls.map((c) => ({
+    status: c.status,
+    euRef: c.euRef,
+    nistRef: c.nistRef,
+    isoRef: c.isoRef,
+    gdprRef: c.gdprRef || "",
+    doraRef: (c as { doraRef?: string }).doraRef || "",
+    iso27001Ref: (c as { iso27001Ref?: string }).iso27001Ref || "",
+  }));
+  const overall = overallReadiness(scores, activeFrameworks(controlStatus));
   const findings = input.findings || [];
 
   // Cover

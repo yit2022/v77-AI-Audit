@@ -2,9 +2,14 @@ export const dynamic = "force-dynamic";
 
 import { db, ensureDb, schema } from "@/lib/db";
 import { PageHeader } from "@/components/ui";
+import { syncControlCatalogue } from "@/lib/db/sync-controls";
+import { getRequestLocale } from "@/lib/i18n/locale";
+import { t } from "@/lib/i18n/dictionaries";
 
 export default async function ControlsPage() {
+  await syncControlCatalogue();
   await ensureDb();
+  const locale = await getRequestLocale();
   const controls = await db.select().from(schema.controls);
   const byArea = controls.reduce<Record<string, typeof controls>>((acc, c) => {
     (acc[c.area] ??= []).push(c);
@@ -13,10 +18,7 @@ export default async function ControlsPage() {
 
   return (
     <div>
-      <PageHeader
-        title="Control crosswalk"
-        subtitle="One control maps to EU AI Act, NIST AI RMF, ISO/IEC 42001, and GDPR where personal data is in scope."
-      />
+      <PageHeader title={t(locale, "controls.title")} subtitle={t(locale, "controls.subtitle")} />
       <div className="space-y-6">
         {Object.entries(byArea).map(([area, list]) => (
           <section key={area} className="card overflow-hidden">
@@ -31,7 +33,7 @@ export default async function ControlsPage() {
                     <h3 className="text-sm font-semibold text-slate-900">{c.title}</h3>
                   </div>
                   <p className="mt-1 text-sm text-slate-600">{c.description}</p>
-                  <dl className="mt-3 grid gap-2 text-xs text-slate-500 md:grid-cols-2 xl:grid-cols-4">
+                  <dl className="mt-3 grid gap-2 text-xs text-slate-500 md:grid-cols-2 xl:grid-cols-3">
                     <div>
                       <dt className="font-semibold text-slate-700">EU AI Act</dt>
                       <dd>{c.euRef || "—"}</dd>
@@ -41,12 +43,20 @@ export default async function ControlsPage() {
                       <dd>{c.nistRef || "—"}</dd>
                     </div>
                     <div>
-                      <dt className="font-semibold text-slate-700">ISO/IEC</dt>
+                      <dt className="font-semibold text-slate-700">ISO/IEC 42001</dt>
                       <dd>{c.isoRef || "—"}</dd>
                     </div>
                     <div>
                       <dt className="font-semibold text-slate-700">GDPR</dt>
                       <dd>{c.gdprRef || "—"}</dd>
+                    </div>
+                    <div>
+                      <dt className="font-semibold text-slate-700">DORA</dt>
+                      <dd>{c.doraRef || "—"}</dd>
+                    </div>
+                    <div>
+                      <dt className="font-semibold text-slate-700">ISO/IEC 27001</dt>
+                      <dd>{c.iso27001Ref || "—"}</dd>
                     </div>
                   </dl>
                   <p className="mt-2 text-xs text-slate-400">Applies to: {c.appliesTo}</p>

@@ -128,3 +128,11 @@ Prefer `sales@vertex77.com` for commercial handover and `contact@vertex77.com` f
 - `bash scripts/dep-audit.sh` — npm audit JSON summary
 - CSP without `unsafe-eval`; `object-src 'none'`
 - Org onboarding checklist `/onboarding` + in-app notification centre
+
+## Round 10 (audit depth + partner channel)
+
+- Partner/reseller portal (`/partner`) with white-label branding and multi-client orgs
+- Control crosswalk expanded: GDPR AI-related, DORA (Regulation (EU) 2022/2554), ISO/IEC 27001 Annex A identifiers
+- Evidence request automation with assignee, cadence, due/expiry tracking (`/evidence-requests`)
+- Executive board report landscape PDF (`/board-report`, `/api/reports/board`)
+- New app strings translated across EN DE FR PL NL ES IT SV
