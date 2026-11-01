@@ -6,10 +6,12 @@ export function BillingCheckoutButton({
   tier,
   enabled,
   label = "Pay by card",
+  interval = "monthly",
 }: {
   tier: string;
   enabled: boolean;
   label?: string;
+  interval?: "monthly" | "annual";
 }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
@@ -35,7 +37,7 @@ export function BillingCheckoutButton({
             const res = await fetch("/api/billing/checkout", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ tier }),
+              body: JSON.stringify({ tier, interval }),
             });
             const data = await res.json().catch(() => ({}));
             if (!res.ok) {

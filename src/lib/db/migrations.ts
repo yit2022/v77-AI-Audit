@@ -255,4 +255,25 @@ CREATE TABLE IF NOT EXISTS password_reset_tokens (
   created_at integer
 );
 CREATE INDEX IF NOT EXISTS password_reset_tokens_user_idx ON password_reset_tokens(user_id);
+
+ALTER TABLE organisations ADD COLUMN trial_ends_at integer;
+ALTER TABLE organisations ADD COLUMN billing_interval text NOT NULL DEFAULT 'monthly';
+ALTER TABLE organisations ADD COLUMN cancel_at_period_end integer NOT NULL DEFAULT 0;
+ALTER TABLE organisations ADD COLUMN current_period_end integer;
+ALTER TABLE users ADD COLUMN locale text NOT NULL DEFAULT 'en';
+ALTER TABLE users ADD COLUMN marketing_opt_out integer NOT NULL DEFAULT 0;
+CREATE TABLE IF NOT EXISTS email_unsubscribes (
+  id text PRIMARY KEY,
+  email text NOT NULL UNIQUE,
+  token_hash text NOT NULL UNIQUE,
+  created_at integer
+);
+CREATE TABLE IF NOT EXISTS lifecycle_email_log (
+  id text PRIMARY KEY,
+  org_id text NOT NULL REFERENCES organisations(id),
+  user_id text REFERENCES users(id),
+  kind text NOT NULL,
+  sent_at integer
+);
+CREATE UNIQUE INDEX IF NOT EXISTS lifecycle_email_log_uniq ON lifecycle_email_log(org_id, kind);
 `;

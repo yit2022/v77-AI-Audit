@@ -11,11 +11,18 @@ CREATE TABLE IF NOT EXISTS organisations (
   paystack_customer_code text NOT NULL DEFAULT '',
   paystack_subaccount text NOT NULL DEFAULT '',
   paystack_split_code text NOT NULL DEFAULT '',
+  trial_ends_at integer,
+  billing_interval text NOT NULL DEFAULT 'monthly',
+  cancel_at_period_end integer NOT NULL DEFAULT 0,
+  current_period_end integer,
   created_at integer
 );
 CREATE TABLE IF NOT EXISTS users (
   id text PRIMARY KEY, email text NOT NULL UNIQUE, name text NOT NULL,
-  password_hash text NOT NULL, created_at integer
+  password_hash text NOT NULL,
+  locale text NOT NULL DEFAULT 'en',
+  marketing_opt_out integer NOT NULL DEFAULT 0,
+  created_at integer
 );
 CREATE TABLE IF NOT EXISTS memberships (
   id text PRIMARY KEY, org_id text NOT NULL REFERENCES organisations(id),
@@ -447,4 +454,20 @@ CREATE TABLE IF NOT EXISTS password_reset_tokens (
   created_at integer
 );
 CREATE INDEX IF NOT EXISTS password_reset_tokens_user_idx ON password_reset_tokens(user_id);
+
+
+CREATE TABLE IF NOT EXISTS email_unsubscribes (
+  id text PRIMARY KEY,
+  email text NOT NULL UNIQUE,
+  token_hash text NOT NULL UNIQUE,
+  created_at integer
+);
+CREATE TABLE IF NOT EXISTS lifecycle_email_log (
+  id text PRIMARY KEY,
+  org_id text NOT NULL REFERENCES organisations(id),
+  user_id text REFERENCES users(id),
+  kind text NOT NULL,
+  sent_at integer
+);
+CREATE UNIQUE INDEX IF NOT EXISTS lifecycle_email_log_uniq ON lifecycle_email_log(org_id, kind);
 `;

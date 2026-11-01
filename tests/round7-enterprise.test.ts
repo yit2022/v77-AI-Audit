@@ -52,7 +52,7 @@ describe("Round 7 SSO scaffolding", () => {
 describe("Round 7 public surfaces", () => {
   it("ships developers + trust routes and Vertex77-only branding", () => {
     expect(COMPANY.legalName).toContain("Vertex77");
-    expect(COMPANY.salesEmail).toBe("sales@vertex77.com");
+    expect(COMPANY.salesEmail).toBe("sales@v77trust.com");
     const developers = readFileSync(resolve(__dirname, "../src/app/developers/page.tsx"), "utf8");
     expect(developers).toMatch(/\/api\/v1\/systems/);
     expect(developers).not.toMatch(/tamalaki|nairobi|kenya|africa/i);

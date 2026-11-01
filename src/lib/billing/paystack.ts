@@ -77,6 +77,7 @@ export function resolveCheckoutSplit(opts: {
 
 export type InitializeInput = {
   email: string;
+  /** EUR amount for this charge (monthly list or full annual list). */
   priceEurMonthly: number;
   reference: string;
   callbackUrl: string;

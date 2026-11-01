@@ -3,22 +3,34 @@ export const dynamic = "force-dynamic";
 import Link from "next/link";
 import { getSession } from "@/lib/auth/session";
 import { ensurePlanCatalog, getOrgPlan, DEFAULT_PLANS } from "@/lib/billing/plans";
-import { BILLABLE_PLANS, displayPriceEur, paystackCurrency, eurToUsdRate } from "@/lib/billing/currency";
+import { BILLABLE_PLANS, displayPriceEur, paystackCurrency, eurToUsdRate, type BillingInterval } from "@/lib/billing/currency";
 import { billingEnabled } from "@/lib/billing/flags";
 import { PageHeader } from "@/components/ui";
 import { COMPANY } from "@/lib/company";
 import { BillingCheckoutButton } from "@/components/billing-checkout";
 import { BillingReturn } from "@/components/billing-return";
+import { BillingCancelButton } from "@/components/billing-portal-actions";
 import { Suspense } from "react";
 import { CHECKOUT_DISPLAY_NAME } from "@/lib/billing/paystack";
 import { getOrgSubscription } from "@/lib/billing/service";
+import { getOrgUsage, PLAN_LIMITS } from "@/lib/billing/limits";
+import { getOrgAccess } from "@/lib/billing/trial";
+import { BillingIntervalToggle } from "@/components/billing-interval-toggle";
 
-export default async function BillingPage() {
+export default async function BillingPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ interval?: string }>;
+}) {
   const session = await getSession();
   if (!session) return null;
   await ensurePlanCatalog();
+  const sp = await searchParams;
+  const interval: BillingInterval = sp.interval === "annual" ? "annual" : "monthly";
   const plan = await getOrgPlan(session.orgId);
   const sub = await getOrgSubscription(session.orgId);
+  const usage = await getOrgUsage(session.orgId);
+  const access = await getOrgAccess(session.orgId);
   const enabled = billingEnabled();
   const currency = paystackCurrency();
   const rate = eurToUsdRate();
@@ -30,7 +42,7 @@ export default async function BillingPage() {
       </Suspense>
       <PageHeader
         title="Plan & billing"
-        subtitle={`${CHECKOUT_DISPLAY_NAME} · prices shown in EUR · card payments only (no mobile money)`}
+        subtitle={`${CHECKOUT_DISPLAY_NAME} · EUR list prices · card only · charged in ${currency}`}
         actions={
           <Link href="/billing/invoices" className="btn btn-secondary text-sm">
             Invoices
@@ -42,42 +54,76 @@ export default async function BillingPage() {
         <p className="mt-2 text-sm text-slate-600">
           Plan: <strong>{plan?.name}</strong> ({plan?.tier}) · Seats {plan?.seatsUsed}/{plan?.seatLimit} · Billing
           status: <strong>{sub?.billingStatus || "none"}</strong>
+          {sub?.billingInterval ? ` · ${sub.billingInterval}` : ""}
         </p>
+        {access?.trialActive ? (
+          <p className="mt-2 text-sm text-sky-800">
+            Trial active — {access.daysLeft} day{access.daysLeft === 1 ? "" : "s"} left
+            {access.trialEndsAt ? ` (ends ${access.trialEndsAt.toISOString().slice(0, 10)})` : ""}.
+          </p>
+        ) : null}
+        {access?.readOnly ? (
+          <p className="mt-2 text-sm text-rose-800">Read-only mode — upgrade to edit systems, evidence and invites.</p>
+        ) : null}
+        {usage ? (
+          <p className="mt-2 text-sm text-slate-600">
+            Usage: {usage.systems}/{usage.limits.systems} systems · {usage.users}/{usage.limits.users} users ·{" "}
+            {usage.frameworks}/{usage.limits.frameworks} frameworks ·{" "}
+            {Math.round(usage.storageBytes / (1024 * 1024))}MB / {Math.round(usage.limits.storageBytes / (1024 * 1024))}MB
+            storage
+          </p>
+        ) : null}
         <p className="mt-2 text-sm text-slate-600">
           Charge currency: <strong>{currency}</strong>
-          {currency === "USD" ? ` · EUR→USD rate ${rate} (config PAYSTACK_EUR_USD_RATE)` : " · charging EUR directly"}
-          {" · "}
-          Checkout name: <strong>{CHECKOUT_DISPLAY_NAME}</strong>
+          {currency === "USD" ? ` · EUR→USD rate ${rate}` : ""} · Checkout name: <strong>{CHECKOUT_DISPLAY_NAME}</strong>
         </p>
+        <p className="mt-2 text-xs text-slate-500">Prices exclude VAT. EUR is the list currency; cards are charged in USD at checkout.</p>
         {!enabled ? (
           <p className="mt-2 text-sm text-amber-800">
             Live checkout is behind <code className="text-xs">V77_BILLING_ENABLED</code>. Contact{" "}
             <a className="font-semibold text-sky-700 hover:underline" href={`mailto:${COMPANY.salesEmail}`}>
               {COMPANY.salesEmail}
-            </a>{" "}
-            for a quote.
+            </a>
+            .
           </p>
         ) : null}
+        {sub?.billingStatus === "active" || sub?.billingStatus === "past_due" ? (
+          <BillingCancelButton
+            cancelAtPeriodEnd={!!sub.cancelAtPeriodEnd}
+            periodEndLabel={sub.currentPeriodEnd ? sub.currentPeriodEnd.toISOString().slice(0, 10) : null}
+          />
+        ) : null}
       </div>
+
+      <div className="mb-4">
+        <BillingIntervalToggle interval={interval} />
+      </div>
+
       <div className="grid gap-4 md:grid-cols-3">
         {BILLABLE_PLANS.map((p) => {
           const catalog = DEFAULT_PLANS.find((d) => d.tier === p.tier);
+          const limits = PLAN_LIMITS[p.tier] || PLAN_LIMITS.pilot;
           return (
             <div key={p.tier} className={`card p-5 ${plan?.tier === p.tier ? "ring-1 ring-sky-300" : ""}`}>
               <h3 className="text-lg font-semibold text-[#0F2A4A]">{p.name}</h3>
-              <p className="mt-1 text-sm font-medium text-slate-700">{displayPriceEur(p)}</p>
-              <p className="mt-2 text-xs text-slate-500">Up to {p.seatLimit} seats</p>
+              <p className="mt-1 text-sm font-medium text-slate-700">{displayPriceEur(p, "en-GB", interval)}</p>
+              <p className="mt-2 text-xs text-slate-500">
+                Up to {limits.systems} systems · {limits.users} users · {limits.frameworks} frameworks
+              </p>
               <ul className="mt-3 space-y-1 text-sm text-slate-700">
                 {(catalog?.features || p.features).map((f) => (
                   <li key={f}>• {f}</li>
                 ))}
               </ul>
               {p.tier === "team" ? (
-                <BillingCheckoutButton tier="team" enabled={enabled} label="Pay by card (Paystack)" />
+                <BillingCheckoutButton
+                  tier="team"
+                  interval={interval}
+                  enabled={enabled}
+                  label={interval === "annual" ? "Upgrade annual (Paystack)" : "Upgrade monthly (Paystack)"}
+                />
               ) : (
-                <p className="mt-3 text-xs text-slate-500">
-                  Contact {COMPANY.salesEmail} — pricing on request.
-                </p>
+                <p className="mt-3 text-xs text-slate-500">Contact {COMPANY.salesEmail} — pricing on request.</p>
               )}
             </div>
           );

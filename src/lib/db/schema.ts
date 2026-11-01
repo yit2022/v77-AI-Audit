@@ -30,6 +30,10 @@ export const organisations = pgTable("organisations", {
   paystackCustomerCode: text("paystack_customer_code").notNull().default(""),
   paystackSubaccount: text("paystack_subaccount").notNull().default(""),
   paystackSplitCode: text("paystack_split_code").notNull().default(""),
+  trialEndsAt: timestamp("trial_ends_at", { withTimezone: true }),
+  billingInterval: text("billing_interval").notNull().default("monthly"),
+  cancelAtPeriodEnd: boolean("cancel_at_period_end").notNull().default(false),
+  currentPeriodEnd: timestamp("current_period_end", { withTimezone: true }),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().$defaultFn(() => new Date()),
 });
 
@@ -38,6 +42,8 @@ export const users = pgTable("users", {
   email: text("email").notNull().unique(),
   name: text("name").notNull(),
   passwordHash: text("password_hash").notNull(),
+  locale: text("locale").notNull().default("en"),
+  marketingOptOut: boolean("marketing_opt_out").notNull().default(false),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().$defaultFn(() => new Date()),
 });
 
@@ -600,3 +606,22 @@ export const passwordResetTokens = pgTable("password_reset_tokens", {
   usedAt: timestamp("used_at", { withTimezone: true }),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().$defaultFn(() => new Date()),
 });
+
+export const emailUnsubscribes = pgTable("email_unsubscribes", {
+  id: text("id").primaryKey(),
+  email: text("email").notNull().unique(),
+  tokenHash: text("token_hash").notNull().unique(),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().$defaultFn(() => new Date()),
+});
+
+export const lifecycleEmailLog = pgTable(
+  "lifecycle_email_log",
+  {
+    id: text("id").primaryKey(),
+    orgId: text("org_id").notNull().references(() => organisations.id),
+    userId: text("user_id").references(() => users.id),
+    kind: text("kind").notNull(),
+    sentAt: timestamp("sent_at", { withTimezone: true }).notNull().$defaultFn(() => new Date()),
+  },
+  (table) => [uniqueIndex("lifecycle_email_log_uniq").on(table.orgId, table.kind)],
+);

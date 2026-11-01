@@ -9,6 +9,8 @@ import { appendAuditLog } from "@/lib/audit/log";
 import { sendEmail } from "@/lib/email/send";
 import { inviteEmail } from "@/lib/email/templates";
 import { getPartnerForOrg } from "@/lib/partner/service";
+import { assertOrgWritable } from "@/lib/billing/trial";
+import { assertUnderLimit } from "@/lib/billing/limits";
 
 const TTL_MS = 1000 * 60 * 60 * 24 * 7;
 
@@ -24,6 +26,8 @@ export async function createOrgInvite(opts: {
   req?: Request;
 }) {
   await ensureDb();
+  await assertOrgWritable(opts.orgId);
+  await assertUnderLimit(opts.orgId, "users");
   const email = opts.email.trim().toLowerCase();
   if (!email.includes("@")) throw new Error("Invalid email");
   if (!["admin", "ai_owner", "reviewer", "auditor"].includes(opts.role)) throw new Error("Invalid role");

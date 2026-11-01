@@ -10,6 +10,7 @@ import { rateLimit } from "@/lib/security/rate-limit";
 import { seedIfEmpty } from "@/lib/db/seed";
 import { sendEmail } from "@/lib/email/send";
 import { signupEmail } from "@/lib/email/templates";
+import { trialEndsAtFrom } from "@/lib/billing/trial";
 
 const bodySchema = z.object({
   orgName: z.string().min(2).max(120),
@@ -49,10 +50,15 @@ export async function POST(req: Request) {
   const membershipId = id();
   const passwordHash = await bcrypt.hash(parsed.data.password, 10);
 
+  const trialEndsAt = trialEndsAtFrom();
   await db.insert(schema.organisations).values({
     id: orgId,
     name: parsed.data.orgName.trim(),
     slug: slugify(parsed.data.orgName),
+    planTier: "pilot",
+    billingStatus: "trialing",
+    trialEndsAt,
+    seatLimit: 5,
   });
   await db.insert(schema.users).values({
     id: userId,

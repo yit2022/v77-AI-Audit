@@ -7,6 +7,8 @@ import { seedIfEmpty } from "@/lib/db/seed";
 import { hashEvidenceContent } from "@/lib/evidence/chain";
 import { storeEvidenceBlob } from "@/lib/storage/evidence";
 import { appendAuditLog } from "@/lib/audit/log";
+import { assertOrgWritable } from "@/lib/billing/trial";
+import { assertUnderLimit } from "@/lib/billing/limits";
 
 export async function GET(req: Request) {
   await seedIfEmpty();
@@ -32,6 +34,16 @@ export async function POST(req: Request) {
   await seedIfEmpty();
   const session = await getSession();
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  try {
+    await assertOrgWritable(session.orgId);
+    await assertUnderLimit(session.orgId, "storageBytes");
+  } catch (e) {
+    const err = e as { status?: number; code?: string; message?: string; kind?: string; used?: number; limit?: number };
+    return NextResponse.json(
+      { error: err.message || "Forbidden", code: err.code, kind: err.kind, used: err.used, limit: err.limit, upgrade: true },
+      { status: err.status || 402 },
+    );
+  }
   const form = await req.formData();
   const file = form.get("file");
   const title = String(form.get("title") || "Evidence");

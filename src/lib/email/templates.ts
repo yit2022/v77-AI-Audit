@@ -292,3 +292,10 @@ export function passwordResetEmail(opts: { name: string; resetUrl: string; local
   const shell = brandShell(body, opts.brand);
   return { subject: c.passwordResetSubject, ...shell, tags: ["password_reset"] };
 }
+
+export {
+  day3TipsEmail,
+  trialEndingEmail,
+  paymentReceiptEmail,
+  paymentFailedEmail,
+} from "./lifecycle-templates";

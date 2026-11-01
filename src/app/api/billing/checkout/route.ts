@@ -7,6 +7,7 @@ import { getAppOrigin } from "@/lib/site";
 
 const bodySchema = z.object({
   tier: z.enum(["team"]),
+  interval: z.enum(["monthly", "annual"]).optional(),
 });
 
 export async function POST(req: Request) {
@@ -28,6 +29,7 @@ export async function POST(req: Request) {
       userId: session.userId,
       email: session.email,
       tier: parsed.data.tier,
+      interval: parsed.data.interval || "monthly",
       callbackUrl,
       req,
     });

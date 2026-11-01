@@ -34,9 +34,19 @@ export async function createPilotLead(input: PilotLeadInput) {
     updatedAt: now,
     createdAt: now,
   });
-  const tpl = leadNotificationEmail({ name: input.name.trim(), company: (input.company || "").trim() || "—" });
+  const company = (input.company || "").trim() || "—";
+  const source = input.source || "landing";
+  const tpl = leadNotificationEmail({ name: input.name.trim(), company: `${company} · source=${source}` });
   const notifyTo = process.env.V77_LEAD_NOTIFY_EMAIL?.trim() || COMPANY.salesEmail;
-  await sendEmail({ to: notifyTo, subject: tpl.subject, html: tpl.html, text: tpl.text, tags: tpl.tags });
+  await sendEmail({
+    to: notifyTo,
+    subject: tpl.subject,
+    html: tpl.html + `<p style="font-size:12px;color:#64748b">Email: ${input.email.trim().toLowerCase()} · source: ${source}</p>`,
+    text: `${tpl.text}
+Email: ${input.email.trim().toLowerCase()}
+Source: ${source}`,
+    tags: tpl.tags,
+  });
   return { id: leadId };
 }
 

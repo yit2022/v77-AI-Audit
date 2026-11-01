@@ -11,10 +11,12 @@ describe("pilot leads", () => {
     expect(lib).toContain("pilotLeads");
   });
 
-  it("landing CTA uses pricing on request copy", () => {
+  it("landing CTA uses trial + EUR pricing copy", () => {
     const page = readFileSync(resolve(__dirname, "../src/app/page.tsx"), "utf8");
-    expect(page).toMatch(/Pricing on request/i);
+    expect(page).toMatch(/14-day self-serve trial/i);
+    expect(page).toMatch(/charged in USD at checkout/i);
     expect(page).toContain("PilotRequestForm");
+    expect(page).toContain("PricingPlans");
     expect(page).not.toMatch(/african/i);
   });
 

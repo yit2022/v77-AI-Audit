@@ -8,6 +8,7 @@ import { LocaleSwitcher } from "@/components/locale-switcher";
 export async function MarketingChrome({ children }: { children: React.ReactNode }) {
   const locale = await getRequestLocale();
   const nav = [
+    { href: "/pricing", key: "mkt.pricing.title" as const },
     { href: "/how-it-works", key: "mkt.nav.how" as const },
     { href: "/demo", key: "mkt.nav.demo" as const },
     { href: "/resources", key: "mkt.nav.resources" as const },

@@ -4,7 +4,7 @@ export const COMPANY = {
   legalName: "Vertex77 sp. z o.o.",
   addressLine: "ul. Świeradowska 47, Warszawa, Poland",
   email: "contact@vertex77.com",
-  salesEmail: "sales@vertex77.com",
+  salesEmail: "sales@v77trust.com",
   website: "https://vertex77.com",
   footerCopyright: "© 2026 V77 Trust · operated by Vertex77 sp. z o.o.",
 } as const;

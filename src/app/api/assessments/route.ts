@@ -7,6 +7,8 @@ import { id } from "@/lib/ids";
 import { insertInChunks } from "@/lib/db/chunk-insert";
 import { controlsForTier } from "@/lib/crosswalk";
 import { seedIfEmpty } from "@/lib/db/seed";
+import { assertOrgWritable } from "@/lib/billing/trial";
+import { assertUnderLimit } from "@/lib/billing/limits";
 
 export async function GET() {
   await seedIfEmpty();
@@ -51,6 +53,16 @@ export async function POST(req: Request) {
   const parsed = createSchema.safeParse(await req.json().catch(() => null));
   if (!parsed.success) return NextResponse.json({ error: "Invalid body" }, { status: 400 });
   await ensureDb();
+  try {
+    await assertOrgWritable(session.orgId);
+    await assertUnderLimit(session.orgId, "frameworks", 0); // soft: block new assessments when already over pack limit
+  } catch (e) {
+    const err = e as { status?: number; code?: string; message?: string; kind?: string; used?: number; limit?: number };
+    return NextResponse.json(
+      { error: err.message || "Forbidden", code: err.code, kind: err.kind, used: err.used, limit: err.limit, upgrade: true },
+      { status: err.status || 402 },
+    );
+  }
   const systems = await db.select().from(schema.aiSystems).where(eq(schema.aiSystems.id, parsed.data.systemId)).limit(1);
   const system = systems[0];
   if (!system || system.orgId !== session.orgId) return NextResponse.json({ error: "Not found" }, { status: 404 });

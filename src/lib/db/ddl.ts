@@ -395,4 +395,20 @@ CREATE TABLE IF NOT EXISTS password_reset_tokens (
   created_at integer
 );
 CREATE INDEX IF NOT EXISTS password_reset_tokens_user_idx ON password_reset_tokens(user_id);
+
+
+CREATE TABLE IF NOT EXISTS email_unsubscribes (
+  id text PRIMARY KEY,
+  email text NOT NULL UNIQUE,
+  token_hash text NOT NULL UNIQUE,
+  created_at integer
+);
+CREATE TABLE IF NOT EXISTS lifecycle_email_log (
+  id text PRIMARY KEY,
+  org_id text NOT NULL REFERENCES organisations(id),
+  user_id text REFERENCES users(id),
+  kind text NOT NULL,
+  sent_at integer
+);
+CREATE UNIQUE INDEX IF NOT EXISTS lifecycle_email_log_uniq ON lifecycle_email_log(org_id, kind);
 `;

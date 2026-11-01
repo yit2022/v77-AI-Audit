@@ -6,6 +6,8 @@ import { getSession } from "@/lib/auth/session";
 import { id } from "@/lib/ids";
 import { seedIfEmpty } from "@/lib/db/seed";
 import { filterRegistry, summariseRegistry } from "@/lib/registry/summary";
+import { assertOrgWritable } from "@/lib/billing/trial";
+import { assertUnderLimit } from "@/lib/billing/limits";
 
 export async function GET(req: Request) {
   await seedIfEmpty();
@@ -79,6 +81,16 @@ export async function POST(req: Request) {
   const parsed = createSchema.safeParse(await req.json().catch(() => null));
   if (!parsed.success) return NextResponse.json({ error: "Invalid body" }, { status: 400 });
   await ensureDb();
+  try {
+    await assertOrgWritable(session.orgId);
+    await assertUnderLimit(session.orgId, "systems");
+  } catch (e) {
+    const err = e as { status?: number; code?: string; message?: string; kind?: string; used?: number; limit?: number };
+    return NextResponse.json(
+      { error: err.message || "Forbidden", code: err.code, kind: err.kind, used: err.used, limit: err.limit, upgrade: true },
+      { status: err.status || 402 },
+    );
+  }
   const systemId = id();
   await db.insert(schema.aiSystems).values({
     id: systemId,
@@ -114,6 +126,12 @@ export async function PATCH(req: Request) {
   const parsed = patchSchema.safeParse(await req.json().catch(() => null));
   if (!parsed.success) return NextResponse.json({ error: "Invalid body" }, { status: 400 });
   await ensureDb();
+  try {
+    await assertOrgWritable(session.orgId);
+  } catch (e) {
+    const err = e as { status?: number; code?: string; message?: string };
+    return NextResponse.json({ error: err.message || "Forbidden", code: err.code, upgrade: true }, { status: err.status || 402 });
+  }
   const existing = await db
     .select()
     .from(schema.aiSystems)

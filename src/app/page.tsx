@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { getSession } from "@/lib/auth/session";
 import { seedIfEmpty } from "@/lib/db/seed";
 import { LogoMark } from "@/components/logo-mark";
+import { PricingPlans } from "@/components/pricing-plans";
 import { PilotRequestForm } from "@/components/pilot-request-form";
 import { COMPANY } from "@/lib/company";
 import { getRequestLocale } from "@/lib/i18n/locale";
@@ -168,38 +169,28 @@ export default async function HomePage() {
       </section>
 
       <section id="pricing" className="mx-auto max-w-6xl px-4 sm:px-6 pb-10">
-        <div className="card overflow-hidden p-0">
-          <div className="grid lg:grid-cols-2">
-            <div className="border-b border-[#d7e6ef] bg-[#6FCDF5]/15 p-8 lg:border-b-0 lg:border-r">
-              <p className="text-xs font-bold uppercase tracking-[0.16em] text-sky-700">Pricing</p>
-              <h2 className="mt-2 text-2xl font-semibold text-[#0F2A4A]">{t(locale, "mkt.pricing.title")}</h2>
-              <p className="mt-3 text-sm leading-relaxed text-slate-600">
-                Pilots and enterprise plans are scoped to your AI inventory, frameworks and assurance depth.
-                Pricing on request — we quote in EUR after a short discovery call. {t(locale, "mkt.footer.sales")}:{" "}
-                <a className="font-semibold text-sky-800 hover:underline" href={`mailto:${COMPANY.salesEmail}`}>
-                  {COMPANY.salesEmail}
-                </a>
-                .
-              </p>
-              <ul className="mt-5 space-y-2 text-sm text-[#0F2A4A]">
-                <li>• Guided EU AI Act classification and control crosswalk</li>
-                <li>• Evidence vault on Cloudflare R2 with hash chain</li>
-                <li>• Technical evals, findings workflow and auditor sign-off</li>
-              </ul>
-            </div>
-            <div className="p-8">
-              <h3 className="text-lg font-semibold text-[#0F2A4A]">{t(locale, "mkt.pilot.title")}</h3>
-              <p className="mt-1 text-sm text-slate-500">
-                Tell us about your programme. We&apos;ll be in touch within 2 business days — or email{" "}
-                <a className="font-semibold text-sky-700 hover:underline" href={`mailto:${COMPANY.salesEmail}`}>
-                  {COMPANY.salesEmail}
-                </a>
-                .
-              </p>
-              <div className="mt-5">
-                <PilotRequestForm />
-              </div>
-            </div>
+        <div className="mb-6">
+          <p className="text-xs font-bold uppercase tracking-[0.16em] text-sky-700">Pricing</p>
+          <h2 className="mt-2 text-2xl font-semibold text-[#0F2A4A]">{t(locale, "mkt.pricing.title")}</h2>
+          <p className="mt-2 text-sm text-slate-600">
+            14-day self-serve trial · EUR list prices (ex VAT) · charged in USD at checkout.{" "}
+            <Link href="/pricing" className="font-semibold text-sky-800 hover:underline">
+              Full pricing page
+            </Link>
+          </p>
+        </div>
+        <PricingPlans />
+        <div className="mt-8 card p-6">
+          <h3 className="text-lg font-semibold text-[#0F2A4A]">{t(locale, "mkt.pilot.title")}</h3>
+          <p className="mt-1 text-sm text-slate-500">
+            Prefer a guided pilot? Email{" "}
+            <a className="font-semibold text-sky-700 hover:underline" href={`mailto:${COMPANY.salesEmail}`}>
+              {COMPANY.salesEmail}
+            </a>{" "}
+            or use the form:
+          </p>
+          <div className="mt-5">
+            <PilotRequestForm />
           </div>
         </div>
       </section>

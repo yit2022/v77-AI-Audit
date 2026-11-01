@@ -11,7 +11,7 @@ describe("company / Vertex77 operator", () => {
     expect(COMPANY.legalName).toContain("Vertex77");
     expect(COMPANY.addressLine).toMatch(/Warszawa|Warsaw/i);
     expect(COMPANY.email).toBe("contact@vertex77.com");
-    expect(COMPANY.salesEmail).toBe("sales@vertex77.com");
+    expect(COMPANY.salesEmail).toBe("sales@v77trust.com");
     expect(COMPANY.footerCopyright).toContain("© 2026 V77 Trust");
     expect(COMPANY.footerCopyright).toContain("Vertex77");
   });

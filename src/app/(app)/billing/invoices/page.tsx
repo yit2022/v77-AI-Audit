@@ -15,7 +15,7 @@ export default async function InvoicesPage() {
     <div>
       <PageHeader
         title="Invoices"
-        subtitle="Paystack card charges for this organisation (amounts also tracked in EUR)."
+        subtitle="Download receipts for Paystack card charges (EUR list shown; charged currency may be USD)."
         actions={
           <Link href="/billing" className="btn btn-secondary text-sm">
             Back to plans
@@ -28,15 +28,16 @@ export default async function InvoicesPage() {
             <tr>
               <th className="px-4 py-3">Date</th>
               <th className="px-4 py-3">Description</th>
-              <th className="px-4 py-3">EUR</th>
+              <th className="px-4 py-3">EUR (ex VAT)</th>
               <th className="px-4 py-3">Charged</th>
               <th className="px-4 py-3">Status</th>
+              <th className="px-4 py-3">Download</th>
             </tr>
           </thead>
           <tbody>
             {invoices.length === 0 ? (
               <tr>
-                <td colSpan={5} className="px-4 py-8 text-center text-slate-500">
+                <td colSpan={6} className="px-4 py-8 text-center text-slate-500">
                   No invoices yet.
                 </td>
               </tr>
@@ -52,6 +53,11 @@ export default async function InvoicesPage() {
                     {(i.chargeAmountMinor / 100).toFixed(2)} {i.chargeCurrency}
                   </td>
                   <td className="px-4 py-3 capitalize">{i.status}</td>
+                  <td className="px-4 py-3">
+                    <a className="font-medium text-sky-700 hover:underline" href={`/api/billing/invoices/${i.id}/download`}>
+                      Download
+                    </a>
+                  </td>
                 </tr>
               ))
             )}
