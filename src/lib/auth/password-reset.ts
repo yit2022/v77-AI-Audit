@@ -60,7 +60,7 @@ export async function requestPasswordReset(opts: {
 
   const resetUrl = `${getAppOrigin(opts.req)}/reset-password?token=${encodeURIComponent(token)}`;
   const tpl = passwordResetEmail({ name: user.name, resetUrl, locale: opts.locale });
-  await sendEmail({
+  const sent = await sendEmail({
     to: email,
     subject: tpl.subject,
     html: tpl.html,
@@ -68,6 +68,11 @@ export async function requestPasswordReset(opts: {
     fromName: tpl.fromName,
     tags: tpl.tags,
   });
+  if (!sent.ok) {
+    console.error("[password-reset:email]", sent.error, "mode", sent.mode);
+  } else if (sent.mode === "resend") {
+    console.info("[password-reset:email:sent]", sent.id || "ok");
+  }
   return { ok: true };
 }
 

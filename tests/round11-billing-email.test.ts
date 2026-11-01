@@ -9,7 +9,7 @@ import {
 } from "@/lib/billing/currency";
 import { billingEnabled } from "@/lib/billing/flags";
 import { PAYSTACK_CHANNELS, CHECKOUT_DISPLAY_NAME, verifyPaystackSignature, isV77PaystackEvent, FARMMATE_PLATFORM_PERCENT, resolveCheckoutSplit, defaultPaystackSplitCode } from "@/lib/billing/paystack";
-import { sendEmail, emailConfigured } from "@/lib/email/send";
+import { sendEmail, emailConfigured, formatFromAddress } from "@/lib/email/send";
 import { signupEmail, inviteEmail, evidenceRequestEmail, reminderEmail, leadNotificationEmail } from "@/lib/email/templates";
 import { redactPii, withSafeProvider } from "@/lib/providers/safe";
 import type { LlmProvider } from "@/lib/providers/types";
@@ -196,5 +196,30 @@ describe("Sprint 11 FarmMate-aligned split defaults", () => {
     process.env.PAYSTACK_SPLIT_CODE = "SPL_env";
     const r = resolveCheckoutSplit({ orgSplitCode: "SPL_org", amountMinor: 5000 });
     expect(r.splitCode).toBe("SPL_org");
+  });
+});
+
+
+describe("Sprint 11 email from address", () => {
+  const keys = ["V77_EMAIL_FROM"] as const;
+  const prev: Record<string, string | undefined> = {};
+  beforeEach(() => {
+    for (const k of keys) prev[k] = process.env[k];
+  });
+  afterEach(() => {
+    for (const k of keys) {
+      if (prev[k] === undefined) delete process.env[k];
+      else process.env[k] = prev[k];
+    }
+  });
+
+  it("does not double-wrap a display-name V77_EMAIL_FROM", () => {
+    process.env.V77_EMAIL_FROM = "V77 Trust <noreply@v77trust.com>";
+    expect(formatFromAddress(process.env, "V77 Trust")).toBe("V77 Trust <noreply@v77trust.com>");
+  });
+
+  it("wraps a bare address with the display name", () => {
+    process.env.V77_EMAIL_FROM = "noreply@v77trust.com";
+    expect(formatFromAddress(process.env, "V77 Trust")).toBe("V77 Trust <noreply@v77trust.com>");
   });
 });

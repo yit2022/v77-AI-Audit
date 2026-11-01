@@ -19,6 +19,27 @@ export function emailConfigured(env: NodeJS.ProcessEnv | Record<string, string |
   return Boolean(env.RESEND_API_KEY?.trim());
 }
 
+/**
+ * Build a Resend-safe `from` value.
+ * Accepts either a bare address (`noreply@…`) or a full `Name <addr>` in V77_EMAIL_FROM
+ * (wrangler ships the latter — do not wrap it again).
+ */
+export function formatFromAddress(
+  env: NodeJS.ProcessEnv | Record<string, string | undefined> = process.env,
+  fromName?: string,
+): string {
+  const raw = (env.V77_EMAIL_FROM?.trim() || DEFAULT_FROM).trim();
+  const display = (fromName || COMPANY.productName).trim() || COMPANY.productName;
+  const angled = raw.match(/^(.+?)\s*<([^>]+)>$/);
+  if (angled) {
+    const name = angled[1].trim().replace(/^["']|["']$/g, "") || display;
+    const email = angled[2].trim();
+    return `${name} <${email}>`;
+  }
+  if (raw.includes("@")) return `${display} <${raw}>`;
+  return `${display} <${DEFAULT_FROM}>`;
+}
+
 /** Send transactional mail via Resend when RESEND_API_KEY is set; otherwise log and no-op. */
 export async function sendEmail(
   payload: EmailPayload,
@@ -26,8 +47,7 @@ export async function sendEmail(
   env: NodeJS.ProcessEnv | Record<string, string | undefined> = process.env,
 ): Promise<EmailResult> {
   const key = env.RESEND_API_KEY?.trim();
-  const fromAddr = env.V77_EMAIL_FROM?.trim() || DEFAULT_FROM;
-  const fromName = payload.fromName || COMPANY.productName;
+  const from = formatFromAddress(env, payload.fromName);
   const replyTo = payload.replyTo || env.V77_EMAIL_REPLY_TO?.trim() || DEFAULT_REPLY;
   const to = Array.isArray(payload.to) ? payload.to : [payload.to];
 
@@ -35,7 +55,7 @@ export async function sendEmail(
     console.info("[email:noop]", {
       to,
       subject: payload.subject,
-      from: `${fromName} <${fromAddr}>`,
+      from,
       replyTo,
     });
     return { ok: true, mode: "noop" };
@@ -49,7 +69,7 @@ export async function sendEmail(
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        from: `${fromName} <${fromAddr}>`,
+        from,
         to,
         subject: payload.subject,
         html: payload.html,
