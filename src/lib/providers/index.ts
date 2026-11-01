@@ -3,14 +3,28 @@ import { createOpenAiProvider } from "./openai";
 import { createAnthropicProvider } from "./anthropic";
 import { createAzureOpenAiProvider } from "./azure";
 import { createHttpProvider } from "./http";
+import { createWorkersAiProvider } from "./workers-ai";
+import { realProvidersEnabled } from "./flags";
 import type { LlmProvider, ProviderId } from "./types";
 
 export type { LlmProvider, ProviderMessage, ProviderId } from "./types";
 export { mockProvider } from "./mock";
+export { realProvidersEnabled } from "./flags";
 
 export function listConfiguredProviders(): Array<{ id: ProviderId; name: string; configured: boolean }> {
-  return [
+  const real = realProvidersEnabled();
+  const rows: Array<{ id: ProviderId; name: string; configured: boolean }> = [
     { id: "mock", name: "Mock LLM Provider", configured: true },
+  ];
+  if (!real) return rows;
+
+  rows.push(
+    {
+      id: "workers_ai",
+      name: "Cloudflare Workers AI",
+      // Binding presence is runtime; treat as configured when flag is on so UI can offer it.
+      configured: true,
+    },
     { id: "openai", name: "OpenAI", configured: Boolean(process.env.OPENAI_API_KEY) },
     { id: "anthropic", name: "Anthropic", configured: Boolean(process.env.ANTHROPIC_API_KEY) },
     {
@@ -23,11 +37,16 @@ export function listConfiguredProviders(): Array<{ id: ProviderId; name: string;
       ),
     },
     { id: "http", name: "Generic HTTP LLM", configured: Boolean(process.env.V77_HTTP_LLM_URL) },
-  ];
+  );
+  return rows;
 }
 
 export function getProvider(id: string = "mock", fetchImpl: typeof fetch = fetch): LlmProvider {
-  switch (id as ProviderId) {
+  const requested = (id || "mock") as ProviderId;
+  if (requested !== "mock" && !realProvidersEnabled()) {
+    return mockProvider;
+  }
+  switch (requested) {
     case "openai":
       return createOpenAiProvider(fetchImpl);
     case "anthropic":
@@ -36,6 +55,8 @@ export function getProvider(id: string = "mock", fetchImpl: typeof fetch = fetch
       return createAzureOpenAiProvider(fetchImpl);
     case "http":
       return createHttpProvider(fetchImpl);
+    case "workers_ai":
+      return createWorkersAiProvider();
     case "mock":
     default:
       return mockProvider;

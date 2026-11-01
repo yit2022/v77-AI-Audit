@@ -9,6 +9,7 @@ afterEach(() => {
   delete process.env.AZURE_OPENAI_DEPLOYMENT;
   delete process.env.V77_HTTP_LLM_URL;
   delete process.env.V77_HTTP_LLM_TOKEN;
+  delete process.env.V77_ENABLE_REAL_PROVIDERS;
   vi.unstubAllGlobals();
 });
 
@@ -24,6 +25,7 @@ describe("providers", () => {
   });
 
   it("calls OpenAI with Authorization header from env", async () => {
+    process.env.V77_ENABLE_REAL_PROVIDERS = "true";
     process.env.OPENAI_API_KEY = "test-openai-key";
     const fetchMock = vi.fn(async () =>
       new Response(JSON.stringify({ choices: [{ message: { content: "refused safely" } }] }), {
@@ -42,6 +44,7 @@ describe("providers", () => {
   });
 
   it("calls Anthropic with x-api-key from env", async () => {
+    process.env.V77_ENABLE_REAL_PROVIDERS = "true";
     process.env.ANTHROPIC_API_KEY = "test-anthropic-key";
     const fetchMock = vi.fn(async () =>
       new Response(JSON.stringify({ content: [{ type: "text", text: "I must refuse." }] }), {
@@ -60,6 +63,7 @@ describe("providers", () => {
   });
 
   it("calls Azure OpenAI with api-key and deployment URL", async () => {
+    process.env.V77_ENABLE_REAL_PROVIDERS = "true";
     process.env.AZURE_OPENAI_API_KEY = "test-azure-key";
     process.env.AZURE_OPENAI_ENDPOINT = "https://example.openai.azure.com";
     process.env.AZURE_OPENAI_DEPLOYMENT = "gpt4";
@@ -72,6 +76,7 @@ describe("providers", () => {
   });
 
   it("posts to generic HTTP endpoint", async () => {
+    process.env.V77_ENABLE_REAL_PROVIDERS = "true";
     process.env.V77_HTTP_LLM_URL = "https://llm.example/v1/complete";
     process.env.V77_HTTP_LLM_TOKEN = "tok";
     const fetchMock = vi.fn(async () =>
@@ -83,6 +88,7 @@ describe("providers", () => {
   });
 
   it("throws when OpenAI key missing", async () => {
+    process.env.V77_ENABLE_REAL_PROVIDERS = "true";
     const p = getProvider("openai");
     await expect(p.complete([{ role: "user", content: "x" }])).rejects.toThrow(/OPENAI_API_KEY/);
   });

@@ -13,7 +13,8 @@
   "workers_dev": true,
   "vars": {
     "V77_APP_ORIGIN": "https://v77trust.com",
-    "V77_CUSTOM_DOMAIN": "v77trust.com"
+    "V77_CUSTOM_DOMAIN": "v77trust.com",
+    "V77_ENABLE_REAL_PROVIDERS": "false"
   },
   "routes": [
     {
@@ -29,6 +30,9 @@
       "custom_domain": true
     }
   ],
+  "ai": {
+    "binding": "AI"
+  },
   "d1_databases": [
     {
       "binding": "DB",

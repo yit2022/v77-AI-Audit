@@ -6,4 +6,4 @@ export type LlmProvider = {
   complete(messages: ProviderMessage[]): Promise<string>;
 };
 
-export type ProviderId = "mock" | "openai" | "anthropic" | "azure_openai" | "http";
+export type ProviderId = "mock" | "openai" | "anthropic" | "azure_openai" | "http" | "workers_ai";
