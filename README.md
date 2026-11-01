@@ -9,8 +9,8 @@ V77 is the system of record and system of proof for AI: inventory, EU AI Act ris
 ## Stack
 
 - Next.js 15 (App Router) + TypeScript + Tailwind CSS v4
-- Drizzle ORM + **PGlite** (embedded Postgres) for zero-config local runs
-- Docker Compose includes Postgres 16 for production-parity networking
+- Drizzle ORM + **PGlite** (embedded Postgres) by default; set `DATABASE_URL` (postgres://…) to use real Postgres
+- Docker Compose includes Postgres 16 and wires `DATABASE_URL` for production-parity networking
 - Cookie sessions, org memberships, roles: `admin` | `ai_owner` | `auditor`
 - Vitest for classification / crosswalk / fairness unit tests
 
@@ -60,7 +60,7 @@ Control descriptions are short original paraphrases with article/clause referenc
 
 **Included:** multi-tenant org + roles, inventory, EU risk wizard, crosswalk v0, assessments, evidence vault, fairness + mock LLM red-team (16 scenarios), auditor workspace, HTML report, seed data, tests, CI, Docker Compose.
 
-**Not yet:** SSO/OIDC, continuous monitoring, FRIA/DPIA templates, MLOps connectors, EN 18286 checklist, NYC LL144 format, WORM object lock, real LLM providers, notified-body workflows, multi-region residency.
+**Not yet:** EN 18286 checklist, NYC LL144 format, WORM object lock, notified-body workflows, multi-region residency. SSO/OIDC groundwork is env-configured.
 
 ## Ownership
 
