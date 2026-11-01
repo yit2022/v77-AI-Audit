@@ -19,7 +19,7 @@ export async function POST(req: Request) {
   if (!reference) return NextResponse.json({ error: "Missing reference" }, { status: 400 });
   try {
     const result = await activatePlanFromWebhook({ reference, event, rawPayload: payload });
-    return NextResponse.json({ ok: true, ...result });
+    return NextResponse.json(result);
   } catch (e) {
     console.error("[paystack:webhook]", e instanceof Error ? e.message : e);
     return NextResponse.json({ error: "Webhook handler failed" }, { status: 500 });
