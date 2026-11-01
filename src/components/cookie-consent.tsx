@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { COMPANY } from "@/lib/company";
 import { isLocale, t, type Locale } from "@/lib/i18n/dictionaries";
 
 const KEY = "v77_cookie_consent";

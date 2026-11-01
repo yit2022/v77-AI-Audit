@@ -26,7 +26,8 @@ export function roleAtLeast(role: Role | string, minimum: Role): boolean {
   return RANK[r] >= RANK[minimum];
 }
 
-export function canRead(_role: Role | string): boolean {
+export function canRead(role: Role | string): boolean {
+  void role;
   return true;
 }
 
