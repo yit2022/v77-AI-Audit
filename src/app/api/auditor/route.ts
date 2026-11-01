@@ -5,6 +5,7 @@ import { db, ensureDb, schema } from "@/lib/db";
 import { getSession } from "@/lib/auth/session";
 import { id } from "@/lib/ids";
 import { seedIfEmpty } from "@/lib/db/seed";
+import { appendAuditLog } from "@/lib/audit/log";
 
 const commentSchema = z.object({ assessmentId: z.string().uuid(), body: z.string().min(1) });
 const signoffSchema = z.object({
@@ -56,6 +57,14 @@ export async function POST(req: Request) {
       });
     }
     await db.update(schema.assessments).set({ status: "signed_off", updatedAt: new Date() }).where(eq(schema.assessments.id, parsed.data.assessmentId));
+    await appendAuditLog({
+      orgId: session.orgId,
+      actorUserId: session.userId,
+      action: "auditor.signoff",
+      entityType: "assessment",
+      entityId: parsed.data.assessmentId,
+      detail: { opinion: parsed.data.opinion, summary: parsed.data.summary },
+    });
     return NextResponse.json({ ok: true });
   }
   const parsed = commentSchema.safeParse(json);

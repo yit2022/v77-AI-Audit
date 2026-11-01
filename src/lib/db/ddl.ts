@@ -132,4 +132,32 @@ CREATE TABLE IF NOT EXISTS eval_runs (
   pass_count integer NOT NULL DEFAULT 0, fail_count integer NOT NULL DEFAULT 0,
   created_by text REFERENCES users(id), created_at timestamptz NOT NULL DEFAULT now()
 );
+CREATE TABLE IF NOT EXISTS findings (
+  id text PRIMARY KEY, org_id text NOT NULL REFERENCES organisations(id),
+  system_id text NOT NULL REFERENCES ai_systems(id),
+  assessment_id text REFERENCES assessments(id),
+  title text NOT NULL, description text NOT NULL DEFAULT '',
+  severity text NOT NULL DEFAULT 'medium', status text NOT NULL DEFAULT 'open',
+  framework_ref text NOT NULL DEFAULT '',
+  created_by text REFERENCES users(id),
+  created_at timestamptz NOT NULL DEFAULT now(),
+  updated_at timestamptz NOT NULL DEFAULT now()
+);
+CREATE TABLE IF NOT EXISTS remediation_tasks (
+  id text PRIMARY KEY, org_id text NOT NULL REFERENCES organisations(id),
+  finding_id text NOT NULL REFERENCES findings(id),
+  title text NOT NULL, description text NOT NULL DEFAULT '',
+  owner_user_id text REFERENCES users(id), owner_name text NOT NULL DEFAULT '',
+  due_date text, status text NOT NULL DEFAULT 'open',
+  created_at timestamptz NOT NULL DEFAULT now(),
+  updated_at timestamptz NOT NULL DEFAULT now()
+);
+CREATE TABLE IF NOT EXISTS audit_log (
+  id text PRIMARY KEY, org_id text NOT NULL REFERENCES organisations(id),
+  actor_user_id text REFERENCES users(id),
+  action text NOT NULL, entity_type text NOT NULL, entity_id text NOT NULL DEFAULT '',
+  detail_json text NOT NULL DEFAULT '{}',
+  prev_sha256 text NOT NULL DEFAULT '', sha256 text NOT NULL,
+  created_at timestamptz NOT NULL DEFAULT now()
+);
 `;

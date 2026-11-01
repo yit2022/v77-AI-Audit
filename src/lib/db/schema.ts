@@ -244,3 +244,46 @@ export const evalRuns = pgTable("eval_runs", {
   createdBy: text("created_by").references(() => users.id),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
+
+export const findings = pgTable("findings", {
+  id: text("id").primaryKey(),
+  orgId: text("org_id").notNull().references(() => organisations.id),
+  systemId: text("system_id").notNull().references(() => aiSystems.id),
+  assessmentId: text("assessment_id").references(() => assessments.id),
+  title: text("title").notNull(),
+  description: text("description").notNull().default(""),
+  severity: text("severity").notNull().default("medium"),
+  status: text("status").notNull().default("open"),
+  frameworkRef: text("framework_ref").notNull().default(""),
+  createdBy: text("created_by").references(() => users.id),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export const remediationTasks = pgTable("remediation_tasks", {
+  id: text("id").primaryKey(),
+  orgId: text("org_id").notNull().references(() => organisations.id),
+  findingId: text("finding_id").notNull().references(() => findings.id),
+  title: text("title").notNull(),
+  description: text("description").notNull().default(""),
+  ownerUserId: text("owner_user_id").references(() => users.id),
+  ownerName: text("owner_name").notNull().default(""),
+  dueDate: text("due_date"),
+  status: text("status").notNull().default("open"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export const auditLog = pgTable("audit_log", {
+  id: text("id").primaryKey(),
+  orgId: text("org_id").notNull().references(() => organisations.id),
+  actorUserId: text("actor_user_id").references(() => users.id),
+  action: text("action").notNull(),
+  entityType: text("entity_type").notNull(),
+  entityId: text("entity_id").notNull().default(""),
+  detailJson: text("detail_json").notNull().default("{}"),
+  prevSha256: text("prev_sha256").notNull().default(""),
+  sha256: text("sha256").notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+

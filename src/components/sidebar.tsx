@@ -14,6 +14,7 @@ const links = [
   { href: "/tests/evals", label: "Eval Suites" },
   { href: "/impact", label: "FRIA / DPIA" },
   { href: "/monitoring", label: "Monitoring" },
+  { href: "/findings", label: "Findings" },
   { href: "/auditor", label: "Auditor Workspace" },
 ];
 
