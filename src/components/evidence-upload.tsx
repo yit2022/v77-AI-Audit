@@ -16,9 +16,10 @@ export function EvidenceUpload({
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    const form = e.currentTarget;
     setLoading(true);
     setMsg("");
-    const fd = new FormData(e.currentTarget);
+    const fd = new FormData(form);
     const res = await fetch("/api/evidence", { method: "POST", body: fd });
     setLoading(false);
     if (!res.ok) {
@@ -27,7 +28,7 @@ export function EvidenceUpload({
     }
     const data = await res.json();
     setMsg(`Stored with SHA-256 ${data.sha256.slice(0, 12)}…`);
-    e.currentTarget.reset();
+    form.reset();
     router.refresh();
   }
 

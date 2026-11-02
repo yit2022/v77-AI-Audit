@@ -9,9 +9,10 @@ export function PilotRequestForm() {
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    const form = e.currentTarget;
     setStatus("loading");
     setError("");
-    const fd = new FormData(e.currentTarget);
+    const fd = new FormData(form);
     const res = await fetch("/api/leads", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -31,7 +32,7 @@ export function PilotRequestForm() {
       return;
     }
     setStatus("done");
-    e.currentTarget.reset();
+    form.reset();
   }
 
   if (status === "done") {

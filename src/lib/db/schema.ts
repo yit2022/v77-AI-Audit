@@ -1,5 +1,6 @@
 import { relations } from "drizzle-orm";
 import {
+  index,
   integer,
   sqliteTable,
   text,
@@ -55,37 +56,51 @@ export const memberships = pgTable(
     userId: text("user_id").notNull().references(() => users.id),
     role: text("role").notNull(),
   },
-  (t) => [uniqueIndex("membership_org_user").on(t.orgId, t.userId)],
+  (t) => [
+    uniqueIndex("membership_org_user").on(t.orgId, t.userId),
+    index("memberships_user_idx").on(t.userId),
+  ],
 );
 
-export const sessions = pgTable("sessions", {
-  id: text("id").primaryKey(),
-  userId: text("user_id").notNull().references(() => users.id),
-  orgId: text("org_id").notNull().references(() => organisations.id),
-  expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
-  createdAt: timestamp("created_at", { withTimezone: true }).notNull().$defaultFn(() => new Date()),
-});
+export const sessions = pgTable(
+  "sessions",
+  {
+    id: text("id").primaryKey(),
+    userId: text("user_id").notNull().references(() => users.id),
+    orgId: text("org_id").notNull().references(() => organisations.id),
+    expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().$defaultFn(() => new Date()),
+  },
+  (t) => [
+    index("sessions_user_idx").on(t.userId),
+    index("sessions_org_idx").on(t.orgId),
+  ],
+);
 
-export const aiSystems = pgTable("ai_systems", {
-  id: text("id").primaryKey(),
-  orgId: text("org_id").notNull().references(() => organisations.id),
-  name: text("name").notNull(),
-  description: text("description").notNull().default(""),
-  intendedPurpose: text("intended_purpose").notNull().default(""),
-  roleInValueChain: text("role_in_value_chain").notNull().default("provider"),
-  domain: text("domain").notNull().default("general"),
-  ownerUserId: text("owner_user_id").references(() => users.id),
-  riskTier: text("risk_tier"),
-  classificationNotes: text("classification_notes").default(""),
-  gpai: boolean("gpai").notNull().default(false),
-  lifecycleStatus: text("lifecycle_status").notNull().default("discovered"),
-  versionLabel: text("version_label").notNull().default(""),
-  vendorName: text("vendor_name").notNull().default(""),
-  euDatabaseId: text("eu_database_id").notNull().default(""),
-  lastReviewedAt: timestamp("last_reviewed_at", { withTimezone: true }),
-  createdAt: timestamp("created_at", { withTimezone: true }).notNull().$defaultFn(() => new Date()),
-  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().$defaultFn(() => new Date()),
-});
+export const aiSystems = pgTable(
+  "ai_systems",
+  {
+    id: text("id").primaryKey(),
+    orgId: text("org_id").notNull().references(() => organisations.id),
+    name: text("name").notNull(),
+    description: text("description").notNull().default(""),
+    intendedPurpose: text("intended_purpose").notNull().default(""),
+    roleInValueChain: text("role_in_value_chain").notNull().default("provider"),
+    domain: text("domain").notNull().default("general"),
+    ownerUserId: text("owner_user_id").references(() => users.id),
+    riskTier: text("risk_tier"),
+    classificationNotes: text("classification_notes").default(""),
+    gpai: boolean("gpai").notNull().default(false),
+    lifecycleStatus: text("lifecycle_status").notNull().default("discovered"),
+    versionLabel: text("version_label").notNull().default(""),
+    vendorName: text("vendor_name").notNull().default(""),
+    euDatabaseId: text("eu_database_id").notNull().default(""),
+    lastReviewedAt: timestamp("last_reviewed_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().$defaultFn(() => new Date()),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().$defaultFn(() => new Date()),
+  },
+  (t) => [index("ai_systems_org_idx").on(t.orgId)],
+);
 
 export const classificationAnswers = pgTable("classification_answers", {
   id: text("id").primaryKey(),
@@ -110,7 +125,9 @@ export const controls = pgTable("controls", {
   appliesTo: text("applies_to").notNull().default("high_risk"),
 });
 
-export const assessments = pgTable("assessments", {
+export const assessments = pgTable(
+  "assessments",
+  {
   id: text("id").primaryKey(),
   orgId: text("org_id").notNull().references(() => organisations.id),
   systemId: text("system_id").notNull().references(() => aiSystems.id),
@@ -118,7 +135,12 @@ export const assessments = pgTable("assessments", {
   status: text("status").notNull().default("draft"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().$defaultFn(() => new Date()),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().$defaultFn(() => new Date()),
-});
+},
+  (t) => [
+    index("assessments_org_idx").on(t.orgId),
+    index("assessments_system_idx").on(t.systemId),
+  ],
+);
 
 export const assessmentControls = pgTable(
   "assessment_controls",
@@ -133,7 +155,9 @@ export const assessmentControls = pgTable(
   (t) => [uniqueIndex("assessment_control_unique").on(t.assessmentId, t.controlId)],
 );
 
-export const evidenceItems = pgTable("evidence_items", {
+export const evidenceItems = pgTable(
+  "evidence_items",
+  {
   id: text("id").primaryKey(),
   orgId: text("org_id").notNull().references(() => organisations.id),
   systemId: text("system_id").references(() => aiSystems.id),
@@ -147,7 +171,9 @@ export const evidenceItems = pgTable("evidence_items", {
   prevSha256: text("prev_sha256").notNull().default(""),
   uploadedBy: text("uploaded_by").references(() => users.id),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().$defaultFn(() => new Date()),
-});
+},
+  (t) => [index("evidence_items_org_idx").on(t.orgId)],
+);
 
 export const fairnessRuns = pgTable("fairness_runs", {
   id: text("id").primaryKey(),

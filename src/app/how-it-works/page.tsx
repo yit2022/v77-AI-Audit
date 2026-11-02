@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { MarketingChrome } from "@/components/marketing-chrome";
 
+export const revalidate = 300;
+
 export const metadata: Metadata = {
   title: "How it works — V77 Trust",
   description: "From AI inventory to auditor-ready evidence: how V77 Trust runs global AI governance programmes.",

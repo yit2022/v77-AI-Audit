@@ -1,10 +1,10 @@
-export const dynamic = "force-dynamic";
-
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { MarketingChrome } from "@/components/marketing-chrome";
 import { BLOG_ARTICLES, getArticle } from "@/lib/blog/articles";
 import { COMPANY } from "@/lib/company";
+
+export const revalidate = 300;
 
 type Props = { params: Promise<{ slug: string }> };
 

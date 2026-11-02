@@ -10,9 +10,10 @@ export function FairnessForm({ systems }: { systems: { id: string; name: string 
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    const form = e.currentTarget;
     setLoading(true);
     setError("");
-    const fd = new FormData(e.currentTarget);
+    const fd = new FormData(form);
     const res = await fetch("/api/tests/fairness", { method: "POST", body: fd });
     setLoading(false);
     if (!res.ok) {
@@ -20,7 +21,7 @@ export function FairnessForm({ systems }: { systems: { id: string; name: string 
       setError(data.error || "Failed");
       return;
     }
-    e.currentTarget.reset();
+    form.reset();
     router.refresh();
   }
 

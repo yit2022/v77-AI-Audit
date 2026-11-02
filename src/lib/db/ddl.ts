@@ -395,6 +395,14 @@ CREATE TABLE IF NOT EXISTS password_reset_tokens (
   created_at integer
 );
 CREATE INDEX IF NOT EXISTS password_reset_tokens_user_idx ON password_reset_tokens(user_id);
+CREATE INDEX IF NOT EXISTS ai_systems_org_idx ON ai_systems(org_id);
+CREATE INDEX IF NOT EXISTS assessments_org_idx ON assessments(org_id);
+CREATE INDEX IF NOT EXISTS assessments_system_idx ON assessments(system_id);
+CREATE INDEX IF NOT EXISTS evidence_items_org_idx ON evidence_items(org_id);
+CREATE INDEX IF NOT EXISTS sessions_user_idx ON sessions(user_id);
+CREATE INDEX IF NOT EXISTS sessions_org_idx ON sessions(org_id);
+CREATE INDEX IF NOT EXISTS memberships_user_idx ON memberships(user_id);
+
 
 
 CREATE TABLE IF NOT EXISTS email_unsubscribes (

@@ -1,12 +1,10 @@
-import { redirect } from "next/navigation";
-import { getSession } from "@/lib/auth/session";
 import { LogoMark } from "@/components/logo-mark";
 import { SignupForm } from "@/components/signup-form";
 
-export default async function SignupPage() {
-  const session = await getSession();
-  if (session) redirect("/dashboard");
+/** Static shell — logged-in users are redirected by middleware. */
+export const revalidate = 300;
 
+export default function SignupPage() {
   return (
     <main className="mx-auto flex min-h-screen max-w-md flex-col justify-center px-6">
       <div className="card p-8">

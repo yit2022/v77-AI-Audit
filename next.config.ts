@@ -9,7 +9,7 @@ const nextConfig: NextConfig = {
     formats: ["image/avif", "image/webp"],
   },
   experimental: {
-    optimizePackageImports: ["lucide-react"],
+    optimizePackageImports: ["lucide-react", "drizzle-orm", "date-fns", "zod"],
   },
   serverExternalPackages: ["@electric-sql/pglite", "@libsql/client"],
   async redirects() {

@@ -3,6 +3,8 @@ import Link from "next/link";
 import { MarketingChrome } from "@/components/marketing-chrome";
 import { COMPANY } from "@/lib/company";
 
+export const revalidate = 300;
+
 export const metadata: Metadata = {
   title: "Security & Trust — V77 Trust",
   description: "How V77 Trust protects tenant data: RBAC, CSRF, rate limits, hash-chained evidence and audit logs.",

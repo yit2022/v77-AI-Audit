@@ -1,17 +1,14 @@
-export const dynamic = "force-dynamic";
-
 import Link from "next/link";
-import { redirect } from "next/navigation";
-import { getSession } from "@/lib/auth/session";
-import { seedIfEmpty } from "@/lib/db/seed";
 import { LogoMark } from "@/components/logo-mark";
 import { PricingPlans } from "@/components/pricing-plans";
 import { PilotRequestForm } from "@/components/pilot-request-form";
 import { COMPANY } from "@/lib/company";
-import { getRequestLocale } from "@/lib/i18n/locale";
-import { t } from "@/lib/i18n/dictionaries";
+import { tEn } from "@/lib/i18n/dictionaries";
 import { LocaleSwitcher } from "@/components/locale-switcher";
 import { RiskTierChecker } from "@/components/risk-tier-checker";
+
+/** Edge-cacheable marketing home — session redirect is handled in middleware. */
+export const revalidate = 300;
 
 const pillars = [
   {
@@ -43,44 +40,39 @@ const modules = [
   "API keys (/api/v1)",
 ];
 
-export default async function HomePage() {
-  await seedIfEmpty();
-  const session = await getSession();
-  if (session) redirect("/dashboard");
-  const locale = await getRequestLocale();
-
+export default function HomePage() {
   return (
     <main id="main-content" tabIndex={-1} className="min-h-screen bg-[radial-gradient(ellipse_at_top,_#e8f7fd_0%,_#ffffff_48%,_#ffffff_100%)]">
       <header className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-5 sm:px-6 sm:py-6">
         <LogoMark />
         <nav className="flex flex-wrap items-center justify-end gap-2 sm:gap-3">
-          <LocaleSwitcher value={locale} />
+          <LocaleSwitcher value="en" />
           <Link href="/how-it-works" className="hidden text-sm font-medium text-slate-600 hover:text-[#0F2A4A] sm:inline">
-            {t(locale, "mkt.nav.how")}
+            {tEn("mkt.nav.how")}
           </Link>
           <Link href="/frameworks" className="hidden text-sm font-medium text-slate-600 hover:text-[#0F2A4A] md:inline">
-            {t(locale, "mkt.nav.frameworks")}
+            {tEn("mkt.nav.frameworks")}
           </Link>
           <Link href="/demo" className="hidden text-sm font-medium text-slate-600 hover:text-[#0F2A4A] md:inline">
-            {t(locale, "mkt.nav.demo")}
+            {tEn("mkt.nav.demo")}
           </Link>
           <Link href="/resources" className="hidden text-sm font-medium text-slate-600 hover:text-[#0F2A4A] lg:inline">
-            {t(locale, "mkt.nav.resources")}
+            {tEn("mkt.nav.resources")}
           </Link>
           <Link href="/developers" className="hidden text-sm font-medium text-slate-600 hover:text-[#0F2A4A] lg:inline">
-            {t(locale, "mkt.nav.developers")}
+            {tEn("mkt.nav.developers")}
           </Link>
           <Link href="/contact" className="hidden text-sm font-medium text-slate-600 hover:text-[#0F2A4A] lg:inline">
-            {t(locale, "mkt.nav.contact")}
+            {tEn("mkt.nav.contact")}
           </Link>
           <a href="#pricing" className="hidden text-sm font-medium text-slate-600 hover:text-[#0F2A4A] lg:inline">
-            {t(locale, "mkt.pricing.title")}
+            {tEn("mkt.pricing.title")}
           </a>
           <Link href="/login" className="btn btn-secondary px-3 py-2 sm:px-5">
-            {t(locale, "mkt.nav.signin")}
+            {tEn("mkt.nav.signin")}
           </Link>
           <Link href="/signup" className="btn btn-primary px-3 py-2 sm:px-5">
-            {t(locale, "mkt.nav.signup")}
+            {tEn("mkt.nav.signup")}
           </Link>
         </nav>
       </header>
@@ -102,7 +94,7 @@ export default async function HomePage() {
                 Check AI Act risk tier
               </a>
               <a href="#request-pilot" className="btn btn-secondary">
-                {t(locale, "mkt.hero.ctaPilot")}
+                {tEn("mkt.hero.ctaPilot")}
               </a>
               <Link href="/demo" className="btn btn-secondary">
                 Product tour
@@ -172,7 +164,7 @@ export default async function HomePage() {
         <div id="request-pilot" className="scroll-mt-24" />
         <div className="mb-6">
           <p className="text-xs font-bold uppercase tracking-[0.16em] text-sky-700">Pricing</p>
-          <h2 className="mt-2 text-2xl font-semibold text-[#0F2A4A]">{t(locale, "mkt.pricing.title")}</h2>
+          <h2 className="mt-2 text-2xl font-semibold text-[#0F2A4A]">{tEn("mkt.pricing.title")}</h2>
           <p className="mt-2 text-sm text-slate-600">
             14-day self-serve trial · EUR list prices (ex VAT) · charged in USD at checkout.{" "}
             <Link href="/pricing" className="font-semibold text-sky-800 hover:underline">
@@ -182,7 +174,7 @@ export default async function HomePage() {
         </div>
         <PricingPlans />
         <div className="mt-8 card p-6">
-          <h3 className="text-lg font-semibold text-[#0F2A4A]">{t(locale, "mkt.pilot.title")}</h3>
+          <h3 className="text-lg font-semibold text-[#0F2A4A]">{tEn("mkt.pilot.title")}</h3>
           <p className="mt-1 text-sm text-slate-500">
             Prefer a guided pilot? Email{" "}
             <a className="font-semibold text-sky-700 hover:underline" href={`mailto:${COMPANY.salesEmail}`}>
@@ -202,12 +194,12 @@ export default async function HomePage() {
             <LogoMark />
             <p className="text-xs text-slate-500">{COMPANY.footerCopyright}</p>
             <p className="text-xs text-slate-500">
-              {t(locale, "mkt.footer.sales")}:{" "}
+              {tEn("mkt.footer.sales")}:{" "}
               <a className="text-sky-700 hover:underline" href={`mailto:${COMPANY.salesEmail}`}>
                 {COMPANY.salesEmail}
               </a>
               {" · "}
-              {t(locale, "mkt.footer.general")}:{" "}
+              {tEn("mkt.footer.general")}:{" "}
               <a className="text-sky-700 hover:underline" href={`mailto:${COMPANY.email}`}>
                 {COMPANY.email}
               </a>
@@ -215,8 +207,8 @@ export default async function HomePage() {
           </div>
           <div className="flex flex-wrap gap-x-4 gap-y-2 text-sm font-medium text-[#0F2A4A]">
             <Link href="/how-it-works" className="hover:text-sky-700">How it works</Link>
-            <Link href="/demo" className="hover:text-sky-700">{t(locale, "mkt.nav.demo")}</Link>
-            <Link href="/resources" className="hover:text-sky-700">{t(locale, "mkt.nav.resources")}</Link>
+            <Link href="/demo" className="hover:text-sky-700">{tEn("mkt.nav.demo")}</Link>
+            <Link href="/resources" className="hover:text-sky-700">{tEn("mkt.nav.resources")}</Link>
             <Link href="/frameworks" className="hover:text-sky-700">Frameworks</Link>
             <Link href="/security" className="hover:text-sky-700">Security</Link>
             <Link href="/contact" className="hover:text-sky-700">Contact</Link>

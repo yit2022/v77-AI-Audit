@@ -2,6 +2,8 @@ import { Suspense } from "react";
 import { LoginForm } from "@/components/login-form";
 import { LogoMark } from "@/components/logo-mark";
 
+export const revalidate = 300;
+
 export default function LoginPage() {
   return (
     <Suspense

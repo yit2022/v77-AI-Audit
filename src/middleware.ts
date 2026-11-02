@@ -37,6 +37,38 @@ const ALIASES: Record<string, string> = {
   "/request-pilot": "/#pricing",
 };
 
+const MARKETING = new Set([
+  "/",
+  "/pricing",
+  "/how-it-works",
+  "/demo",
+  "/resources",
+  "/frameworks",
+  "/security",
+  "/developers",
+  "/contact",
+  "/privacy",
+  "/terms",
+  "/login",
+  "/signup",
+  "/forgot-password",
+  "/unsubscribe",
+]);
+
+const SESSION_COOKIE = "v77_session";
+
+function withSecurity(res: NextResponse, cachePublic = false) {
+  for (const [k, v] of Object.entries(SECURITY_HEADERS)) res.headers.set(k, v);
+  if (cachePublic) {
+    // Override Next's private no-store for edge-cacheable marketing HTML.
+    res.headers.set(
+      "Cache-Control",
+      "public, s-maxage=300, stale-while-revalidate=86400",
+    );
+  }
+  return res;
+}
+
 export function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
   const mapped = ALIASES[pathname];
@@ -49,38 +81,37 @@ export function middleware(req: NextRequest) {
     } else {
       url.pathname = mapped;
     }
-    const res = NextResponse.redirect(url);
-    for (const [k, v] of Object.entries(SECURITY_HEADERS)) res.headers.set(k, v);
-    return res;
+    return withSecurity(NextResponse.redirect(url));
   }
-  // /inventory/:id → /systems/:id
   if (pathname.startsWith("/inventory/")) {
     const url = req.nextUrl.clone();
     url.pathname = "/systems/" + pathname.slice("/inventory/".length);
-    const res = NextResponse.redirect(url);
-    for (const [k, v] of Object.entries(SECURITY_HEADERS)) res.headers.set(k, v);
-    return res;
+    return withSecurity(NextResponse.redirect(url));
   }
   if (pathname.startsWith("/ai-systems/")) {
     const url = req.nextUrl.clone();
     url.pathname = "/systems/" + pathname.slice("/ai-systems/".length);
-    const res = NextResponse.redirect(url);
-    for (const [k, v] of Object.entries(SECURITY_HEADERS)) res.headers.set(k, v);
-    return res;
+    return withSecurity(NextResponse.redirect(url));
   }
   if (pathname.startsWith("/app/") && pathname !== "/app") {
     const url = req.nextUrl.clone();
     url.pathname = pathname.slice(4) || "/dashboard";
-    const res = NextResponse.redirect(url);
-    for (const [k, v] of Object.entries(SECURITY_HEADERS)) res.headers.set(k, v);
-    return res;
+    return withSecurity(NextResponse.redirect(url));
   }
 
-  const res = NextResponse.next();
-  for (const [k, v] of Object.entries(SECURITY_HEADERS)) {
-    res.headers.set(k, v);
+  const hasSession = Boolean(req.cookies.get(SESSION_COOKIE)?.value);
+  if (hasSession && (pathname === "/" || pathname === "/signup" || pathname === "/login")) {
+    const url = req.nextUrl.clone();
+    url.pathname = "/dashboard";
+    return withSecurity(NextResponse.redirect(url));
   }
-  return res;
+
+  const isMarketing =
+    MARKETING.has(pathname) ||
+    pathname.startsWith("/resources/") ||
+    pathname.startsWith("/trust/");
+
+  return withSecurity(NextResponse.next(), isMarketing && !hasSession);
 }
 
 export const config = {

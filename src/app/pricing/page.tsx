@@ -1,3 +1,5 @@
+export const revalidate = 300;
+
 import { MarketingChrome } from "@/components/marketing-chrome";
 import { PricingPlans } from "@/components/pricing-plans";
 import { COMPANY } from "@/lib/company";

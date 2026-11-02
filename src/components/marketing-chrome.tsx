@@ -1,22 +1,41 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { LogoMark } from "@/components/logo-mark";
 import { COMPANY } from "@/lib/company";
-import { getRequestLocale } from "@/lib/i18n/locale";
-import { t } from "@/lib/i18n/dictionaries";
+import { ensureLocale, isLocale, t, tEn, type Locale } from "@/lib/i18n/dictionaries";
 import { LocaleSwitcher } from "@/components/locale-switcher";
 
-export async function MarketingChrome({ children }: { children: React.ReactNode }) {
-  const locale = await getRequestLocale();
+function readLocaleCookie(): Locale {
+  if (typeof document === "undefined") return "en";
+  const m = document.cookie.match(/(?:^|; )v77_locale=([^;]+)/);
+  const raw = m ? decodeURIComponent(m[1]) : "en";
+  return isLocale(raw) ? raw : "en";
+}
+
+export function MarketingChrome({ children }: { children: React.ReactNode }) {
+  const [locale, setLocale] = useState<Locale>("en");
+  const [ready, setReady] = useState(false);
+
+  useEffect(() => {
+    const loc = readLocaleCookie();
+    setLocale(loc);
+    document.documentElement.lang = loc;
+    void ensureLocale(loc).then(() => setReady(true));
+  }, []);
+
+  const tr = (key: string) => (ready ? t(locale, key) : tEn(key));
   const nav = [
-    { href: "/pricing", key: "mkt.pricing.title" as const },
-    { href: "/how-it-works", key: "mkt.nav.how" as const },
-    { href: "/demo", key: "mkt.nav.demo" as const },
-    { href: "/resources", key: "mkt.nav.resources" as const },
-    { href: "/frameworks", key: "mkt.nav.frameworks" as const },
-    { href: "/security", key: "mkt.nav.security" as const },
-    { href: "/contact", key: "mkt.nav.contact" as const },
-    { href: "/developers", key: "mkt.nav.developers" as const },
-  ];
+    { href: "/pricing", key: "mkt.pricing.title" },
+    { href: "/how-it-works", key: "mkt.nav.how" },
+    { href: "/demo", key: "mkt.nav.demo" },
+    { href: "/resources", key: "mkt.nav.resources" },
+    { href: "/frameworks", key: "mkt.nav.frameworks" },
+    { href: "/security", key: "mkt.nav.security" },
+    { href: "/contact", key: "mkt.nav.contact" },
+    { href: "/developers", key: "mkt.nav.developers" },
+  ] as const;
 
   return (
     <main className="min-h-screen bg-[radial-gradient(ellipse_at_top,_#e8f7fd_0%,_#ffffff_48%,_#ffffff_100%)]">
@@ -29,15 +48,15 @@ export async function MarketingChrome({ children }: { children: React.ReactNode 
               href={n.href}
               className="hidden text-sm font-medium text-slate-600 hover:text-[#0F2A4A] sm:inline"
             >
-              {t(locale, n.key)}
+              {tr(n.key)}
             </Link>
           ))}
           <LocaleSwitcher value={locale} />
           <Link href="/login" className="btn btn-secondary px-3 py-2 sm:px-5">
-            {t(locale, "mkt.nav.signin")}
+            {tr("mkt.nav.signin")}
           </Link>
           <Link href="/signup" className="btn btn-primary px-3 py-2 sm:px-5">
-            {t(locale, "mkt.nav.signup")}
+            {tr("mkt.nav.signup")}
           </Link>
         </nav>
       </header>
@@ -50,12 +69,12 @@ export async function MarketingChrome({ children }: { children: React.ReactNode 
             <LogoMark />
             <p className="text-xs text-slate-500">{COMPANY.footerCopyright}</p>
             <p className="text-xs text-slate-500">
-              {t(locale, "mkt.footer.sales")}:{" "}
+              {tr("mkt.footer.sales")}:{" "}
               <a className="text-sky-700 hover:underline" href={`mailto:${COMPANY.salesEmail}`}>
                 {COMPANY.salesEmail}
               </a>
               {" · "}
-              {t(locale, "mkt.footer.general")}:{" "}
+              {tr("mkt.footer.general")}:{" "}
               <a className="text-sky-700 hover:underline" href={`mailto:${COMPANY.email}`}>
                 {COMPANY.email}
               </a>
@@ -63,28 +82,25 @@ export async function MarketingChrome({ children }: { children: React.ReactNode 
           </div>
           <div className="flex flex-wrap gap-x-4 gap-y-2 text-sm font-medium text-[#0F2A4A]">
             <Link href="/how-it-works" className="hover:text-sky-700">
-              {t(locale, "mkt.nav.how")}
+              {tr("mkt.nav.how")}
             </Link>
             <Link href="/frameworks" className="hover:text-sky-700">
-              {t(locale, "mkt.nav.frameworks")}
+              {tr("mkt.nav.frameworks")}
             </Link>
             <Link href="/security" className="hover:text-sky-700">
-              {t(locale, "mkt.nav.security")}
+              {tr("mkt.nav.security")}
             </Link>
             <Link href="/developers" className="hover:text-sky-700">
-              {t(locale, "mkt.nav.developers")}
+              {tr("mkt.nav.developers")}
             </Link>
             <Link href="/contact" className="hover:text-sky-700">
-              {t(locale, "mkt.nav.contact")}
+              {tr("mkt.nav.contact")}
             </Link>
             <Link href="/privacy" className="hover:text-sky-700">
               Privacy
             </Link>
             <Link href="/terms" className="hover:text-sky-700">
               Terms
-            </Link>
-            <Link href="/login" className="hover:text-sky-700">
-              {t(locale, "mkt.nav.signin")}
             </Link>
           </div>
         </div>

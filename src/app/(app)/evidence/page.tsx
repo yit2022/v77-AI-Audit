@@ -41,6 +41,7 @@ export default async function EvidencePage() {
               <th className="px-5 py-2">File</th>
               <th className="px-5 py-2">SHA-256</th>
               <th className="px-5 py-2">Uploaded</th>
+              <th className="px-5 py-2">Download</th>
             </tr>
           </thead>
           <tbody>
@@ -55,11 +56,16 @@ export default async function EvidencePage() {
                 <td className="px-5 py-3 text-slate-500">
                   {i.createdAt ? new Date(i.createdAt).toISOString().slice(0, 10) : "—"}
                 </td>
+                <td className="px-5 py-3">
+                  <a className="font-medium text-sky-700 hover:underline" href={`/api/evidence/${i.id}/download`}>
+                    Download
+                  </a>
+                </td>
               </tr>
             ))}
             {items.length === 0 ? (
               <tr>
-                <td colSpan={5} className="px-5 py-8 text-center text-slate-500">
+                <td colSpan={6} className="px-5 py-8 text-center text-slate-500">
                   No evidence uploaded yet.
                 </td>
               </tr>

@@ -1,8 +1,8 @@
-export const dynamic = "force-dynamic";
-
 import Link from "next/link";
 import { MarketingChrome } from "@/components/marketing-chrome";
 import { BLOG_ARTICLES } from "@/lib/blog/articles";
+
+export const revalidate = 300;
 
 export default function ResourcesPage() {
   return (

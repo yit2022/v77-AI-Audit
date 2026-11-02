@@ -1,10 +1,8 @@
 import type { Metadata } from "next";
-import { cookies } from "next/headers";
 import "./globals.css";
 import { getAppOrigin } from "@/lib/site";
 import { CookieConsent } from "@/components/cookie-consent";
 import { ErrorMonitor } from "@/components/error-monitor";
-import { isLocale } from "@/lib/i18n/dictionaries";
 
 const origin = getAppOrigin();
 
@@ -35,14 +33,7 @@ export const metadata: Metadata = {
     title: "V77 Trust — AI Auditor",
     description:
       "System of record and system of proof for AI governance across the EU AI Act, NIST AI RMF and ISO/IEC 42001.",
-    images: [
-      {
-        url: "/og-image.png",
-        width: 1200,
-        height: 630,
-        alt: "V77 Trust",
-      },
-    ],
+    images: [{ url: "/og-image.png", width: 1200, height: 630, alt: "V77 Trust" }],
   },
   twitter: {
     card: "summary_large_image",
@@ -61,13 +52,13 @@ export const metadata: Metadata = {
   manifest: "/site.webmanifest",
 };
 
-export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  const jar = await cookies();
-  const raw = jar.get("v77_locale")?.value;
-  const lang = isLocale(raw) ? raw : "en";
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang={lang}>
-      <body className="min-h-screen antialiased">
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <link rel="preload" href="/brand/v77-lockup.svg" as="image" type="image/svg+xml" />
+      </head>
+      <body className="min-h-screen antialiased font-sans">
         <a href="#main-content" className="skip-link">
           Skip to main content
         </a>

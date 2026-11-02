@@ -1,7 +1,7 @@
 export const dynamic = "force-dynamic";
 
 import Link from "next/link";
-import { eq, count } from "drizzle-orm";
+import { eq, count, desc } from "drizzle-orm";
 import { db, ensureDb, schema } from "@/lib/db";
 import { getSession } from "@/lib/auth/session";
 import { PageHeader, RiskBadge } from "@/components/ui";
@@ -12,25 +12,40 @@ export default async function DashboardPage() {
   if (!session) return null;
   await ensureDb();
 
-  const systems = await db
-    .select()
-    .from(schema.aiSystems)
-    .where(eq(schema.aiSystems.orgId, session.orgId));
-  const assessments = await db
-    .select()
-    .from(schema.assessments)
-    .where(eq(schema.assessments.orgId, session.orgId));
-  const evidence = await db
-    .select({ value: count() })
-    .from(schema.evidenceItems)
-    .where(eq(schema.evidenceItems.orgId, session.orgId));
-  const controls = await db.select({ value: count() }).from(schema.controls);
+  const [systemCountRows, assessmentCountRows, evidenceRows, controlRows, recentSystems] =
+    await Promise.all([
+      db
+        .select({ value: count() })
+        .from(schema.aiSystems)
+        .where(eq(schema.aiSystems.orgId, session.orgId)),
+      db
+        .select({ value: count() })
+        .from(schema.assessments)
+        .where(eq(schema.assessments.orgId, session.orgId)),
+      db
+        .select({ value: count() })
+        .from(schema.evidenceItems)
+        .where(eq(schema.evidenceItems.orgId, session.orgId)),
+      db.select({ value: count() }).from(schema.controls),
+      db
+        .select({
+          id: schema.aiSystems.id,
+          name: schema.aiSystems.name,
+          domain: schema.aiSystems.domain,
+          roleInValueChain: schema.aiSystems.roleInValueChain,
+          riskTier: schema.aiSystems.riskTier,
+        })
+        .from(schema.aiSystems)
+        .where(eq(schema.aiSystems.orgId, session.orgId))
+        .orderBy(desc(schema.aiSystems.createdAt))
+        .limit(8),
+    ]);
 
   const stats = [
-    { label: "AI systems", value: systems.length, href: "/systems" },
-    { label: "Assessments", value: assessments.length, href: "/assessments" },
-    { label: "Evidence items", value: Number(evidence[0]?.value ?? 0), href: "/evidence" },
-    { label: "Controls in library", value: Number(controls[0]?.value ?? 0), href: "/controls" },
+    { label: "AI systems", value: Number(systemCountRows[0]?.value ?? 0), href: "/systems" },
+    { label: "Assessments", value: Number(assessmentCountRows[0]?.value ?? 0), href: "/assessments" },
+    { label: "Evidence items", value: Number(evidenceRows[0]?.value ?? 0), href: "/evidence" },
+    { label: "Controls in library", value: Number(controlRows[0]?.value ?? 0), href: "/controls" },
   ];
 
   return (
@@ -48,12 +63,8 @@ export default async function DashboardPage() {
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {stats.map((s) => (
           <Link key={s.label} href={s.href} className="card p-5 hover:border-sky-300">
-            <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-              {s.label}
-            </div>
-            <div className="mt-2 text-3xl font-semibold text-slate-900">
-              {s.value}
-            </div>
+            <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">{s.label}</div>
+            <div className="mt-2 text-3xl font-semibold text-slate-900">{s.value}</div>
           </Link>
         ))}
       </div>
@@ -72,7 +83,7 @@ export default async function DashboardPage() {
             </tr>
           </thead>
           <tbody>
-            {systems.slice(0, 8).map((s) => (
+            {recentSystems.map((s) => (
               <tr key={s.id} className="border-t border-slate-100">
                 <td className="px-5 py-3">
                   <Link className="font-medium text-sky-900 hover:underline" href={`/systems/${s.id}`}>
@@ -80,9 +91,7 @@ export default async function DashboardPage() {
                   </Link>
                 </td>
                 <td className="px-5 py-3 text-slate-600">{s.domain}</td>
-                <td className="px-5 py-3 capitalize text-slate-600">
-                  {s.roleInValueChain}
-                </td>
+                <td className="px-5 py-3 capitalize text-slate-600">{s.roleInValueChain}</td>
                 <td className="px-5 py-3">
                   <RiskBadge tier={s.riskTier} />
                 </td>

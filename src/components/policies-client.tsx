@@ -45,7 +45,7 @@ export function PoliciesClient({ templates, docs }: { templates: Tpl[]; docs: Do
             <li key={d.id} className="card flex flex-wrap items-center justify-between gap-2 p-4 text-sm">
               <div>
                 <div className="font-medium text-[#0F2A4A]">{d.title}</div>
-                <div className="text-xs text-slate-500">Updated {new Date(d.updatedAt).toLocaleString()}</div>
+                <div className="text-xs text-slate-500">Updated {d.updatedAt ? new Date(d.updatedAt).toISOString().slice(0, 10) : "—"}</div>
               </div>
               <div className="flex gap-2">
                 <a className="btn btn-secondary" href={`/api/policies/export?id=${d.id}&format=pdf`}>

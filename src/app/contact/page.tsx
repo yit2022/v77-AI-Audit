@@ -3,6 +3,8 @@ import Link from "next/link";
 import { MarketingChrome } from "@/components/marketing-chrome";
 import { COMPANY } from "@/lib/company";
 
+export const revalidate = 300;
+
 export const metadata: Metadata = {
   title: "Contact — V77 Trust",
   description: `Contact ${COMPANY.productName} / ${COMPANY.legalName} — sales and general enquiries.`,

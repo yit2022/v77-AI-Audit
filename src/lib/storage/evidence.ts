@@ -37,3 +37,28 @@ export async function storeEvidenceBlob(opts: {
   await fs.writeFile(storagePath, opts.buffer);
   return storagePath;
 }
+
+export async function loadEvidenceBlob(storagePath: string): Promise<{ buffer: Buffer; contentType?: string } | null> {
+  if (storagePath.startsWith("r2://")) {
+    const key = storagePath.slice("r2://".length);
+    try {
+      const { getCloudflareContext } = await import("@opennextjs/cloudflare");
+      const ctx = await getCloudflareContext({ async: true });
+      const bucket = (ctx.env as { EVIDENCE?: R2Bucket }).EVIDENCE;
+      if (!bucket) return null;
+      const obj = await bucket.get(key);
+      if (!obj) return null;
+      const ab = await obj.arrayBuffer();
+      return { buffer: Buffer.from(ab) };
+    } catch {
+      return null;
+    }
+  }
+  try {
+    const fs = await import("fs/promises");
+    const buffer = await fs.readFile(storagePath);
+    return { buffer };
+  } catch {
+    return null;
+  }
+}

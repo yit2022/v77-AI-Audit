@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { MarketingChrome } from "@/components/marketing-chrome";
 import { COMPANY } from "@/lib/company";
 
+export const revalidate = 300;
+
 export const metadata: Metadata = {
   title: "API & integrations — V77 Trust",
   description: "REST API documentation for V77 Trust. Authenticate with org API keys from Settings.",

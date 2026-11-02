@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { MarketingChrome } from "@/components/marketing-chrome";
 import { COMPANY } from "@/lib/company";
 
+export const revalidate = 300;
+
 export const metadata: Metadata = {
   description: `Terms of use for ${COMPANY.productName}, operated by ${COMPANY.legalName}.`,
   title: "Terms — V77 Trust",

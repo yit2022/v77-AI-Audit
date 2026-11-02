@@ -1,9 +1,9 @@
-export const dynamic = "force-dynamic";
-
 import Image from "next/image";
 import Link from "next/link";
 import { MarketingChrome } from "@/components/marketing-chrome";
 import { COMPANY } from "@/lib/company";
+
+export const revalidate = 300;
 
 const SHOTS = [
   { src: "/demo/live-home.png", title: "Marketing home (live)", body: "Captured from the production site — hero, modules and conversion paths." },

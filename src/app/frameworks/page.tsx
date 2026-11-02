@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { MarketingChrome } from "@/components/marketing-chrome";
 
+export const revalidate = 300;
+
 export const metadata: Metadata = {
   title: "Frameworks — V77 Trust",
   description:
