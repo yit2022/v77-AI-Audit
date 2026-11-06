@@ -14,7 +14,7 @@ describe("pilot leads", () => {
   it("landing CTA uses trial + EUR pricing copy", () => {
     const page = readFileSync(resolve(__dirname, "../src/app/page.tsx"), "utf8");
     expect(page).toMatch(/14-day self-serve trial/i);
-    expect(page).toMatch(/charged in USD at checkout/i);
+    expect(page).toMatch(/Native EUR checkout via Stripe/i);
     expect(page).toContain("PilotRequestForm");
     expect(page).toContain("PricingPlans");
     expect(page).not.toMatch(/african/i);

@@ -16,7 +16,7 @@ export async function POST(req: Request) {
   if (session.role !== "admin") return NextResponse.json({ error: "Admin only" }, { status: 403 });
   if (!billingEnabled()) {
     return NextResponse.json(
-      { error: "Billing is not enabled yet. Set V77_BILLING_ENABLED=true and Paystack keys." },
+      { error: "Billing is not enabled yet. Set V77_BILLING_ENABLED=true and Stripe keys." },
       { status: 503 },
     );
   }
@@ -34,13 +34,15 @@ export async function POST(req: Request) {
       req,
     });
     return NextResponse.json({
+      provider: result.provider,
       authorizationUrl: result.authorizationUrl,
+      sessionId: "sessionId" in result ? result.sessionId : undefined,
       reference: result.reference,
       invoiceId: result.invoiceId,
       currency: result.currency,
       amountMinor: result.amountMinor,
       eurAmount: result.eurAmount,
-      usdAmount: result.usdAmount,
+      usdAmount: "usdAmount" in result ? result.usdAmount : undefined,
     });
   } catch (e) {
     return NextResponse.json({ error: e instanceof Error ? e.message : "Checkout failed" }, { status: 400 });

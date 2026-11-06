@@ -2,9 +2,10 @@ import { NextResponse } from "next/server";
 import { getSession } from "@/lib/auth/session";
 import { ensurePlanCatalog, getOrgPlan, DEFAULT_PLANS } from "@/lib/billing/plans";
 import { BILLABLE_PLANS, displayPriceEur, paystackCurrency, eurToUsdRate } from "@/lib/billing/currency";
-import { billingEnabled } from "@/lib/billing/flags";
+import { billingEnabled, billingProvider } from "@/lib/billing/flags";
 import { getOrgSubscription, listInvoices } from "@/lib/billing/service";
 import { CHECKOUT_DISPLAY_NAME, PAYSTACK_CHANNELS } from "@/lib/billing/paystack";
+import { STRIPE_PAYMENT_METHODS } from "@/lib/billing/stripe";
 
 export async function GET() {
   const session = await getSession();
@@ -13,8 +14,10 @@ export async function GET() {
   const plan = await getOrgPlan(session.orgId);
   const sub = await getOrgSubscription(session.orgId);
   const invoices = await listInvoices(session.orgId);
-  const currency = paystackCurrency();
+  const provider = billingProvider();
+  const currency = provider === "stripe" ? "EUR" : paystackCurrency();
   return NextResponse.json({
+    provider,
     plan,
     subscription: sub,
     catalog: DEFAULT_PLANS,
@@ -24,7 +27,7 @@ export async function GET() {
     })),
     billingEnabled: billingEnabled(),
     checkoutDisplayName: CHECKOUT_DISPLAY_NAME,
-    channels: PAYSTACK_CHANNELS,
+    channels: provider === "stripe" ? STRIPE_PAYMENT_METHODS : PAYSTACK_CHANNELS,
     chargeCurrency: currency,
     eurToUsdRate: currency === "USD" ? eurToUsdRate() : null,
     invoices: invoices.slice(0, 20).map((i) => ({
@@ -39,7 +42,9 @@ export async function GET() {
       createdAt: i.createdAt,
     })),
     note: billingEnabled()
-      ? "Card checkout via Paystack (EUR prices shown). Mobile money channels are disabled."
-      : "Billing is staged behind V77_BILLING_ENABLED. Contact sales@vertex77.com for quotes.",
+      ? provider === "stripe"
+        ? "Native EUR checkout via Stripe (Cards & SEPA Direct Debit, EU VAT / VIES reverse charge supported)."
+        : "Card checkout via Paystack (EUR prices shown). Mobile money channels are disabled."
+      : "Billing is staged behind V77_BILLING_ENABLED. Contact sales@v77trust.com for quotes.",
   });
 }

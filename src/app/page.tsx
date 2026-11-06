@@ -161,19 +161,18 @@ export default function HomePage() {
       </section>
 
       <section id="pricing" className="mx-auto max-w-6xl px-4 sm:px-6 pb-10">
-        <div id="request-pilot" className="scroll-mt-24" />
         <div className="mb-6">
           <p className="text-xs font-bold uppercase tracking-[0.16em] text-sky-700">Pricing</p>
           <h2 className="mt-2 text-2xl font-semibold text-[#0F2A4A]">{tEn("mkt.pricing.title")}</h2>
           <p className="mt-2 text-sm text-slate-600">
-            14-day self-serve trial · EUR list prices (ex VAT) · charged in USD at checkout.{" "}
+            14-day self-serve trial · Native EUR checkout via Stripe (Card &amp; SEPA Direct Debit) · EU VAT / VIES reverse charge supported.{" "}
             <Link href="/pricing" className="font-semibold text-sky-800 hover:underline">
               Full pricing page
             </Link>
           </p>
         </div>
         <PricingPlans />
-        <div className="mt-8 card p-6">
+        <div id="request-pilot" className="mt-8 card p-6 scroll-mt-24">
           <h3 className="text-lg font-semibold text-[#0F2A4A]">{tEn("mkt.pilot.title")}</h3>
           <p className="mt-1 text-sm text-slate-500">
             Prefer a guided pilot? Email{" "}
@@ -190,9 +189,10 @@ export default function HomePage() {
 
       <footer className="border-t border-[#d7e6ef] bg-white">
         <div className="mx-auto flex max-w-6xl flex-col gap-4 px-4 py-8 sm:flex-row sm:items-start sm:justify-between sm:px-6">
-          <div className="space-y-2">
+          <div className="space-y-2 max-w-2xl">
             <LogoMark />
             <p className="text-xs text-slate-500">{COMPANY.footerCopyright}</p>
+            <p className="text-xs text-slate-500">{COMPANY.statutoryDisclosure}</p>
             <p className="text-xs text-slate-500">
               {tEn("mkt.footer.sales")}:{" "}
               <a className="text-sky-700 hover:underline" href={`mailto:${COMPANY.salesEmail}`}>
@@ -203,9 +203,14 @@ export default function HomePage() {
               <a className="text-sky-700 hover:underline" href={`mailto:${COMPANY.email}`}>
                 {COMPANY.email}
               </a>
+              {" · Privacy: "}
+              <a className="text-sky-700 hover:underline" href={`mailto:${COMPANY.privacyEmail}`}>
+                {COMPANY.privacyEmail}
+              </a>
             </p>
           </div>
           <div className="flex flex-wrap gap-x-4 gap-y-2 text-sm font-medium text-[#0F2A4A]">
+            <Link href="/pricing" className="hover:text-sky-700">Pricing</Link>
             <Link href="/how-it-works" className="hover:text-sky-700">How it works</Link>
             <Link href="/demo" className="hover:text-sky-700">{tEn("mkt.nav.demo")}</Link>
             <Link href="/resources" className="hover:text-sky-700">{tEn("mkt.nav.resources")}</Link>

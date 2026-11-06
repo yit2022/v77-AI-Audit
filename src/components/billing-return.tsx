@@ -10,15 +10,20 @@ export function BillingReturn() {
 
   useEffect(() => {
     const checkout = search.get("checkout");
-    const reference = search.get("reference") || search.get("trxref");
-    if (checkout !== "return" || !reference) return;
+    const reference = search.get("reference") || search.get("trxref") || "";
+    const sessionId = search.get("session_id") || search.get("sessionId") || "";
+    if (checkout === "cancelled") {
+      setMsg("Checkout was cancelled — your workspace plan was not changed.");
+      return;
+    }
+    if (checkout !== "return" || (!reference && !sessionId)) return;
     let cancelled = false;
     (async () => {
-      setMsg("Confirming payment with Paystack…");
+      setMsg("Confirming payment…");
       const res = await fetch("/api/billing/verify-return", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ reference }),
+        body: JSON.stringify({ reference, sessionId }),
       });
       const data = await res.json().catch(() => ({}));
       if (cancelled) return;
@@ -27,7 +32,11 @@ export function BillingReturn() {
       } else if (data.failed) {
         setMsg("Payment was not completed.");
       } else {
-        setMsg(data.reason === "verify_failed" ? "Payment still pending — we will keep checking." : data.error || data.reason || "Could not confirm payment yet.");
+        setMsg(
+          data.reason === "verify_failed"
+            ? "Payment still pending (e.g. SEPA Direct Debit settlement) — we will activate automatically once confirmed."
+            : data.error || data.reason || "Could not confirm payment yet.",
+        );
       }
       router.replace("/billing");
       router.refresh();

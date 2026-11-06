@@ -6,7 +6,7 @@ import { COMPANY } from "@/lib/company";
 
 export const metadata = {
   title: `Pricing — ${COMPANY.productName}`,
-  description: "EUR list prices, USD card checkout, 14-day trial.",
+  description: "EUR pricing, Stripe EUR checkout (Card & SEPA Direct Debit), EU VAT reverse charge, 14-day trial.",
 };
 
 export default function PricingPage() {

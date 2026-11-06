@@ -44,30 +44,40 @@ export function PilotRequestForm() {
   }
 
   return (
-    <form onSubmit={onSubmit} className="space-y-3" id="request-pilot">
+    <form onSubmit={onSubmit} className="space-y-3">
       <div className="grid gap-3 sm:grid-cols-2">
         <div>
-          <label className="mb-1 block text-xs font-semibold text-slate-600">Name</label>
-          <input name="name" className="input" required />
+          <label htmlFor="pilot-name" className="mb-1 block text-xs font-semibold text-slate-600">
+            Name
+          </label>
+          <input id="pilot-name" name="name" className="input" required autoComplete="name" />
         </div>
         <div>
-          <label className="mb-1 block text-xs font-semibold text-slate-600">Work email</label>
-          <input name="email" type="email" className="input" required />
+          <label htmlFor="pilot-email" className="mb-1 block text-xs font-semibold text-slate-600">
+            Work email
+          </label>
+          <input id="pilot-email" name="email" type="email" className="input" required autoComplete="email" />
         </div>
         <div>
-          <label className="mb-1 block text-xs font-semibold text-slate-600">Organisation</label>
-          <input name="company" className="input" />
+          <label htmlFor="pilot-company" className="mb-1 block text-xs font-semibold text-slate-600">
+            Organisation
+          </label>
+          <input id="pilot-company" name="company" className="input" autoComplete="organization" />
         </div>
         <div>
-          <label className="mb-1 block text-xs font-semibold text-slate-600">Role</label>
-          <input name="roleTitle" className="input" placeholder="CISO / AI lead / Auditor" />
+          <label htmlFor="pilot-role" className="mb-1 block text-xs font-semibold text-slate-600">
+            Role
+          </label>
+          <input id="pilot-role" name="roleTitle" className="input" placeholder="CISO / AI lead / Auditor" autoComplete="organization-title" />
         </div>
       </div>
       <div>
-        <label className="mb-1 block text-xs font-semibold text-slate-600">What should we cover in a pilot?</label>
-        <textarea name="message" className="textarea" placeholder="Frameworks, systems in scope, timeline…" />
+        <label htmlFor="pilot-message" className="mb-1 block text-xs font-semibold text-slate-600">
+          What should we cover in a pilot?
+        </label>
+        <textarea id="pilot-message" name="message" className="textarea" placeholder="Frameworks, systems in scope, timeline…" />
       </div>
-      {error ? <p className="text-sm text-red-700">{error}</p> : null}
+      {error ? <p className="text-sm text-red-700" role="alert">{error}</p> : null}
       <button className="btn btn-primary" disabled={status === "loading"}>
         {status === "loading" ? "Submitting…" : "Request a pilot"}
       </button>
@@ -76,6 +86,11 @@ export function PilotRequestForm() {
         <a className="font-medium text-sky-700 hover:underline" href={`mailto:${COMPANY.salesEmail}`}>
           {COMPANY.salesEmail}
         </a>
+        . Data Controller: {COMPANY.legalName} ({COMPANY.addressLine}) — processed under GDPR Art. 6(1)(b) to respond to your enquiry. See{" "}
+        <a className="font-medium text-sky-700 hover:underline" href="/privacy">
+          Privacy Notice
+        </a>
+        .
       </p>
     </form>
   );

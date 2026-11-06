@@ -2,7 +2,7 @@ import { and, desc, eq } from "drizzle-orm";
 import { db, ensureDb, schema } from "@/lib/db";
 import { id } from "@/lib/ids";
 import { appendAuditLog } from "@/lib/audit/log";
-import { BILLABLE_PLANS, listPriceEur, type BillingInterval } from "./currency";
+import { BILLABLE_PLANS, listPriceEur, type BillingInterval, chargeAmountMinor } from "./currency";
 import {
   initializeTransaction,
   verifyTransaction,
@@ -10,9 +10,16 @@ import {
   isV77PaystackEvent,
   CHECKOUT_DISPLAY_NAME,
   resolveCheckoutSplit,
+  paystackPlatformPercent,
 } from "./paystack";
-import { chargeAmountMinor } from "./currency";
-import { billingEnabled } from "./flags";
+import {
+  createStripeCheckoutSession,
+  verifyStripeSession,
+  listStripeCheckoutSessions,
+  isV77StripeEvent,
+  type StripeWebhookEventPayload,
+} from "./stripe";
+import { billingEnabled, billingProvider } from "./flags";
 import { sendEmail } from "@/lib/email/send";
 import { paymentFailedEmail, paymentReceiptEmail } from "@/lib/email/templates";
 
@@ -85,6 +92,75 @@ export async function startCheckout(opts: {
   // Direct sales: 100% to main account — only apply org-level split/subaccount overrides (no defaults).
   const reference = `v77_${opts.orgId.slice(0, 8)}_${id().slice(0, 12)}`;
   const invoiceId = id();
+  const provider = billingProvider();
+
+  if (provider === "stripe") {
+    const connectDest = (org.paystackSubaccount || org.paystackSplitCode || "").trim();
+    const stripeInit = await createStripeCheckoutSession({
+      email: opts.email,
+      priceEur,
+      interval,
+      planName: plan.name,
+      reference,
+      callbackUrl: opts.callbackUrl,
+      customerId: org.paystackCustomerCode || null,
+      connectDestination: connectDest.startsWith("acct_") ? connectDest : null,
+      platformFeePercent: connectDest.startsWith("acct_") ? paystackPlatformPercent() : null,
+      metadata: {
+        app: "v77",
+        source: "v77",
+        org_id: opts.orgId,
+        user_id: opts.userId,
+        plan_tier: plan.tier,
+        billing_interval: interval,
+        invoice_id: invoiceId,
+        product: CHECKOUT_DISPLAY_NAME,
+      },
+    });
+
+    await db.insert(schema.billingInvoices).values({
+      id: invoiceId,
+      orgId: opts.orgId,
+      planTier: plan.tier,
+      amountEurCents: Math.round(priceEur * 100),
+      chargeCurrency: "EUR",
+      chargeAmountMinor: stripeInit.amountMinor,
+      status: "pending",
+      paystackReference: `${stripeInit.reference}:${stripeInit.sessionId}`,
+      description: `${CHECKOUT_DISPLAY_NAME} — ${plan.name} (${interval})`,
+    });
+
+    await appendAuditLog({
+      orgId: opts.orgId,
+      actorUserId: opts.userId,
+      action: "billing.checkout_started",
+      entityType: "billing_invoice",
+      entityId: invoiceId,
+      detail: {
+        provider: "stripe",
+        tier: plan.tier,
+        interval,
+        reference: stripeInit.reference,
+        sessionId: stripeInit.sessionId,
+        currency: "EUR",
+      },
+    });
+
+    return {
+      authorizationUrl: stripeInit.authorizationUrl,
+      accessCode: stripeInit.sessionId,
+      sessionId: stripeInit.sessionId,
+      reference: stripeInit.reference,
+      currency: "EUR" as const,
+      amountMinor: stripeInit.amountMinor,
+      eurAmount: stripeInit.eurAmount,
+      invoiceId,
+      planTier: plan.tier,
+      interval,
+      provider: "stripe" as const,
+    };
+  }
+
   const priced = chargeAmountMinor(priceEur);
   const split = resolveCheckoutSplit({
     orgSplitCode: org.paystackSplitCode,
@@ -133,10 +209,10 @@ export async function startCheckout(opts: {
     action: "billing.checkout_started",
     entityType: "billing_invoice",
     entityId: invoiceId,
-    detail: { tier: plan.tier, interval, reference: init.reference, currency: init.currency },
+    detail: { provider: "paystack", tier: plan.tier, interval, reference: init.reference, currency: init.currency },
   });
 
-  return { ...init, invoiceId, planTier: plan.tier, interval };
+  return { ...init, invoiceId, planTier: plan.tier, interval, provider: "paystack" as const };
 }
 
 async function notifyBillingEmail(orgId: string, kind: "receipt" | "failed", invoice: {
@@ -149,6 +225,7 @@ async function notifyBillingEmail(orgId: string, kind: "receipt" | "failed", inv
   paystackReference: string;
 }) {
   await ensureDb();
+  const cleanRef = invoice.paystackReference.split(":")[0] || invoice.paystackReference;
   const members = await db
     .select({
       email: schema.users.email,
@@ -170,38 +247,126 @@ async function notifyBillingEmail(orgId: string, kind: "receipt" | "failed", inv
             description: invoice.description,
             amountEur: invoice.amountEurCents / 100,
             chargeLabel: `${(invoice.chargeAmountMinor / 100).toFixed(2)} ${invoice.chargeCurrency}`,
-            reference: invoice.paystackReference,
+            reference: cleanRef,
             locale: u.locale,
           })
         : paymentFailedEmail({
             name: u.name,
             planTier: invoice.planTier,
-            reference: invoice.paystackReference,
+            reference: cleanRef,
             locale: u.locale,
           });
     await sendEmail({ to: u.email, subject: tpl.subject, html: tpl.html, text: tpl.text, tags: tpl.tags });
   }
 }
 
-/** Server-side verify + activate — used by callback, webhook, and reconciliation. */
+/** Server-side verify + activate — used by callback, webhook, and reconciliation (supports Stripe & Paystack). */
 export async function confirmPaidReference(
-  reference: string,
-  opts: { source: "callback" | "webhook" | "reconcile"; event?: string } = { source: "callback" },
+  referenceInput: string,
+  opts: { source: "callback" | "webhook" | "reconcile"; event?: string; sessionId?: string } = { source: "callback" },
 ) {
   await ensureDb();
-  const invoices = await db
-    .select()
-    .from(schema.billingInvoices)
-    .where(eq(schema.billingInvoices.paystackReference, reference))
-    .limit(1);
-  const invoice = invoices[0];
+  const baseRef = referenceInput.split(":")[0] || referenceInput;
+  const allInvoices = await db.select().from(schema.billingInvoices);
+  const invoice = allInvoices.find(
+    (inv) =>
+      inv.paystackReference === referenceInput ||
+      inv.paystackReference.split(":")[0] === baseRef ||
+      (opts.sessionId && inv.paystackReference.endsWith(`:${opts.sessionId}`)),
+  );
   if (!invoice) return { ok: false as const, reason: "invoice_not_found" as const };
 
   if (invoice.status === "paid") {
     return { ok: true as const, orgId: invoice.orgId, tier: invoice.planTier, alreadyPaid: true as const };
   }
 
-  const verified = await verifyTransaction(reference);
+  const storedParts = invoice.paystackReference.split(":");
+  const storedSessionId = opts.sessionId || (storedParts[1]?.startsWith("cs_") ? storedParts[1] : "");
+
+  if (storedSessionId || billingProvider() === "stripe") {
+    if (!storedSessionId) {
+      return { ok: false as const, reason: "verify_failed" as const, stripeStatus: "missing_session_id" };
+    }
+    const verified = await verifyStripeSession(storedSessionId);
+    if (!verified.ok) {
+      if (
+        opts.event === "checkout.session.async_payment_failed" ||
+        opts.event === "checkout.session.expired" ||
+        opts.event === "invoice.payment_failed" ||
+        verified.status === "expired"
+      ) {
+        await db
+          .update(schema.billingInvoices)
+          .set({ status: "failed", updatedAt: new Date() })
+          .where(and(eq(schema.billingInvoices.id, invoice.id), eq(schema.billingInvoices.status, "pending")));
+        await notifyBillingEmail(invoice.orgId, "failed", invoice).catch((e) =>
+          console.error("[billing:email:failed]", e instanceof Error ? e.message : e),
+        );
+        return { ok: true as const, orgId: invoice.orgId, tier: invoice.planTier, failed: true as const };
+      }
+      return { ok: false as const, reason: "verify_failed" as const, stripeStatus: verified.paymentStatus || verified.status };
+    }
+
+    const meta = (verified.metadata || {}) as { app?: string; source?: string; billing_interval?: string };
+    const metaApp = String(meta.app || meta.source || "");
+    if (metaApp && metaApp !== "v77" && !baseRef.startsWith("v77_")) {
+      return { ok: false as const, reason: "not_v77" as const };
+    }
+
+    const interval: BillingInterval = meta.billing_interval === "annual" ? "annual" : "monthly";
+    const plan = BILLABLE_PLANS.find((p) => p.tier === invoice.planTier);
+    const now = new Date();
+    await db
+      .update(schema.billingInvoices)
+      .set({
+        status: "paid",
+        chargeCurrency: verified.currency || "EUR",
+        chargeAmountMinor: verified.amountMinor || invoice.chargeAmountMinor,
+        paidAt: now,
+        updatedAt: now,
+      })
+      .where(eq(schema.billingInvoices.id, invoice.id));
+
+    await db
+      .update(schema.organisations)
+      .set({
+        planTier: invoice.planTier,
+        seatLimit: plan?.seatLimit ?? 25,
+        billingStatus: "active",
+        billingInterval: interval,
+        cancelAtPeriodEnd: false,
+        currentPeriodEnd: periodEndFrom(interval, now),
+        trialEndsAt: null,
+        ...(verified.customerId ? { paystackCustomerCode: verified.customerId } : {}),
+      })
+      .where(eq(schema.organisations.id, invoice.orgId));
+
+    await appendAuditLog({
+      orgId: invoice.orgId,
+      actorUserId: null,
+      action: "billing.plan_activated",
+      entityType: "billing_invoice",
+      entityId: invoice.id,
+      detail: {
+        provider: "stripe",
+        tier: invoice.planTier,
+        interval,
+        reference: baseRef,
+        sessionId: storedSessionId,
+        customerId: verified.customerId || undefined,
+        customerVatId: verified.customerVatId || undefined,
+        via: opts.source,
+      },
+    });
+
+    await notifyBillingEmail(invoice.orgId, "receipt", invoice).catch((e) =>
+      console.error("[billing:email:receipt]", e instanceof Error ? e.message : e),
+    );
+
+    return { ok: true as const, orgId: invoice.orgId, tier: invoice.planTier };
+  }
+
+  const verified = await verifyTransaction(baseRef);
   if (!verified.ok) {
     if (opts.event === "charge.failed" || verified.status === "failed" || verified.status === "abandoned") {
       await db
@@ -218,7 +383,7 @@ export async function confirmPaidReference(
 
   const meta = (verified.metadata || {}) as { app?: string; source?: string; billing_interval?: string };
   const metaApp = String(meta.app || meta.source || "");
-  if (metaApp && metaApp !== "v77" && !reference.startsWith("v77_")) {
+  if (metaApp && metaApp !== "v77" && !baseRef.startsWith("v77_")) {
     return { ok: false as const, reason: "not_v77" as const };
   }
 
@@ -253,7 +418,7 @@ export async function confirmPaidReference(
     action: "billing.plan_activated",
     entityType: "billing_invoice",
     entityId: invoice.id,
-    detail: { tier: invoice.planTier, interval, reference, via: opts.source },
+    detail: { provider: "paystack", tier: invoice.planTier, interval, reference: baseRef, via: opts.source },
   });
 
   await notifyBillingEmail(invoice.orgId, "receipt", invoice).catch((e) =>
@@ -261,6 +426,28 @@ export async function confirmPaidReference(
   );
 
   return { ok: true as const, orgId: invoice.orgId, tier: invoice.planTier };
+}
+
+export async function activatePlanFromStripeWebhook(payload: StripeWebhookEventPayload) {
+  if (!isV77StripeEvent(payload)) {
+    return { ok: true as const, ignored: true as const, reason: "not_v77" as const };
+  }
+  const event = payload.type || "";
+  const obj = payload.data?.object;
+  const sessionId = obj?.object === "checkout.session" ? obj.id || "" : "";
+  const reference = obj?.client_reference_id || String(obj?.metadata?.reference || "");
+  if (!reference && !sessionId) {
+    return { ok: true as const, ignored: true as const, reason: "missing_reference" as const };
+  }
+  if (
+    event === "checkout.session.completed" ||
+    event === "checkout.session.async_payment_succeeded" ||
+    event === "checkout.session.async_payment_failed" ||
+    event === "checkout.session.expired"
+  ) {
+    return confirmPaidReference(reference || sessionId, { source: "webhook", event, sessionId: sessionId || undefined });
+  }
+  return { ok: true as const, ignored: true as const };
 }
 
 export async function activatePlanFromWebhook(opts: {
@@ -355,17 +542,37 @@ export async function reconcileV77Payments() {
   }
 
   try {
-    const txs = await listTransactions({ perPage: 50, status: "success" });
-    for (const tx of txs) {
-      const meta = tx.metadata || {};
-      const app = String((meta as { app?: string }).app || (meta as { source?: string }).source || "");
-      if (!(app === "v77" || tx.reference.startsWith("v77_"))) continue;
-      const r = await confirmPaidReference(tx.reference, { source: "reconcile" });
-      if (!results.some((x) => x.reference === tx.reference)) {
-        results.push({
-          reference: tx.reference,
-          result: r.ok ? "activated_or_paid" : r.reason,
+    if (billingProvider() === "stripe") {
+      const sessions = await listStripeCheckoutSessions({ limit: 50 });
+      for (const s of sessions) {
+        if (s.paymentStatus !== "paid" && s.status !== "complete") continue;
+        const meta = s.metadata || {};
+        const app = String((meta as { app?: string }).app || (meta as { source?: string }).source || "");
+        if (!(app === "v77" || s.reference.startsWith("v77_"))) continue;
+        const r = await confirmPaidReference(s.reference || s.sessionId, {
+          source: "reconcile",
+          sessionId: s.sessionId,
         });
+        if (!results.some((x) => x.reference.startsWith(s.reference))) {
+          results.push({
+            reference: s.reference || s.sessionId,
+            result: r.ok ? "activated_or_paid" : r.reason,
+          });
+        }
+      }
+    } else {
+      const txs = await listTransactions({ perPage: 50, status: "success" });
+      for (const tx of txs) {
+        const meta = tx.metadata || {};
+        const app = String((meta as { app?: string }).app || (meta as { source?: string }).source || "");
+        if (!(app === "v77" || tx.reference.startsWith("v77_"))) continue;
+        const r = await confirmPaidReference(tx.reference, { source: "reconcile" });
+        if (!results.some((x) => x.reference === tx.reference)) {
+          results.push({
+            reference: tx.reference,
+            result: r.ok ? "activated_or_paid" : r.reason,
+          });
+        }
       }
     }
   } catch (e) {

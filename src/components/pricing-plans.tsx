@@ -33,7 +33,7 @@ export function PricingPlans({
           </button>
         </div>
         <p className="text-xs text-slate-500">
-          Prices in EUR · exclude VAT · charged in USD at checkout
+          Prices in EUR (ex VAT) · Stripe EUR checkout (Card &amp; SEPA Direct Debit) · EU VAT / VIES reverse charge
         </p>
       </div>
 
@@ -72,8 +72,8 @@ export function PricingPlans({
 
       {showCheckoutHint ? (
         <p className="mt-4 text-xs text-slate-500">
-          After signup, upgrade from Billing with Paystack card checkout. Self-serve Team sales settle 100% to the
-          main {COMPANY.productName} account.
+          After signup, upgrade from Billing with Stripe EUR checkout (3DS2 Cards &amp; SEPA Direct Debit). Invoiced by{" "}
+          {COMPANY.legalName} ({COMPANY.addressLine}, VAT-UE: {COMPANY.vatEu}).
         </p>
       ) : null}
 
@@ -86,24 +86,28 @@ export function PricingPlans({
               <dd className="text-slate-600">Yes — 14 days on signup. When it ends the workspace becomes read-only until you upgrade.</dd>
             </div>
             <div>
-              <dt className="font-medium">Why USD at checkout?</dt>
-              <dd className="text-slate-600">List prices are shown in EUR for EU buyers; Paystack card charges are processed in USD.</dd>
+              <dt className="font-medium">How are payments processed?</dt>
+              <dd className="text-slate-600">
+                Self-serve Team plans are billed natively in EUR via Stripe, supporting European corporate cards (PSD2 SCA / 3DS2) and SEPA Direct Debit.
+              </dd>
             </div>
             <div>
               <dt className="font-medium">Can I pay annually?</dt>
-              <dd className="text-slate-600">Yes — annual Team is 10× the monthly EUR list (two months free).</dd>
+              <dd className="text-slate-600">Yes — annual Team is 10× the monthly EUR list (€4,990 / year, two months free).</dd>
             </div>
             <div>
-              <dt className="font-medium">VAT</dt>
-              <dd className="text-slate-600">Displayed prices exclude VAT. Applicable VAT is handled on the invoice / local rules.</dd>
+              <dt className="font-medium">EU VAT &amp; VIES Reverse Charge</dt>
+              <dd className="text-slate-600">
+                Displayed prices exclude VAT. Enter your EU VAT ID at checkout for automatic VIES validation and 0% intra-Community reverse charge (Art. 196 VAT Directive). Polish entities are billed with standard 23% PL VAT.
+              </dd>
             </div>
           </dl>
         </div>
         <div className="card p-5">
           <h3 className="font-semibold text-[#0F2A4A]">Notes</h3>
           <ul className="mt-3 space-y-2 text-sm text-slate-700">
-            <li>• Card payments only (no mobile money).</li>
-            <li>• Enterprise and custom MSA: email {COMPANY.salesEmail}.</li>
+            <li>• Native EUR billing via Stripe (Corporate Cards &amp; SEPA Direct Debit).</li>
+            <li>• Enterprise, custom MSA, and procurement PO / SEPA wire: email {COMPANY.salesEmail}.</li>
             <li>• Cancel anytime at period end from the billing portal.</li>
           </ul>
         </div>

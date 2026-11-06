@@ -17,6 +17,7 @@ function readLocaleCookie(): Locale {
 export function MarketingChrome({ children }: { children: React.ReactNode }) {
   const [locale, setLocale] = useState<Locale>("en");
   const [ready, setReady] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     const loc = readLocaleCookie();
@@ -58,16 +59,45 @@ export function MarketingChrome({ children }: { children: React.ReactNode }) {
           <Link href="/signup" className="btn btn-primary px-3 py-2 sm:px-5">
             {tr("mkt.nav.signup")}
           </Link>
+          <button
+            type="button"
+            className="btn btn-secondary px-3 py-2 text-xs sm:hidden"
+            aria-expanded={mobileMenuOpen}
+            aria-controls="mobile-primary-nav"
+            aria-label="Toggle navigation menu"
+            onClick={() => setMobileMenuOpen((v) => !v)}
+          >
+            {mobileMenuOpen ? "Close" : "Menu"}
+          </button>
         </nav>
       </header>
+      {mobileMenuOpen ? (
+        <nav
+          id="mobile-primary-nav"
+          aria-label="Mobile navigation"
+          className="mx-auto mb-4 flex max-w-6xl flex-wrap gap-3 border-b border-[#d7e6ef] bg-white/90 px-4 py-3 sm:hidden"
+        >
+          {nav.map((n) => (
+            <Link
+              key={n.href}
+              href={n.href}
+              className="text-sm font-medium text-[#0F2A4A] hover:text-sky-700"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              {tr(n.key)}
+            </Link>
+          ))}
+        </nav>
+      ) : null}
       <div id="main-content" tabIndex={-1}>
         {children}
       </div>
       <footer className="border-t border-[#d7e6ef] bg-white">
         <div className="mx-auto flex max-w-6xl flex-col gap-4 px-4 py-8 sm:flex-row sm:items-start sm:justify-between sm:px-6">
-          <div className="space-y-2">
+          <div className="space-y-2 max-w-2xl">
             <LogoMark />
             <p className="text-xs text-slate-500">{COMPANY.footerCopyright}</p>
+            <p className="text-xs text-slate-500">{COMPANY.statutoryDisclosure}</p>
             <p className="text-xs text-slate-500">
               {tr("mkt.footer.sales")}:{" "}
               <a className="text-sky-700 hover:underline" href={`mailto:${COMPANY.salesEmail}`}>
@@ -78,9 +108,16 @@ export function MarketingChrome({ children }: { children: React.ReactNode }) {
               <a className="text-sky-700 hover:underline" href={`mailto:${COMPANY.email}`}>
                 {COMPANY.email}
               </a>
+              {" · Privacy: "}
+              <a className="text-sky-700 hover:underline" href={`mailto:${COMPANY.privacyEmail}`}>
+                {COMPANY.privacyEmail}
+              </a>
             </p>
           </div>
-          <div className="flex flex-wrap gap-x-4 gap-y-2 text-sm font-medium text-[#0F2A4A]">
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm font-medium text-[#0F2A4A]">
+            <Link href="/pricing" className="hover:text-sky-700">
+              {tr("mkt.pricing.title")}
+            </Link>
             <Link href="/how-it-works" className="hover:text-sky-700">
               {tr("mkt.nav.how")}
             </Link>
@@ -102,6 +139,13 @@ export function MarketingChrome({ children }: { children: React.ReactNode }) {
             <Link href="/terms" className="hover:text-sky-700">
               Terms
             </Link>
+            <button
+              type="button"
+              className="text-sm font-medium text-[#0F2A4A] hover:text-sky-700"
+              onClick={() => window.dispatchEvent(new CustomEvent("v77:open-cookie-settings"))}
+            >
+              Cookie settings
+            </button>
           </div>
         </div>
       </footer>

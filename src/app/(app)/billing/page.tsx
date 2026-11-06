@@ -4,7 +4,7 @@ import Link from "next/link";
 import { getSession } from "@/lib/auth/session";
 import { ensurePlanCatalog, getOrgPlan, DEFAULT_PLANS } from "@/lib/billing/plans";
 import { BILLABLE_PLANS, displayPriceEur, paystackCurrency, eurToUsdRate, type BillingInterval } from "@/lib/billing/currency";
-import { billingEnabled } from "@/lib/billing/flags";
+import { billingEnabled, billingProvider } from "@/lib/billing/flags";
 import { PageHeader } from "@/components/ui";
 import { COMPANY } from "@/lib/company";
 import { BillingCheckoutButton } from "@/components/billing-checkout";
@@ -33,7 +33,8 @@ export default async function BillingPage({
   const usage = await getOrgUsage(session.orgId);
   const access = await getOrgAccess(session.orgId);
   const enabled = billingEnabled();
-  const currency = paystackCurrency();
+  const provider = billingProvider();
+  const currency = provider === "stripe" ? "EUR" : paystackCurrency();
   const rate = eurToUsdRate();
 
   return (
@@ -43,7 +44,11 @@ export default async function BillingPage({
       </Suspense>
       <PageHeader
         title="Plan & billing"
-        subtitle={`${CHECKOUT_DISPLAY_NAME} · EUR list prices · card only · charged in ${currency}`}
+        subtitle={
+          provider === "stripe"
+            ? `${CHECKOUT_DISPLAY_NAME} · Native EUR checkout via Stripe · Card & SEPA Direct Debit · EU VAT / VIES supported`
+            : `${CHECKOUT_DISPLAY_NAME} · EUR list prices · card only · charged in ${currency}`
+        }
         actions={
           <Link href="/billing/invoices" className="btn btn-secondary text-sm">
             Invoices
@@ -75,10 +80,13 @@ export default async function BillingPage({
           </p>
         ) : null}
         <p className="mt-2 text-sm text-slate-600">
-          Charge currency: <strong>{currency}</strong>
-          {currency === "USD" ? ` · EUR→USD rate ${rate}` : ""} · Checkout name: <strong>{CHECKOUT_DISPLAY_NAME}</strong>
+          Billing provider: <strong>{provider === "stripe" ? "Stripe (EUR — Cards & SEPA Direct Debit)" : `Paystack (${currency})`}</strong>
+          {provider !== "stripe" && currency === "USD" ? ` · EUR→USD rate ${rate}` : ""} · Seller:{" "}
+          <strong>{COMPANY.legalName}</strong> (VAT-UE: {COMPANY.vatEu})
         </p>
-        <p className="mt-2 text-xs text-slate-500">Prices exclude VAT. EUR is the list currency; cards are charged in USD at checkout.</p>
+        <p className="mt-2 text-xs text-slate-500">
+          Displayed prices exclude VAT. Enter your EU VAT number at Stripe Checkout for automatic VIES validation and 0% intra-EU reverse-charge invoicing (Art. 196 VAT Directive), or standard 23% PL VAT for Polish entities.
+        </p>
         {!enabled ? (
           <p className="mt-2 text-sm text-amber-800">
             Live checkout is behind <code className="text-xs">V77_BILLING_ENABLED</code>. Contact{" "}
@@ -92,6 +100,7 @@ export default async function BillingPage({
           <BillingCancelButton
             cancelAtPeriodEnd={!!sub.cancelAtPeriodEnd}
             periodEndLabel={sub.currentPeriodEnd ? sub.currentPeriodEnd.toISOString().slice(0, 10) : null}
+            stripeCustomerId={sub.paystackCustomerCode || null}
           />
         ) : null}
       </div>
@@ -121,7 +130,15 @@ export default async function BillingPage({
                   tier="team"
                   interval={interval}
                   enabled={enabled}
-                  label={interval === "annual" ? "Upgrade annual (Paystack)" : "Upgrade monthly (Paystack)"}
+                  label={
+                    provider === "stripe"
+                      ? interval === "annual"
+                        ? "Upgrade annual in EUR (Stripe)"
+                        : "Upgrade monthly in EUR (Stripe)"
+                      : interval === "annual"
+                        ? "Upgrade annual (Paystack)"
+                        : "Upgrade monthly (Paystack)"
+                  }
                 />
               ) : (
                 <p className="mt-3 text-xs text-slate-500">Contact {COMPANY.salesEmail} — pricing on request.</p>

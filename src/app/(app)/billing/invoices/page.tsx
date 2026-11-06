@@ -15,7 +15,7 @@ export default async function InvoicesPage() {
     <div>
       <PageHeader
         title="Invoices"
-        subtitle="Download receipts for Paystack card charges (EUR list shown; charged currency may be USD)."
+        subtitle="Download VAT-compliant invoices & receipts issued by Vertex77 sp. z o.o. (VAT-UE: PL5214148501)."
         actions={
           <Link href="/billing" className="btn btn-secondary text-sm">
             Back to plans

@@ -150,8 +150,13 @@ Prefer `sales@vertex77.com` for commercial handover and `contact@vertex77.com` f
 
 | Name | Purpose |
 |------|---------|
-| `PAYSTACK_SECRET_KEY` | Paystack server secret (webhook HMAC + initialize/verify) |
-| `PAYSTACK_PUBLIC_KEY` | Paystack public key (optional client use) |
+| `STRIPE_SECRET_KEY` | Stripe server secret key (`sk_live_…` / `sk_test_…`) for native EUR Checkout & Customer Portal |
+| `STRIPE_PUBLISHABLE_KEY` | Stripe publishable key (`pk_live_…` / `pk_test_…`) |
+| `STRIPE_WEBHOOK_SECRET` | Stripe webhook signing secret (`whsec_…`) for `/api/billing/webhook` or `/api/stripe/webhook` |
+| `STRIPE_AUTOMATIC_TAX` | Enable Stripe Tax + EU VAT / VIES reverse charge collection (default `true`) |
+| `V77_BILLING_PROVIDER` | Active billing provider: `stripe` (default for EU) or `paystack` |
+| `PAYSTACK_SECRET_KEY` | Legacy Paystack server secret (webhook HMAC + initialize/verify) |
+| `PAYSTACK_PUBLIC_KEY` | Legacy Paystack public key (optional client use) |
 | `RESEND_API_KEY` | Resend API key for transactional email |
 | `V77_BILLING_ENABLED` | Must be `true` to expose live checkout (keep `false` until keys exist) |
 | `PAYSTACK_CURRENCY` | Charge currency: `USD` (default) or `EUR` |

@@ -26,6 +26,12 @@ export function CookieConsent() {
       setConsent(null);
     }
     setReady(true);
+
+    function handleReopen() {
+      setConsent(null);
+    }
+    window.addEventListener("v77:open-cookie-settings", handleReopen);
+    return () => window.removeEventListener("v77:open-cookie-settings", handleReopen);
   }, []);
 
   function choose(next: Exclude<Consent, null>) {
