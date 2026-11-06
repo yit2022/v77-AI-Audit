@@ -1,17 +1,29 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { ART_73_CATEGORIES, computeArt73Deadline } from "@/lib/eu-ai-act/incidents";
 
 export function IncidentsClient({
   systems,
   incidents,
 }: {
   systems: Array<{ id: string; name: string }>;
-  incidents: Array<{ id: string; title: string; severity: string; status: string; seriousIncident: boolean }>;
+  incidents: Array<{
+    id: string;
+    title: string;
+    severity: string;
+    status: string;
+    seriousIncident: boolean;
+    euArticleRef?: string;
+    discoveredAt?: string;
+    authorityNotified?: boolean;
+    createdAt?: string;
+  }>;
 }) {
   const router = useRouter();
 
   async function create() {
+    const artSelect = document.getElementById("inc-art-ref") as HTMLSelectElement | null;
     const payload = {
       title: (document.getElementById("inc-title") as HTMLInputElement).value,
       systemId: (document.getElementById("inc-system") as HTMLSelectElement).value || undefined,
@@ -22,7 +34,7 @@ export function IncidentsClient({
       impactSummary: (document.getElementById("inc-impact") as HTMLTextAreaElement).value,
       seriousIncident: (document.getElementById("inc-serious") as HTMLInputElement).checked,
       authorityNotified: (document.getElementById("inc-auth") as HTMLInputElement).checked,
-      euArticleRef: "Art. 73",
+      euArticleRef: artSelect?.value || "Art. 73(2)",
     };
     await fetch("/api/incidents", {
       method: "POST",
@@ -37,14 +49,23 @@ export function IncidentsClient({
       <div className="card space-y-3 p-5">
         <h2 className="font-semibold text-[#0F2A4A]">Log incident (EU AI Act serious-incident fields)</h2>
         <input id="inc-title" className="input" placeholder="Title" />
-        <select id="inc-system" className="select">
-          <option value="">No linked system</option>
-          {systems.map((s) => (
-            <option key={s.id} value={s.id}>
-              {s.name}
-            </option>
-          ))}
-        </select>
+        <div className="grid gap-3 sm:grid-cols-2">
+          <select id="inc-system" className="select">
+            <option value="">No linked system</option>
+            {systems.map((s) => (
+              <option key={s.id} value={s.id}>
+                {s.name}
+              </option>
+            ))}
+          </select>
+          <select id="inc-art-ref" className="select" defaultValue="Art. 73(2)">
+            {ART_73_CATEGORIES.map((c) => (
+              <option key={c.id} value={c.articleRef}>
+                {c.label}
+              </option>
+            ))}
+          </select>
+        </div>
         <select id="inc-sev" className="select w-40" defaultValue="medium">
           <option value="low">low</option>
           <option value="medium">medium</option>
@@ -52,8 +73,8 @@ export function IncidentsClient({
           <option value="critical">critical</option>
         </select>
         <div className="grid gap-3 sm:grid-cols-2">
-          <input id="inc-discovered" className="input" placeholder="Discovered at (ISO date)" />
-          <input id="inc-occurred" className="input" placeholder="Occurred at (ISO date)" />
+          <input id="inc-discovered" className="input" placeholder="Discovered at (YYYY-MM-DD)" />
+          <input id="inc-occurred" className="input" placeholder="Occurred at (YYYY-MM-DD)" />
         </div>
         <textarea id="inc-desc" className="textarea" placeholder="Description" />
         <textarea id="inc-impact" className="textarea" placeholder="Impact summary" />
@@ -68,15 +89,41 @@ export function IncidentsClient({
         </button>
       </div>
       <ul className="space-y-2">
-        {incidents.map((i) => (
-          <li key={i.id} className="card p-4 text-sm">
-            <div className="font-medium text-[#0F2A4A]">{i.title}</div>
-            <p className="text-slate-600">
-              {i.severity} · {i.status}
-              {i.seriousIncident ? " · serious incident" : ""}
-            </p>
-          </li>
-        ))}
+        {incidents.map((i) => {
+          const deadline = i.seriousIncident
+            ? computeArt73Deadline({
+                euArticleRef: i.euArticleRef,
+                discoveredAt: i.discoveredAt,
+                createdAt: i.createdAt,
+              })
+            : null;
+          return (
+            <li key={i.id} className="card p-4 text-sm">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <div className="font-medium text-[#0F2A4A]">{i.title}</div>
+                {deadline ? (
+                  <span
+                    className={`badge ${
+                      i.authorityNotified
+                        ? "badge-minimal"
+                        : deadline.overdue
+                          ? "badge-high"
+                          : "badge-limited"
+                    }`}
+                  >
+                    {i.authorityNotified
+                      ? `${deadline.articleRef} Notified`
+                      : `${deadline.articleRef} due ${deadline.deadlineIso} (${deadline.deadlineDays}d window)`}
+                  </span>
+                ) : null}
+              </div>
+              <p className="mt-1 text-slate-600">
+                {i.severity} · {i.status}
+                {i.seriousIncident ? ` · serious incident (${i.euArticleRef || "Art. 73(2)"})` : ""}
+              </p>
+            </li>
+          );
+        })}
       </ul>
     </div>
   );

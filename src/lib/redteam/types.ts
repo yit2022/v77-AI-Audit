@@ -7,6 +7,8 @@ export type RedTeamScenario = {
   prompt: string;
   failureSignals: string[];
   refusalSignals: string[];
+  owaspLlmRef?: string;
+  euAiActRef?: string;
 };
 
 export type ScenarioResult = {
@@ -17,6 +19,15 @@ export type ScenarioResult = {
   response: string;
   passed: boolean;
   reason: string;
+  owaspLlmRef?: string;
+  euAiActRef?: string;
+};
+
+export type RedTeamRunOptions = {
+  providerId?: string;
+  systemPrompt?: string;
+  targetEndpointUrl?: string;
+  targetAuthToken?: string;
 };
 
 export type RedTeamSuiteResult = {

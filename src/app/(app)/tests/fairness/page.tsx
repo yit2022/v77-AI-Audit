@@ -30,15 +30,26 @@ export default async function FairnessPage() {
       <div className="mt-6 space-y-4">
         {runs.map((r) => {
           const m = JSON.parse(r.metricsJson);
+          const ratio = Number(m.demographicParityRatio ?? 1);
+          const verdict = m.verdict || (ratio >= 0.8 ? "pass" : "fail");
           return (
             <div key={r.id} className="card p-5">
-              <div className="flex flex-wrap justify-between gap-2">
-                <div className="font-medium text-slate-900">{r.filename}</div>
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <div className="flex items-center gap-2">
+                  <span className="font-medium text-slate-900">{r.filename}</span>
+                  <span className={`badge ${verdict === "pass" ? "badge-minimal" : verdict === "review" ? "badge-limited" : "badge-high"}`}>
+                    {verdict === "pass" ? "Art. 10 Pass" : verdict === "review" ? "Art. 10 Review" : "Disparate Impact Fail"}
+                  </span>
+                </div>
                 <div className="text-xs text-slate-500">
                   {r.createdAt ? new Date(r.createdAt).toISOString() : ""}
                 </div>
               </div>
-              <dl className="mt-3 grid gap-3 text-sm sm:grid-cols-3">
+              <dl className="mt-3 grid gap-3 text-sm sm:grid-cols-4">
+                <div>
+                  <dt className="text-xs uppercase text-slate-500">Four-Fifths Ratio (≥0.80)</dt>
+                  <dd className="font-semibold">{ratio.toFixed(3)}</dd>
+                </div>
                 <div>
                   <dt className="text-xs uppercase text-slate-500">Demographic parity Δ</dt>
                   <dd className="font-semibold">{m.demographicParityDifference?.toFixed(3)}</dd>
@@ -52,6 +63,13 @@ export default async function FairnessPage() {
                   <dd className="font-semibold">{(m.overallAccuracy * 100)?.toFixed(1)}%</dd>
                 </div>
               </dl>
+              {Array.isArray(m.warnings) && m.warnings.length > 0 ? (
+                <ul className="mt-3 space-y-1 border-t border-slate-100 pt-2 text-xs text-amber-800">
+                  {m.warnings.map((w: string, idx: number) => (
+                    <li key={idx}>• {w}</li>
+                  ))}
+                </ul>
+              ) : null}
             </div>
           );
         })}

@@ -37,8 +37,11 @@ export async function POST(req: Request) {
     })),
   );
   await db.update(schema.aiSystems).set({
-    riskTier: result.tier, gpai: result.gpai,
-    classificationNotes: result.reasons.join(" "), updatedAt: new Date(),
+    riskTier: result.tier,
+    gpai: result.gpai,
+    ...(result.art25ProviderEscalation ? { roleInValueChain: "provider" } : {}),
+    classificationNotes: result.reasons.join(" "),
+    updatedAt: new Date(),
   }).where(eq(schema.aiSystems.id, system.id));
 
   let assessmentId: string | null = null;

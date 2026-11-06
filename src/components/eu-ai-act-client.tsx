@@ -58,6 +58,24 @@ export function EuAiActClient({ systems }: { systems: SystemOpt[] }) {
     setMsg(res.ok ? "Annex IV draft saved." : "Could not save Annex IV draft.");
   }
 
+  async function autoPopulateAnnex() {
+    setMsg("");
+    const res = await fetch("/api/eu-ai-act/annex", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ systemId }),
+    });
+    if (!res.ok) {
+      setMsg("Could not auto-populate Annex IV draft.");
+      return;
+    }
+    const body = (await res.json().catch(() => ({}))) as { answers?: Record<string, string> };
+    if (body.answers) {
+      setAnswers(body.answers);
+    }
+    setMsg("Annex IV drafted automatically from system metadata, controls, and test runs.");
+  }
+
   async function saveStep(stepId: string, status: string) {
     setMsg("");
     const res = await fetch("/api/eu-ai-act/conformity", {
@@ -141,9 +159,14 @@ export function EuAiActClient({ systems }: { systems: SystemOpt[] }) {
           <h2 id="annex-heading" className="text-lg font-semibold text-[#0F2A4A]">
             Annex IV technical documentation
           </h2>
-          <button type="button" className="btn btn-primary" onClick={() => void saveAnnex()}>
-            Save draft
-          </button>
+          <div className="flex flex-wrap gap-2">
+            <button type="button" className="btn btn-secondary" onClick={() => void autoPopulateAnnex()}>
+              Auto-populate from system &amp; test evidence
+            </button>
+            <button type="button" className="btn btn-primary" onClick={() => void saveAnnex()}>
+              Save draft
+            </button>
+          </div>
         </div>
         <div className="mt-3 space-y-4">
           {ANNEX_IV_SECTIONS.map((s) => (

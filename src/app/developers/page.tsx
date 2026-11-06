@@ -30,6 +30,11 @@ const endpoints = [
     path: "/api/v1/findings",
     desc: "List findings for the organisation.",
   },
+  {
+    method: "GET",
+    path: "/api/v1/compliance-gate?systemId=<uuid>&strict=true",
+    desc: "CI/CD EU AI Act & ISO 42001 release gate. Evaluates Art. 5 prohibitions, Art. 6 classification, Annex IV documentation, control readiness threshold, open critical/high findings, and red-team status. Returns HTTP 422 when strict=true and blocked.",
+  },
 ];
 
 export default function DevelopersPage() {
@@ -63,6 +68,23 @@ export default function DevelopersPage() {
 
         <h2 className="mt-10 text-lg font-semibold text-[#0F2A4A]">Example</h2>
         <pre className="card mt-3 overflow-x-auto p-4 text-xs leading-relaxed text-slate-800">{`curl -s \\\n  -H "Authorization: Bearer v77_YOUR_KEY" \\\n  https://v77trust.com/api/v1/systems`}</pre>
+
+        <h2 className="mt-10 text-lg font-semibold text-[#0F2A4A]">GitHub Actions CI/CD Release Gate</h2>
+        <p className="mt-2 text-sm text-slate-600">
+          Block production deployments automatically if a high-risk AI system is missing Annex IV documentation, falls below your control readiness threshold, or has unresolved critical findings:
+        </p>
+        <pre className="card mt-3 overflow-x-auto p-4 text-xs leading-relaxed text-slate-800">{`# .github/workflows/eu-ai-act-gate.yml
+name: V77 Trust EU AI Act Release Gate
+on: [ pull_request ]
+jobs:
+  compliance-gate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify AI System Conformity Gate
+        run: |
+          curl -f -sS \\
+            -H "Authorization: Bearer \${{ secrets.V77_API_KEY }}" \\
+            "https://v77trust.com/api/v1/compliance-gate?systemId=\${{ vars.V77_SYSTEM_ID }}&strict=true&minReadiness=80"`}</pre>
 
         <p className="mt-8 text-sm text-slate-600">
           Need a higher-volume integration? Email{" "}

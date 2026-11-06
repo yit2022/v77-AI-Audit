@@ -14,7 +14,7 @@
   "vars": {
     "V77_APP_ORIGIN": "https://v77trust.com",
     "V77_CUSTOM_DOMAIN": "v77trust.com",
-    "V77_ENABLE_REAL_PROVIDERS": "false",
+    "V77_ENABLE_REAL_PROVIDERS": "true",
     "V77_BILLING_ENABLED": "true",
     "V77_BILLING_PROVIDER": "stripe",
     "STRIPE_AUTOMATIC_TAX": "true",

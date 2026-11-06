@@ -33,6 +33,10 @@ export default async function IncidentsPage() {
           severity: i.severity,
           status: i.status,
           seriousIncident: i.seriousIncident,
+          euArticleRef: i.euArticleRef,
+          discoveredAt: i.discoveredAt,
+          authorityNotified: i.authorityNotified,
+          createdAt: i.createdAt ? new Date(i.createdAt).toISOString() : "",
         }))}
       />
     </div>

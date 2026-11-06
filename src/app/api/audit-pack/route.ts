@@ -4,7 +4,12 @@ import { db, ensureDb, schema } from "@/lib/db";
 import { getSession } from "@/lib/auth/session";
 import { buildAuditReportPdf } from "@/lib/reports/pdf";
 import { buildAuditPackZip } from "@/lib/audit-pack/build";
-import { renderAnnexIvMarkdown } from "@/lib/eu-ai-act/annex-iv";
+import {
+  buildEuDatabaseRegistrationPayload,
+  renderAnnexIvMarkdown,
+  renderEuDeclarationOfConformity,
+  synthesizeAnnexIvFromTelemetry,
+} from "@/lib/eu-ai-act/annex-iv";
 import { appendAuditLog } from "@/lib/audit/log";
 
 export const dynamic = "force-dynamic";
@@ -107,20 +112,64 @@ export async function GET(req: Request) {
     .where(and(eq(schema.euAnnexDocs.orgId, session.orgId), eq(schema.euAnnexDocs.systemId, system.id)))
     .limit(1);
 
-  let annexMarkdown: string | undefined;
+  const fairnessRuns = await db
+    .select()
+    .from(schema.fairnessRuns)
+    .where(and(eq(schema.fairnessRuns.orgId, session.orgId), eq(schema.fairnessRuns.systemId, system.id)))
+    .orderBy(desc(schema.fairnessRuns.createdAt));
+  const redteamRuns = await db
+    .select()
+    .from(schema.redteamRuns)
+    .where(and(eq(schema.redteamRuns.orgId, session.orgId), eq(schema.redteamRuns.systemId, system.id)))
+    .orderBy(desc(schema.redteamRuns.createdAt));
+  const evalRuns = await db
+    .select()
+    .from(schema.evalRuns)
+    .where(and(eq(schema.evalRuns.orgId, session.orgId), eq(schema.evalRuns.systemId, system.id)))
+    .orderBy(desc(schema.evalRuns.createdAt));
+  const impacts = await db
+    .select()
+    .from(schema.impactAssessments)
+    .where(and(eq(schema.impactAssessments.orgId, session.orgId), eq(schema.impactAssessments.systemId, system.id)))
+    .orderBy(desc(schema.impactAssessments.createdAt));
+
+  let annexAnswers: Record<string, string> = {};
   if (annex[0]) {
     try {
-      const answers = JSON.parse(annex[0].answersJson || "{}") as Record<string, string>;
-      annexMarkdown = renderAnnexIvMarkdown({
-        systemName: system.name,
-        role: system.roleInValueChain,
-        riskTier: system.riskTier || "unclassified",
-        answers,
-      });
+      annexAnswers = JSON.parse(annex[0].answersJson || "{}") as Record<string, string>;
     } catch {
-      annexMarkdown = undefined;
+      annexAnswers = {};
     }
   }
+  if (Object.keys(annexAnswers).length === 0) {
+    annexAnswers = synthesizeAnnexIvFromTelemetry({
+      orgName: session.orgName,
+      system,
+      findings: findings.map((f) => ({ title: f.title, severity: f.severity, status: f.status })),
+    });
+  }
+
+  const annexMarkdown = renderAnnexIvMarkdown({
+    systemName: system.name,
+    role: system.roleInValueChain,
+    riskTier: system.riskTier || "unclassified",
+    answers: annexAnswers,
+  });
+
+  const declarationOfConformityMarkdown = renderEuDeclarationOfConformity({
+    orgName: session.orgName,
+    systemId: system.id,
+    systemName: system.name,
+    versionLabel: system.versionLabel,
+    intendedPurpose: system.intendedPurpose || system.description,
+    riskTier: system.riskTier,
+    euDatabaseId: system.euDatabaseId,
+  });
+
+  const euDatabaseRegistrationJson = buildEuDatabaseRegistrationPayload({
+    orgName: session.orgName,
+    system,
+  });
 
   const zip = await buildAuditPackZip({
     orgName: session.orgName,
@@ -130,6 +179,11 @@ export async function GET(req: Request) {
       riskTier: system.riskTier,
       roleInValueChain: system.roleInValueChain,
       description: system.description,
+      intendedPurpose: system.intendedPurpose,
+      domain: system.domain,
+      versionLabel: system.versionLabel,
+      euDatabaseId: system.euDatabaseId,
+      classificationNotes: system.classificationNotes,
     },
     pdfBytes,
     evidence: evidence.map((e) => ({
@@ -140,6 +194,26 @@ export async function GET(req: Request) {
     })),
     findings: findings.map((f) => ({ title: f.title, severity: f.severity, status: f.status })),
     annexMarkdown,
+    declarationOfConformityMarkdown,
+    euDatabaseRegistrationJson,
+    impactAssessments: impacts.map((imp) => ({
+      id: imp.id,
+      templateId: imp.templateId,
+      title: imp.title,
+      status: imp.status,
+      updatedAt: new Date(imp.updatedAt).toISOString(),
+    })),
+    technicalTests: {
+      fairnessRunCount: fairnessRuns.length,
+      redteamRunCount: redteamRuns.length,
+      evalRunCount: evalRuns.length,
+      latestRedteam: redteamRuns[0]
+        ? { provider: redteamRuns[0].provider, passCount: redteamRuns[0].passCount, failCount: redteamRuns[0].failCount }
+        : null,
+      latestEval: evalRuns[0]
+        ? { provider: evalRuns[0].provider, overallScore: evalRuns[0].overallScore, passCount: evalRuns[0].passCount, failCount: evalRuns[0].failCount }
+        : null,
+    },
   });
 
   await appendAuditLog({

@@ -9,11 +9,20 @@ export type AuditPackInput = {
     riskTier: string | null;
     roleInValueChain: string;
     description: string;
+    intendedPurpose?: string;
+    domain?: string;
+    versionLabel?: string;
+    euDatabaseId?: string;
+    classificationNotes?: string | null;
   };
   pdfBytes?: Uint8Array | null;
   evidence: Array<{ id: string; filename: string; sha256: string; createdAt: string }>;
   findings: Array<{ title: string; severity: string; status: string }>;
   annexMarkdown?: string;
+  declarationOfConformityMarkdown?: string;
+  euDatabaseRegistrationJson?: Record<string, unknown>;
+  impactAssessments?: Array<Record<string, unknown>>;
+  technicalTests?: Record<string, unknown>;
 };
 
 export async function buildAuditPackZip(input: AuditPackInput): Promise<Uint8Array> {
@@ -30,9 +39,13 @@ export async function buildAuditPackZip(input: AuditPackInput): Promise<Uint8Arr
       "",
       "Contents:",
       "- report.pdf (when available)",
-      "- evidence-index.json",
+      "- annex-iv.md (EU AI Act Art. 11 / Annex IV technical documentation)",
+      "- eu-declaration-of-conformity-art47.md (EU AI Act Art. 47 / Annex V declaration template)",
+      "- eu-database-registration-art49.json (EU AI Act Art. 49 / Annex VIII registration payload)",
+      "- evidence-index.json (SHA-256 hash-chained evidence manifest)",
       "- system-summary.json",
-      "- annex-iv.md (when completed)",
+      "- impact-assessments.json (Art. 27 FRIA & GDPR Art. 35 DPIA records)",
+      "- technical-tests-summary.json (Fairness, Red-Team & Scored Eval runs)",
       "",
       "Not a notified-body certificate or legal advice.",
     ].join("\n"),
@@ -66,6 +79,18 @@ export async function buildAuditPackZip(input: AuditPackInput): Promise<Uint8Arr
   }
   if (input.annexMarkdown) {
     root.file("annex-iv.md", input.annexMarkdown);
+  }
+  if (input.declarationOfConformityMarkdown) {
+    root.file("eu-declaration-of-conformity-art47.md", input.declarationOfConformityMarkdown);
+  }
+  if (input.euDatabaseRegistrationJson) {
+    root.file("eu-database-registration-art49.json", JSON.stringify(input.euDatabaseRegistrationJson, null, 2));
+  }
+  if (input.impactAssessments) {
+    root.file("impact-assessments.json", JSON.stringify({ items: input.impactAssessments }, null, 2));
+  }
+  if (input.technicalTests) {
+    root.file("technical-tests-summary.json", JSON.stringify(input.technicalTests, null, 2));
   }
   const out = await zip.generateAsync({ type: "uint8array", compression: "DEFLATE" });
   return out;

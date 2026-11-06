@@ -34,6 +34,8 @@ export default async function RedTeamPage() {
             category: string;
             passed: boolean;
             reason: string;
+            owaspLlmRef?: string;
+            euAiActRef?: string;
           }>;
           return (
             <div key={r.id} className="card p-5">
@@ -51,6 +53,11 @@ export default async function RedTeamPage() {
                     <div>
                       <span className="font-medium">{x.name}</span>
                       <span className="ml-2 text-xs uppercase text-slate-400">{x.category}</span>
+                      {(x.owaspLlmRef || x.euAiActRef) ? (
+                        <span className="ml-2 text-xs text-sky-700">
+                          {[x.owaspLlmRef, x.euAiActRef].filter(Boolean).join(" · ")}
+                        </span>
+                      ) : null}
                       <div className="text-xs text-slate-500">{x.reason}</div>
                     </div>
                     <span className={`badge ${x.passed ? "badge-minimal" : "badge-high"}`}>

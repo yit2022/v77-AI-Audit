@@ -18,6 +18,9 @@ export type FairnessReport = {
   equalizedOddsTprGap: number;
   equalizedOddsFprGap: number;
   overallAccuracy: number;
+  fourFifthsRulePassed: boolean;
+  equalizedOddsPassed: boolean;
+  verdict: "pass" | "review" | "fail";
   warnings: string[];
 };
 
@@ -89,6 +92,25 @@ export function computeFairness(rows: FairnessRow[]): FairnessReport {
   const equalizedOddsDifference = Math.max(equalizedOddsTprGap, equalizedOddsFprGap);
   let correct = 0;
   for (const r of rows) if (r.yTrue === r.yPred) correct++;
+  const fourFifthsRulePassed = demographicParityRatio >= 0.8;
+  const equalizedOddsPassed = equalizedOddsDifference <= 0.1;
+  if (!fourFifthsRulePassed) {
+    warnings.push(
+      `Disparate impact alert: Four-Fifths Ratio (${demographicParityRatio.toFixed(3)}) is below the 0.80 threshold (EU AI Act Art. 10(2)(f) bias examination trigger).`,
+    );
+  }
+  if (!equalizedOddsPassed) {
+    warnings.push(
+      `Error-rate disparity alert: Equalized Odds Δ (${equalizedOddsDifference.toFixed(3)}) exceeds 0.10 across protected groups.`,
+    );
+  }
+  const verdict: "pass" | "review" | "fail" =
+    fourFifthsRulePassed && equalizedOddsPassed
+      ? "pass"
+      : demographicParityRatio < 0.65 || equalizedOddsDifference > 0.25
+        ? "fail"
+        : "review";
+
   return {
     groups,
     demographicParityDifference,
@@ -97,6 +119,9 @@ export function computeFairness(rows: FairnessRow[]): FairnessReport {
     equalizedOddsTprGap,
     equalizedOddsFprGap,
     overallAccuracy: rows.length ? correct / rows.length : 0,
+    fourFifthsRulePassed,
+    equalizedOddsPassed,
+    verdict,
     warnings,
   };
 }

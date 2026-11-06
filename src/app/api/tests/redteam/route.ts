@@ -16,7 +16,12 @@ export async function GET() {
   return NextResponse.json({ runs: runs.map((r) => ({ ...r, results: JSON.parse(r.resultsJson) })) });
 }
 
-const bodySchema = z.object({ systemId: z.string().uuid(), provider: z.string().default("mock") });
+const bodySchema = z.object({
+  systemId: z.string().uuid(),
+  provider: z.string().default("mock"),
+  systemPrompt: z.string().max(4000).optional(),
+  targetEndpointUrl: z.string().max(500).optional(),
+});
 
 export async function POST(req: Request) {
   await seedIfEmpty();
@@ -25,7 +30,11 @@ export async function POST(req: Request) {
   const parsed = bodySchema.safeParse(await req.json().catch(() => null));
   if (!parsed.success) return NextResponse.json({ error: "Invalid body" }, { status: 400 });
   try {
-    const suite = await runRedTeamSuite(parsed.data.provider);
+    const suite = await runRedTeamSuite({
+      providerId: parsed.data.provider,
+      systemPrompt: parsed.data.systemPrompt,
+      targetEndpointUrl: parsed.data.targetEndpointUrl,
+    });
     await ensureDb();
     const runId = id();
     await db.insert(schema.redteamRuns).values({
