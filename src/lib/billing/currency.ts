@@ -34,7 +34,12 @@ export const BILLABLE_PLANS: PricedPlan[] = [
     priceEurMonthly: null,
     priceEurAnnual: null,
     seatLimit: 5,
-    features: ["14-day trial", "Up to 3 AI systems", "5 users", "6 frameworks", "Evidence vault"],
+    features: [
+      "14-day self-serve trial",
+      "Up to 3 AI systems & 5 users",
+      "EU AI Act Art. 5 / Annex III / Art. 6(3) classifier",
+      "6 frameworks & SHA-256 evidence vault",
+    ],
   },
   {
     tier: "team",
@@ -42,15 +47,27 @@ export const BILLABLE_PLANS: PricedPlan[] = [
     priceEurMonthly: 499,
     priceEurAnnual: 4990,
     seatLimit: 25,
-    features: ["Everything in Pilot", "50 AI systems", "25 users", "8 frameworks", "Approvals & Trust Center", "API keys"],
+    features: [
+      "Everything in Pilot (up to 50 AI systems & 25 users)",
+      "Auto-drafted Annex IV, Model Cards, FRIA & GDPR DPIA",
+      "Art. 47 Declaration of Conformity & Art. 49 EU DB JSON",
+      "Live OWASP LLM Top 10 red-teaming & Four-Fifths fairness",
+      "CI/CD Compliance Gate API (/api/v1/compliance-gate)",
+    ],
   },
   {
     tier: "enterprise",
     name: "Enterprise",
-    priceEurMonthly: null,
-    priceEurAnnual: null,
+    priceEurMonthly: 1890,
+    priceEurAnnual: 18900,
     seatLimit: 200,
-    features: ["Everything in Team", "Custom limits", "SSO scaffolding", "Dedicated onboarding", "Partner split billing"],
+    features: [
+      "Everything in Team (up to 500 AI systems & 200 users)",
+      "10-artifact Audit Pack ZIP & external Auditor Sign-Off",
+      "Art. 73 serious-incident authority dossiers (2/10/15d)",
+      "Custom OIDC SSO, white-label Partner Portal & custom MSA",
+      "Dedicated EU compliance onboarding & SEPA / PO invoicing",
+    ],
   },
 ];
 

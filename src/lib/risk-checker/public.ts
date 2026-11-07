@@ -16,6 +16,9 @@ export const PUBLIC_RISK_QUESTION_IDS = [
   "hr_annex_iii_education",
   "hr_annex_iii_biometric",
   "hr_annex_iii_critical",
+  "ctx_art6_3_narrow_preparatory",
+  "ctx_art6_3_profiling",
+  "ctx_art25_substantial_mod",
   "lim_interaction",
   "lim_synthetic",
   "gpai_model",
@@ -65,6 +68,16 @@ export function runPublicRiskCheck(answers: ClassificationInput): PublicRiskResu
     nextSteps.push("Review Chapter V GPAI provider duties (documentation, copyright policy, systemic-risk if designated).");
   } else {
     nextSteps.push("Keep a lightweight inventory entry and re-check if the use case expands into Annex III.");
+  }
+  if (result.art6_3ExemptionClaimed) {
+    nextSteps.push(
+      "Art. 6(3) derogation claimed: document the non-high-risk assessment under Art. 6(4) before market placement and register under Art. 49(2).",
+    );
+  }
+  if (result.art25ProviderEscalation) {
+    nextSteps.push(
+      "Art. 25(1) Provider Escalation: substantial modification or rebranding makes your organisation the legal Provider under the EU AI Act.",
+    );
   }
   nextSteps.push("Request a V77 Trust pilot to turn this heuristic into evidence-backed controls.");
   return {

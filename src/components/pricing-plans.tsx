@@ -93,7 +93,9 @@ export function PricingPlans({
             </div>
             <div>
               <dt className="font-medium">Can I pay annually?</dt>
-              <dd className="text-slate-600">Yes — annual Team is 10× the monthly EUR list (€4,990 / year, two months free).</dd>
+              <dd className="text-slate-600">
+                Yes — annual plans are 10× the monthly EUR list (two months free): €4,990 / year for Team and €18,900 / year (~$20,400) for Enterprise.
+              </dd>
             </div>
             <div>
               <dt className="font-medium">EU VAT &amp; VIES Reverse Charge</dt>

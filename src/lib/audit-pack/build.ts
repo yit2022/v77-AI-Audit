@@ -19,6 +19,7 @@ export type AuditPackInput = {
   evidence: Array<{ id: string; filename: string; sha256: string; createdAt: string }>;
   findings: Array<{ title: string; severity: string; status: string }>;
   annexMarkdown?: string;
+  modelCardMarkdown?: string;
   declarationOfConformityMarkdown?: string;
   euDatabaseRegistrationJson?: Record<string, unknown>;
   impactAssessments?: Array<Record<string, unknown>>;
@@ -40,6 +41,7 @@ export async function buildAuditPackZip(input: AuditPackInput): Promise<Uint8Arr
       "Contents:",
       "- report.pdf (when available)",
       "- annex-iv.md (EU AI Act Art. 11 / Annex IV technical documentation)",
+      "- model-card.md (EU AI Act Art. 13 Instructions for Use & Art. 53 Model Card)",
       "- eu-declaration-of-conformity-art47.md (EU AI Act Art. 47 / Annex V declaration template)",
       "- eu-database-registration-art49.json (EU AI Act Art. 49 / Annex VIII registration payload)",
       "- evidence-index.json (SHA-256 hash-chained evidence manifest)",
@@ -79,6 +81,9 @@ export async function buildAuditPackZip(input: AuditPackInput): Promise<Uint8Arr
   }
   if (input.annexMarkdown) {
     root.file("annex-iv.md", input.annexMarkdown);
+  }
+  if (input.modelCardMarkdown) {
+    root.file("model-card.md", input.modelCardMarkdown);
   }
   if (input.declarationOfConformityMarkdown) {
     root.file("eu-declaration-of-conformity-art47.md", input.declarationOfConformityMarkdown);

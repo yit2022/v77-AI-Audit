@@ -4,6 +4,7 @@ import { z } from "zod";
 import { db, ensureDb, schema } from "@/lib/db";
 import { getSession } from "@/lib/auth/session";
 import { getImpactTemplate, validateImpactAnswers } from "@/lib/impact/templates";
+import { synthesizeImpactAnswers } from "@/lib/impact/autofill";
 import { id } from "@/lib/ids";
 import { seedIfEmpty } from "@/lib/db/seed";
 
@@ -68,6 +69,7 @@ const updateSchema = z.object({
   id: z.string().uuid(),
   status: z.enum(["draft", "in_review", "complete"]).optional(),
   answers: z.record(z.string(), z.string()).optional(),
+  autofill: z.boolean().optional(),
 });
 
 export async function PATCH(req: Request) {
@@ -85,7 +87,63 @@ export async function PATCH(req: Request) {
   const impact = rows[0];
   if (!impact) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
-  if (parsed.data.answers) {
+  let answersToSave = parsed.data.answers;
+  if (parsed.data.autofill) {
+    const sysRows = await db
+      .select()
+      .from(schema.aiSystems)
+      .where(and(eq(schema.aiSystems.id, impact.systemId), eq(schema.aiSystems.orgId, session.orgId)))
+      .limit(1);
+    const sys = sysRows[0];
+    if (sys) {
+      const [fairRows, rtRows, evRows] = await Promise.all([
+        db
+          .select()
+          .from(schema.fairnessRuns)
+          .where(and(eq(schema.fairnessRuns.systemId, sys.id), eq(schema.fairnessRuns.orgId, session.orgId)))
+          .orderBy(desc(schema.fairnessRuns.createdAt))
+          .limit(1),
+        db
+          .select()
+          .from(schema.redteamRuns)
+          .where(and(eq(schema.redteamRuns.systemId, sys.id), eq(schema.redteamRuns.orgId, session.orgId)))
+          .orderBy(desc(schema.redteamRuns.createdAt))
+          .limit(1),
+        db
+          .select()
+          .from(schema.evalRuns)
+          .where(and(eq(schema.evalRuns.systemId, sys.id), eq(schema.evalRuns.orgId, session.orgId)))
+          .orderBy(desc(schema.evalRuns.createdAt))
+          .limit(1),
+      ]);
+      let fairnessSummary: string | undefined;
+      if (fairRows[0]?.metricsJson) {
+        try {
+          const fm = JSON.parse(fairRows[0].metricsJson) as {
+            demographicParityDifference?: number;
+            equalizedOddsDifference?: number;
+          };
+          fairnessSummary = `Demographic Parity Δ=${fm.demographicParityDifference ?? "N/A"}, Equalized Odds Δ=${fm.equalizedOddsDifference ?? "N/A"} (${fairRows[0].filename})`;
+        } catch {
+          fairnessSummary = `Evaluated (${fairRows[0].filename})`;
+        }
+      }
+      answersToSave = synthesizeImpactAnswers({
+        templateId: (impact.templateId === "dpia" ? "dpia" : "fria"),
+        orgName: session.orgName,
+        system: sys,
+        fairnessSummary,
+        redteamSummary: rtRows[0]
+          ? `${rtRows[0].passCount} passed / ${rtRows[0].failCount} failed (${rtRows[0].provider})`
+          : undefined,
+        evalSummary: evRows[0]
+          ? `Score ${(Number(evRows[0].overallScore) * 100).toFixed(0)}% (${evRows[0].passCount}/${evRows[0].passCount + evRows[0].failCount} passed)`
+          : undefined,
+      });
+    }
+  }
+
+  if (answersToSave) {
     if (parsed.data.status === "complete" || impact.status === "complete") {
       const check = validateImpactAnswers(impact.templateId, {
         ...Object.fromEntries(
@@ -93,13 +151,13 @@ export async function PATCH(req: Request) {
             (a) => [a.questionId, a.answer],
           ),
         ),
-        ...parsed.data.answers,
+        ...answersToSave,
       });
       if (parsed.data.status === "complete" && !check.ok) {
         return NextResponse.json({ error: "Missing required answers", missing: check.missing }, { status: 400 });
       }
     }
-    for (const [questionId, answer] of Object.entries(parsed.data.answers)) {
+    for (const [questionId, answer] of Object.entries(answersToSave)) {
       const existing = await db
         .select()
         .from(schema.impactAnswers)
@@ -136,5 +194,5 @@ export async function PATCH(req: Request) {
       .where(eq(schema.impactAssessments.id, impact.id));
   }
 
-  return NextResponse.json({ ok: true });
+  return NextResponse.json({ ok: true, answers: answersToSave });
 }

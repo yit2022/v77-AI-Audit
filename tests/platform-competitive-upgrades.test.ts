@@ -10,8 +10,12 @@ import { buildAuditPackZip } from "../src/lib/audit-pack/build";
 import { REDTEAM_SCENARIOS } from "../src/lib/redteam/scenarios";
 import { runRedTeamSuite } from "../src/lib/redteam/runner";
 import { computeFairness, parsePredictionsCsv } from "../src/lib/fairness";
-import { computeArt73Deadline } from "../src/lib/eu-ai-act/incidents";
+import { computeArt73Deadline, renderArt73AuthorityReport } from "../src/lib/eu-ai-act/incidents";
 import { evaluateComplianceGate } from "../src/lib/compliance/gate";
+import { renderModelCardMarkdown, synthesizeModelCardFromTelemetry } from "../src/lib/model-cards";
+import { renderImpactMarkdown, synthesizeImpactAnswers } from "../src/lib/impact/autofill";
+import { EVAL_CASES } from "../src/lib/evals/cases";
+import { runEvalSuite } from "../src/lib/evals/runner";
 
 function allNo(): Record<string, Answer> {
   const a: Record<string, Answer> = {};
@@ -214,5 +218,71 @@ describe("Upgrade 4 & 5: Art. 73 Incident Deadlines (2/10/15d) & CI/CD Complianc
     });
     expect(passed.passed).toBe(true);
     expect(passed.status).toBe("pass");
+  });
+
+  it("synthesizes Model Cards, FRIA/DPIA Impact Assessments, Scored Evals with statutory refs, and Art. 73 Authority Dossiers", async () => {
+    const mc = synthesizeModelCardFromTelemetry({
+      system: {
+        id: "sys-1",
+        name: "CreditGuard EU",
+        description: "Retail credit scoring model",
+        purpose: "Creditworthiness evaluation",
+        domain: "finance",
+        riskTier: "high_risk",
+        roleInValueChain: "provider",
+      },
+      fairnessRuns: [{ sensitiveAttribute: "gender", demographicParityDiff: "0.04", equalizedOddsDiff: "0.03" }],
+      redteamRuns: [{ provider: "workers_ai", passCount: 16, failCount: 0 }],
+      evalRuns: [{ provider: "workers_ai", overallScore: "0.95", passCount: 10, failCount: 0 }],
+    });
+    expect(mc.intendedUse).toContain("Creditworthiness evaluation");
+    expect(mc.evaluationSummary).toContain("95.0%");
+    const mcMd = renderModelCardMarkdown("CreditGuard EU", mc);
+    expect(mcMd).toContain("EU AI Act Art. 13");
+
+    const friaAnswers = synthesizeImpactAnswers({
+      templateId: "fria",
+      orgName: "Vertex77 sp. z o.o.",
+      system: {
+        id: "sys-1",
+        name: "CreditGuard EU",
+        description: "Retail credit scoring model",
+        purpose: "Creditworthiness evaluation",
+        domain: "finance",
+        riskTier: "high_risk",
+      },
+      fairnessSummary: "DPD=0.04",
+    });
+    expect(friaAnswers.fria_processes).toContain("CreditGuard EU");
+    expect(friaAnswers.fria_human_oversight).toContain("Art. 14");
+    const friaMd = renderImpactMarkdown({
+      title: "FRIA — CreditGuard EU",
+      templateId: "fria",
+      status: "draft",
+      answers: friaAnswers,
+    });
+    expect(friaMd).toContain("Art. 27(1)(a)");
+
+    for (const c of EVAL_CASES) {
+      expect(c.euAiActRef).toBeTruthy();
+      expect(c.iso42001Ref).toBeTruthy();
+    }
+    const evalSuite = await runEvalSuite({
+      providerId: "mock",
+      systemPrompt: "You are a strict European compliance assistant.",
+    });
+    expect(evalSuite.results[0].euAiActRef).toContain("Art.");
+
+    const art73Md = renderArt73AuthorityReport({
+      id: "inc-101",
+      title: "Biased rejection spike",
+      severity: "high",
+      status: "open",
+      seriousIncident: true,
+      euArticleRef: "Art. 73(3)",
+      discoveredAt: "2026-11-01",
+    });
+    expect(art73Md).toContain("Article 73");
+    expect(art73Md).toContain("2 calendar days");
   });
 });

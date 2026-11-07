@@ -34,6 +34,8 @@ export default async function ImpactDetailPage({ params }: { params: Promise<{ i
       <p className="mb-4 max-w-3xl text-sm text-slate-600">{template.description}</p>
       <ImpactEditor
         impactId={impact.id}
+        title={impact.title}
+        templateId={impact.templateId}
         status={impact.status}
         questions={template.questions}
         answers={answerMap}

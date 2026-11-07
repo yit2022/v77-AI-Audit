@@ -26,6 +26,8 @@ export async function GET() {
 const bodySchema = z.object({
   systemId: z.string().uuid(),
   provider: z.string().default("mock"),
+  systemPrompt: z.string().max(4000).optional(),
+  customEndpointUrl: z.string().url().optional().or(z.literal("")),
   categories: z
     .array(z.enum(["robustness", "prompt_injection", "pii_leakage", "hallucination", "fairness"]))
     .optional(),
@@ -42,6 +44,8 @@ export async function POST(req: Request) {
   try {
     const suite = await runEvalSuite({
       providerId: parsed.data.provider,
+      systemPrompt: parsed.data.systemPrompt,
+      customEndpointUrl: parsed.data.customEndpointUrl || undefined,
       categories: parsed.data.categories as EvalCategory[] | undefined,
       fairnessCsv: parsed.data.fairnessCsv,
       sensitiveColumn: parsed.data.sensitiveColumn,

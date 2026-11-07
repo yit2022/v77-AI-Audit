@@ -2,16 +2,21 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { renderImpactMarkdown } from "@/lib/impact/autofill";
 
 type Q = { id: string; prompt: string; guidance: string; euRef: string; required: boolean };
 
 export function ImpactEditor({
   impactId,
+  title = "Impact Assessment",
+  templateId = "fria",
   status,
   questions,
   answers: initial,
 }: {
   impactId: string;
+  title?: string;
+  templateId?: string;
   status: string;
   questions: Q[];
   answers: Record<string, string>;
@@ -39,8 +44,53 @@ export function ImpactEditor({
     router.refresh();
   }
 
+  async function autoDraft() {
+    setBusy(true);
+    setMessage("");
+    const res = await fetch("/api/impact", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id: impactId, autofill: true }),
+    });
+    setBusy(false);
+    if (!res.ok) {
+      setMessage("Could not auto-draft impact assessment.");
+      return;
+    }
+    const body = (await res.json().catch(() => ({}))) as { answers?: Record<string, string> };
+    if (body.answers) {
+      setAnswers(body.answers);
+    }
+    setMessage("Drafted automatically from system metadata, classification, fairness, red-team, and eval runs.");
+    router.refresh();
+  }
+
+  function downloadMarkdown() {
+    const md = renderImpactMarkdown({ title, templateId, status, answers });
+    const blob = new Blob([md], { type: "text/markdown;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${templateId}-${impactId.slice(0, 8)}.md`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
   return (
     <div className="space-y-4">
+      <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-[#d7e6ef] bg-sky-50/60 p-3">
+        <span className="text-xs text-slate-600">
+          Synthesize answers from your system registry, EU AI Act classification, and technical assurance runs:
+        </span>
+        <div className="flex flex-wrap gap-2">
+          <button className="btn btn-secondary" type="button" disabled={busy} onClick={() => void autoDraft()}>
+            Auto-draft from system &amp; test evidence
+          </button>
+          <button className="btn btn-secondary" type="button" onClick={downloadMarkdown}>
+            Export (.md)
+          </button>
+        </div>
+      </div>
       {questions.map((q) => (
         <div key={q.id} className="card p-4">
           <div className="flex items-start justify-between gap-3">

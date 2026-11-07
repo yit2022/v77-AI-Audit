@@ -31,6 +31,16 @@ export default async function EvalSuitePage() {
         {runs.map((r) => {
           const parsed = JSON.parse(r.resultsJson) as {
             categoryScores?: Record<string, { score: number; pass: number; total: number }>;
+            results?: Array<{
+              caseId: string;
+              category: string;
+              name: string;
+              passed: boolean;
+              score: number;
+              reason: string;
+              euAiActRef?: string;
+              iso42001Ref?: string;
+            }>;
           };
           return (
             <div key={r.id} className="card p-4">
@@ -49,6 +59,29 @@ export default async function EvalSuitePage() {
                   </span>
                 ))}
               </div>
+              {parsed.results?.length ? (
+                <div className="mt-3 grid gap-2 sm:grid-cols-2">
+                  {parsed.results.map((c) => (
+                    <div
+                      key={c.caseId}
+                      className={`rounded-lg border p-2.5 text-xs ${
+                        c.passed ? "border-emerald-200 bg-emerald-50/40" : "border-red-200 bg-red-50/50"
+                      }`}
+                    >
+                      <div className="flex items-center justify-between gap-2 font-medium text-slate-800">
+                        <span>{c.name}</span>
+                        <span>{c.passed ? "PASS" : "FAIL"}</span>
+                      </div>
+                      <div className="mt-0.5 text-slate-600">{c.reason}</div>
+                      {c.euAiActRef || c.iso42001Ref ? (
+                        <div className="mt-1 text-[11px] text-slate-500">
+                          {[c.euAiActRef, c.iso42001Ref].filter(Boolean).join(" · ")}
+                        </div>
+                      ) : null}
+                    </div>
+                  ))}
+                </div>
+              ) : null}
             </div>
           );
         })}

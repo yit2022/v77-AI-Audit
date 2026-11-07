@@ -21,8 +21,14 @@ export const DEFAULT_PLANS = [
     tier: "enterprise",
     name: "Enterprise",
     seatLimit: 200,
-    priceNote: "Pricing on request — custom MSA",
-    features: ["Everything in Team", "SSO scaffolding", "Platform usage exports", "Dedicated onboarding", "Partner split billing"],
+    priceNote: "€1,890 / month (€18,900 / year) — custom MSA & SEPA invoicing",
+    features: [
+      "Everything in Team",
+      "Up to 500 AI systems & 200 users",
+      "10-artifact Audit Pack ZIP & external Auditor Sign-Off",
+      "Custom OIDC SSO & white-label Partner split billing",
+      "Dedicated EU onboarding & custom MSA",
+    ],
   },
 ] as const;
 

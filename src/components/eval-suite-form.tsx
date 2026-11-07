@@ -28,10 +28,12 @@ export function EvalSuiteForm({ systems }: { systems: { id: string; name: string
     setError("");
     const systemId = (document.getElementById("eval-system") as HTMLSelectElement).value;
     const provider = (document.getElementById("eval-provider") as HTMLSelectElement).value;
+    const systemPrompt = (document.getElementById("eval-system-prompt") as HTMLTextAreaElement | null)?.value || "";
+    const customEndpointUrl = (document.getElementById("eval-endpoint") as HTMLInputElement | null)?.value || "";
     const res = await fetch("/api/tests/evals", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ systemId, provider }),
+      body: JSON.stringify({ systemId, provider, systemPrompt, customEndpointUrl }),
     });
     setBusy(false);
     if (!res.ok) {
@@ -43,29 +45,65 @@ export function EvalSuiteForm({ systems }: { systems: { id: string; name: string
   }
 
   return (
-    <div className="card flex flex-wrap items-end gap-3 p-5">
-      <div className="min-w-[200px] flex-1">
-        <label className="mb-1 block text-xs font-semibold text-slate-600">System</label>
-        <select id="eval-system" className="select" defaultValue={systems[0]?.id}>
-          {systems.map((s) => (
-            <option key={s.id} value={s.id}>{s.name}</option>
-          ))}
-        </select>
+    <div className="card space-y-4 p-5">
+      <div className="flex flex-wrap items-end gap-3">
+        <div className="min-w-[200px] flex-1">
+          <label className="mb-1 block text-xs font-semibold text-slate-600" htmlFor="eval-system">
+            System
+          </label>
+          <select id="eval-system" className="select" defaultValue={systems[0]?.id}>
+            {systems.map((s) => (
+              <option key={s.id} value={s.id}>
+                {s.name}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="min-w-[180px]">
+          <label className="mb-1 block text-xs font-semibold text-slate-600" htmlFor="eval-provider">
+            Provider
+          </label>
+          <select id="eval-provider" className="select" defaultValue="mock">
+            {providers.map((p) => (
+              <option key={p.id} value={p.id} disabled={!p.configured}>
+                {p.name}
+                {p.configured ? "" : " (not configured)"}
+              </option>
+            ))}
+          </select>
+        </div>
+        <button className="btn btn-primary" type="button" disabled={busy || !systems.length} onClick={run}>
+          {busy ? "Running…" : "Run scored eval suite"}
+        </button>
       </div>
-      <div className="min-w-[180px]">
-        <label className="mb-1 block text-xs font-semibold text-slate-600">Provider</label>
-        <select id="eval-provider" className="select" defaultValue="mock">
-          {providers.map((p) => (
-            <option key={p.id} value={p.id} disabled={!p.configured}>
-              {p.name}{p.configured ? "" : " (not configured)"}
-            </option>
-          ))}
-        </select>
+      <div className="grid gap-3 sm:grid-cols-2">
+        <div>
+          <label className="mb-1 block text-xs font-semibold text-slate-600" htmlFor="eval-system-prompt">
+            Target System Prompt under test (optional)
+          </label>
+          <textarea
+            id="eval-system-prompt"
+            className="textarea"
+            rows={2}
+            placeholder="Paste your application's system prompt to test its robustness, PII refusal, and groundedness…"
+          />
+        </div>
+        <div>
+          <label className="mb-1 block text-xs font-semibold text-slate-600" htmlFor="eval-endpoint">
+            Custom HTTP LLM Endpoint URL (optional)
+          </label>
+          <input
+            id="eval-endpoint"
+            type="url"
+            className="input"
+            placeholder="https://api.yourcompany.eu/v1/chat (POST { messages })"
+          />
+          <p className="mt-1 text-[11px] text-slate-500">
+            Leave blank to run against the selected LLM provider (e.g. Cloudflare Workers AI).
+          </p>
+        </div>
       </div>
-      <button className="btn btn-primary" type="button" disabled={busy || !systems.length} onClick={run}>
-        {busy ? "Running…" : "Run scored eval suite"}
-      </button>
-      {error ? <span className="text-sm text-red-700">{error}</span> : null}
+      {error ? <span className="block text-sm text-red-700">{error}</span> : null}
     </div>
   );
 }

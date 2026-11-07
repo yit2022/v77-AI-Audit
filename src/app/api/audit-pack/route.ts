@@ -10,6 +10,7 @@ import {
   renderEuDeclarationOfConformity,
   synthesizeAnnexIvFromTelemetry,
 } from "@/lib/eu-ai-act/annex-iv";
+import { renderModelCardMarkdown, synthesizeModelCardFromTelemetry } from "@/lib/model-cards";
 import { appendAuditLog } from "@/lib/audit/log";
 
 export const dynamic = "force-dynamic";
@@ -132,6 +133,31 @@ export async function GET(req: Request) {
     .from(schema.impactAssessments)
     .where(and(eq(schema.impactAssessments.orgId, session.orgId), eq(schema.impactAssessments.systemId, system.id)))
     .orderBy(desc(schema.impactAssessments.createdAt));
+  const modelCardRows = await db
+    .select()
+    .from(schema.modelCards)
+    .where(and(eq(schema.modelCards.orgId, session.orgId), eq(schema.modelCards.systemId, system.id)))
+    .limit(1);
+
+  const modelCardFields = synthesizeModelCardFromTelemetry({
+    system: {
+      id: system.id,
+      name: system.name,
+      description: system.description,
+      purpose: system.intendedPurpose,
+      domain: system.domain,
+      riskTier: system.riskTier,
+      roleInValueChain: system.roleInValueChain,
+      lifecycleStatus: system.lifecycleStatus,
+      ownerEmail: session.email,
+    },
+    fairnessRuns,
+    redteamRuns,
+    evalRuns,
+    impactAssessments: impacts,
+    existing: modelCardRows[0] || undefined,
+  });
+  const modelCardMarkdown = renderModelCardMarkdown(system.name, modelCardFields);
 
   let annexAnswers: Record<string, string> = {};
   if (annex[0]) {
@@ -194,6 +220,7 @@ export async function GET(req: Request) {
     })),
     findings: findings.map((f) => ({ title: f.title, severity: f.severity, status: f.status })),
     annexMarkdown,
+    modelCardMarkdown,
     declarationOfConformityMarkdown,
     euDatabaseRegistrationJson,
     impactAssessments: impacts.map((imp) => ({

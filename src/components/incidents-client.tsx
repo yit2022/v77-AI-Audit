@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { ART_73_CATEGORIES, computeArt73Deadline } from "@/lib/eu-ai-act/incidents";
+import { ART_73_CATEGORIES, computeArt73Deadline, renderArt73AuthorityReport } from "@/lib/eu-ai-act/incidents";
 
 export function IncidentsClient({
   systems,
@@ -101,21 +101,41 @@ export function IncidentsClient({
             <li key={i.id} className="card p-4 text-sm">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <div className="font-medium text-[#0F2A4A]">{i.title}</div>
-                {deadline ? (
-                  <span
-                    className={`badge ${
-                      i.authorityNotified
-                        ? "badge-minimal"
-                        : deadline.overdue
-                          ? "badge-high"
-                          : "badge-limited"
-                    }`}
-                  >
-                    {i.authorityNotified
-                      ? `${deadline.articleRef} Notified`
-                      : `${deadline.articleRef} due ${deadline.deadlineIso} (${deadline.deadlineDays}d window)`}
-                  </span>
-                ) : null}
+                <div className="flex flex-wrap items-center gap-2">
+                  {deadline ? (
+                    <span
+                      className={`badge ${
+                        i.authorityNotified
+                          ? "badge-minimal"
+                          : deadline.overdue
+                            ? "badge-high"
+                            : "badge-limited"
+                      }`}
+                    >
+                      {i.authorityNotified
+                        ? `${deadline.articleRef} Notified`
+                        : `${deadline.articleRef} due ${deadline.deadlineIso} (${deadline.deadlineDays}d window)`}
+                    </span>
+                  ) : null}
+                  {i.seriousIncident ? (
+                    <button
+                      type="button"
+                      className="btn btn-secondary px-2.5 py-1 text-xs"
+                      onClick={() => {
+                        const md = renderArt73AuthorityReport(i);
+                        const blob = new Blob([md], { type: "text/markdown;charset=utf-8" });
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement("a");
+                        a.href = url;
+                        a.download = `art73-authority-report-${i.id.slice(0, 8)}.md`;
+                        a.click();
+                        URL.revokeObjectURL(url);
+                      }}
+                    >
+                      Download Art. 73 Authority Dossier (.md)
+                    </button>
+                  ) : null}
+                </div>
               </div>
               <p className="mt-1 text-slate-600">
                 {i.severity} · {i.status}

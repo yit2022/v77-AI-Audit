@@ -61,3 +61,48 @@ export function computeArt73Deadline(opts: {
     overdue: Date.now() > deadlineMs,
   };
 }
+
+export function renderArt73AuthorityReport(incident: {
+  id: string;
+  title: string;
+  severity: string;
+  status: string;
+  seriousIncident: boolean;
+  euArticleRef?: string;
+  discoveredAt?: string;
+  authorityNotified?: boolean;
+  createdAt?: string;
+  systemName?: string;
+}): string {
+  const deadline = computeArt73Deadline({
+    euArticleRef: incident.euArticleRef,
+    discoveredAt: incident.discoveredAt,
+    createdAt: incident.createdAt,
+  });
+  return [
+    `# EU AI Act Article 73 — Serious Incident Market Surveillance Notification Dossier`,
+    "",
+    `- **Incident ID:** ${incident.id}`,
+    `- **Title:** ${incident.title}`,
+    `- **Linked AI System:** ${incident.systemName || "Workspace-level / Unlinked"}`,
+    `- **Statutory Basis:** Regulation (EU) 2024/1689 ${deadline.articleRef}`,
+    `- **Reporting Window:** ${deadline.deadlineDays} calendar days from awareness`,
+    `- **Discovered Date:** ${incident.discoveredAt || incident.createdAt || new Date().toISOString().slice(0, 10)}`,
+    `- **Statutory Notification Deadline:** ${deadline.deadlineIso}${deadline.overdue && !incident.authorityNotified ? " (OVERDUE)" : ""}`,
+    `- **Authority Notification Status:** ${incident.authorityNotified ? "Notified" : "Pending Notification"}`,
+    `- **Severity / Status:** ${incident.severity.toUpperCase()} · ${incident.status}`,
+    "",
+    `## 1. Nature of the Serious Incident (Art. 3(49) & ${deadline.articleRef})`,
+    `This dossier documents a serious incident or malfunctioning of an AI system under Article 73 of the EU AI Act for submission to the competent national Market Surveillance Authority.`,
+    "",
+    `## 2. Immediate Containment, Root-Cause Investigation & Risk Mitigation (Art. 73(6))`,
+    `- Preserve immutable inference logs and SHA-256 evidence records (Art. 12 & Art. 19) without altering the AI system in a manner that compromises root-cause investigation.`,
+    `- Perform causal link verification between the AI system output and the reported harm.`,
+    `- Coordinate corrective actions with the Provider / Deployer under Art. 20 and Art. 26(5).`,
+    "",
+    `## 3. Sign-Off Block`,
+    `- **Prepared via:** V77 Trust (Vertex77 sp. z o.o.)`,
+    `- **Exported At:** ${new Date().toISOString()}`,
+    "",
+  ].join("\n");
+}

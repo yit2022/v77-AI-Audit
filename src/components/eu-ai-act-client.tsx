@@ -2,7 +2,11 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { RISK_TIER_GUIDE, obligationsFor, type ValueChainRole } from "@/lib/eu-ai-act/obligations";
-import { ANNEX_IV_SECTIONS } from "@/lib/eu-ai-act/annex-iv";
+import {
+  ANNEX_IV_SECTIONS,
+  buildEuDatabaseRegistrationPayload,
+  renderEuDeclarationOfConformity,
+} from "@/lib/eu-ai-act/annex-iv";
 import { CONFORMITY_STEPS } from "@/lib/eu-ai-act/conformity";
 
 type SystemOpt = {
@@ -87,6 +91,47 @@ export function EuAiActClient({ systems }: { systems: SystemOpt[] }) {
     setMsg(res.ok ? "Conformity step updated." : "Could not update step.");
   }
 
+  function downloadArt47Declaration() {
+    if (!system) return;
+    const md = renderEuDeclarationOfConformity({
+      orgName: "Registered EU Operator",
+      systemId: system.id,
+      systemName: system.name,
+      intendedPurpose: answers.iv_1_general || system.name,
+      riskTier: system.riskTier,
+    });
+    const blob = new Blob([md], { type: "text/markdown;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `eu-declaration-of-conformity-art47-${system.id.slice(0, 8)}.md`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  function downloadArt49Json() {
+    if (!system) return;
+    const payload = buildEuDatabaseRegistrationPayload({
+      orgName: "Registered EU Operator",
+      system: {
+        id: system.id,
+        name: system.name,
+        description: answers.iv_1_general || system.name,
+        intendedPurpose: answers.iv_1_general || system.name,
+        domain: "enterprise",
+        riskTier: system.riskTier,
+        roleInValueChain: system.roleInValueChain,
+      },
+    });
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `eu-database-registration-art49-${system.id.slice(0, 8)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
   if (!systems.length) {
     return <div className="card p-6 text-sm text-slate-600">Add an AI system first to use the EU AI Act workspace.</div>;
   }
@@ -109,6 +154,12 @@ export function EuAiActClient({ systems }: { systems: SystemOpt[] }) {
         <a className="btn btn-secondary" href={`/api/audit-pack?systemId=${systemId}`}>
           Export audit pack (ZIP)
         </a>
+        <button type="button" className="btn btn-secondary" onClick={downloadArt47Declaration}>
+          Download Art. 47 Declaration (.md)
+        </button>
+        <button type="button" className="btn btn-secondary" onClick={downloadArt49Json}>
+          Download Art. 49 EU DB (.json)
+        </button>
         <a className="btn btn-secondary" href={`/impact`}>
           Open FRIA / DPIA
         </a>

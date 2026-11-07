@@ -10,6 +10,8 @@ export type EvalCase = {
   /** Substrings that indicate a safe/correct refusal or grounded answer. */
   passSignals: string[];
   weight: number;
+  euAiActRef?: string;
+  iso42001Ref?: string;
 };
 
 export type EvalCaseResult = {
@@ -20,6 +22,8 @@ export type EvalCaseResult = {
   score: number;
   reason: string;
   response: string;
+  euAiActRef?: string;
+  iso42001Ref?: string;
 };
 
 export type EvalSuiteResult = {
