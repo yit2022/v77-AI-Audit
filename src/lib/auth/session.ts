@@ -7,6 +7,8 @@ import { assertSessionIdShape, sessionCookieOptions } from "@/lib/security/sessi
 
 const COOKIE = "v77_session";
 const TTL_MS = 1000 * 60 * 60 * 24 * 14;
+const SESSION_CACHE_TTL_MS = 3000;
+const sessionCache = new Map<string, { user: SessionUser; expiresAtMs: number }>();
 
 export type SessionUser = {
   sessionId: string;
@@ -23,6 +25,7 @@ export async function createSession(userId: string, orgId: string) {
   const sessionId = id();
   const expiresAt = new Date(Date.now() + TTL_MS);
   await db.insert(schema.sessions).values({ id: sessionId, userId, orgId, expiresAt });
+  sessionCache.delete(sessionId);
   const jar = await cookies();
   jar.set(COOKIE, sessionId, sessionCookieOptions(expiresAt));
   return sessionId;
@@ -33,16 +36,21 @@ export async function destroySession() {
   const jar = await cookies();
   const sid = jar.get(COOKIE)?.value;
   if (sid) {
+    sessionCache.delete(sid);
     await db.delete(schema.sessions).where(eq(schema.sessions.id, sid));
     jar.delete(COOKIE);
   }
 }
 
 export async function getSession(): Promise<SessionUser | null> {
-  await ensureDb();
   const jar = await cookies();
   const sid = jar.get(COOKIE)?.value;
   if (!assertSessionIdShape(sid) || !sid) return null;
+  const cached = sessionCache.get(sid);
+  if (cached && cached.expiresAtMs > Date.now()) {
+    return cached.user;
+  }
+  await ensureDb();
   const rows = await db
     .select({
       sessionId: schema.sessions.id,
@@ -66,10 +74,11 @@ export async function getSession(): Promise<SessionUser | null> {
   const row = rows[0];
   if (!row) return null;
   if (new Date(row.expiresAt).getTime() < Date.now()) {
+    sessionCache.delete(sid);
     await db.delete(schema.sessions).where(eq(schema.sessions.id, sid));
     return null;
   }
-  return {
+  const user: SessionUser = {
     sessionId: row.sessionId,
     userId: row.userId,
     orgId: row.orgId,
@@ -78,6 +87,8 @@ export async function getSession(): Promise<SessionUser | null> {
     role: row.role as Role,
     orgName: row.orgName,
   };
+  sessionCache.set(sid, { user, expiresAtMs: Date.now() + SESSION_CACHE_TTL_MS });
+  return user;
 }
 
 export async function requireSession(): Promise<SessionUser> {

@@ -25,17 +25,17 @@ export default async function ImpactListPage() {
   return (
     <div>
       <PageHeader
-        title="Impact assessments"
-        subtitle="EU AI Act Art. 27 FRIA and complementary GDPR DPIA templates."
+        title="Global Impact & Conformity Assessments"
+        subtitle="Multi-jurisdiction statutory impact templates with 1-click telemetry auto-drafting across EU, US, UK, Australia, and New Zealand."
       />
       <div className="card mb-6 border-sky-200 bg-sky-50/70 p-4 text-sm text-slate-700">
-        <strong className="text-[#0F2A4A]">GDPR / DPIA linkage:</strong> when a high-risk system processes personal
-        data, complete both an Art. 27 FRIA and a GDPR Art. 35 DPIA. Neither replaces the other — start both from this
-        page and keep them linked in your evidence vault. Continue obligations tracking in{" "}
-        <a className="font-semibold text-sky-700 hover:underline" href="/eu-ai-act">
-          EU AI Act
-        </a>
-        .
+        <strong className="text-[#0F2A4A]">6 Global Statutory Assessment Templates Included:</strong>{" "}
+        <strong>EU</strong> (Art. 27 FRIA &amp; GDPR Art. 35 DPIA) ·{" "}
+        <strong>United States</strong> (Colorado SB 24-205 / NYC LL144 / NIST AI RMF) ·{" "}
+        <strong>United Kingdom</strong> (UK ATRS Tier 1/2 &amp; UK GDPR / ICO AI Assessment) ·{" "}
+        <strong>Australia</strong> (10 Mandatory High-Risk AI Guardrails &amp; OAIC APP 1 ADM) ·{" "}
+        <strong>New Zealand</strong> (Privacy Act 2020 IPP 1–13 &amp; Algorithm Charter). Open any assessment and click{" "}
+        <strong>Auto-draft from system telemetry</strong> to populate statutory answers from your live Evals, Fairness, and Red-Team runs.
       </div>
       <ImpactCreateForm systems={systems} templates={IMPACT_TEMPLATES.map((t) => ({ id: t.id, name: t.name }))} />
       <div className="mt-6 space-y-3">

@@ -127,19 +127,15 @@ async function enrichDemoOrgIfNeeded(orgId: string) {
 
 async function seedOnce() {
   await ensureDb();
+  const [existing, ctrlRows] = await Promise.all([
+    db.select().from(schema.organisations).limit(1),
+    db.select({ id: schema.controls.id }).from(schema.controls),
+  ]);
+  if (existing.length > 0 && ctrlRows.length >= CONTROL_SEEDS.length && !/tamalaki/i.test(existing[0].name)) {
+    return { seeded: false };
+  }
   await syncControlCatalogue();
-  const existing = await db.select().from(schema.organisations).limit(1);
   if (existing.length > 0) {
-    const ctrl = await db.select().from(schema.controls).limit(1);
-    if (ctrl.length === 0) {
-      await insertInChunks(
-        schema.controls,
-        CONTROL_SEEDS.map((c) => ({
-          id: c.id, code: c.code, title: c.title, description: c.description,
-          area: c.area, euRef: c.euRef, nistRef: c.nistRef, isoRef: c.isoRef, gdprRef: c.gdprRef, doraRef: c.doraRef, iso27001Ref: c.iso27001Ref, appliesTo: c.appliesTo,
-        })),
-      );
-    }
     await enrichDemoOrgIfNeeded(existing[0].id);
     return { seeded: false };
   }

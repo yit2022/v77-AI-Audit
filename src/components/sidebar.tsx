@@ -106,6 +106,11 @@ export function Sidebar({
   const [open, setOpen] = useState(false);
   const [localeReady, setLocaleReady] = useState(locale === "en");
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
+  const [pendingHref, setPendingHref] = useState<string | null>(null);
+
+  useEffect(() => {
+    setPendingHref(null);
+  }, [pathname]);
 
   useEffect(() => {
     let cancelled = false;
@@ -187,17 +192,25 @@ export function Sidebar({
                 {!closed ? (
                   <div className="mt-1 space-y-0.5">
                     {section.items.map((l) => {
-                      const active = pathname === l.href || pathname.startsWith(l.href + "/");
+                      const activePath = pendingHref || pathname;
+                      const active = activePath === l.href || activePath.startsWith(l.href + "/");
                       return (
                         <Link
                           key={l.href}
                           href={l.href}
-                          className={`block rounded-lg px-3 py-2 text-sm font-medium ${
+                          prefetch={true}
+                          className={`flex items-center justify-between rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
                             active ? "bg-sky-50 text-sky-900" : "text-slate-700 hover:bg-slate-50"
                           }`}
-                          onClick={() => setOpen(false)}
+                          onClick={() => {
+                            setPendingHref(l.href);
+                            setOpen(false);
+                          }}
                         >
-                          {label(l.key)}
+                          <span>{label(l.key)}</span>
+                          {pendingHref === l.href && pathname !== l.href ? (
+                            <span className="h-2 w-2 animate-ping rounded-full bg-sky-500" aria-hidden />
+                          ) : null}
                         </Link>
                       );
                     })}

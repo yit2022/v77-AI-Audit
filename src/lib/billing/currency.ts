@@ -16,6 +16,22 @@ export function eurToUsdRate(env: NodeJS.ProcessEnv | Record<string, string | un
 
 export type BillingInterval = "monthly" | "annual";
 
+export type DisplayCurrency = "EUR" | "USD" | "GBP" | "AUD" | "NZD";
+
+export const DISPLAY_CURRENCIES: Array<{
+  code: DisplayCurrency;
+  label: string;
+  locale: string;
+  rateFromEur: number;
+  regionHint: string;
+}> = [
+  { code: "EUR", label: "EUR (€)", locale: "en-IE", rateFromEur: 1, regionHint: "EU / EEA (Stripe EUR & SEPA)" },
+  { code: "USD", label: "USD ($)", locale: "en-US", rateFromEur: 1.08, regionHint: "United States" },
+  { code: "GBP", label: "GBP (£)", locale: "en-GB", rateFromEur: 0.85, regionHint: "United Kingdom" },
+  { code: "AUD", label: "AUD (A$)", locale: "en-AU", rateFromEur: 1.65, regionHint: "Australia" },
+  { code: "NZD", label: "NZD (NZ$)", locale: "en-NZ", rateFromEur: 1.80, regionHint: "New Zealand" },
+];
+
 export type PricedPlan = {
   tier: string;
   name: string;
@@ -81,6 +97,24 @@ export function displayPriceEur(plan: PricedPlan, locale = "en-GB", interval: Bi
   if (amount == null) return "Pricing on request";
   if (interval === "annual") return `${formatEur(amount, locale)} / year`;
   return `${formatEur(amount, locale)} / month`;
+}
+
+export function displayPriceForCurrency(
+  plan: PricedPlan,
+  currency: DisplayCurrency = "EUR",
+  interval: BillingInterval = "monthly",
+): string {
+  if (currency === "EUR") return displayPriceEur(plan, "en-GB", interval);
+  const eurAmount = listPriceEur(plan, interval);
+  if (eurAmount == null) return "Pricing on request";
+  const meta = DISPLAY_CURRENCIES.find((c) => c.code === currency) || DISPLAY_CURRENCIES[0];
+  const converted = Math.round((eurAmount * meta.rateFromEur) / 10) * 10;
+  const formatted = new Intl.NumberFormat(meta.locale, {
+    style: "currency",
+    currency: meta.code,
+    maximumFractionDigits: 0,
+  }).format(converted);
+  return interval === "annual" ? `${formatted} / year` : `${formatted} / month`;
 }
 
 /** Convert EUR list price into the smallest currency unit for Paystack (cents). */

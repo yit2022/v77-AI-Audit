@@ -17,15 +17,15 @@ export default async function AppLayout({
 }: {
   children: React.ReactNode;
 }) {
-  await seedIfEmpty();
-  const session = await getSession();
+  const [, session, jar] = await Promise.all([seedIfEmpty(), getSession(), cookies()]);
   if (!session) redirect("/login");
-  const jar = await cookies();
   const raw = jar.get("v77_locale")?.value;
   const locale: Locale = isLocale(raw) ? raw : "en";
-  await ensureLocale(locale);
-  const access = await getOrgAccess(session.orgId);
-  const showPlatform = await isPlatformAdminEmailAsync(session.email);
+  const [, access, showPlatform] = await Promise.all([
+    ensureLocale(locale),
+    getOrgAccess(session.orgId),
+    isPlatformAdminEmailAsync(session.email),
+  ]);
 
   return (
     <div className="flex min-h-screen flex-col lg:flex-row">

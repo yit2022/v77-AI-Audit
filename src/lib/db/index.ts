@@ -83,11 +83,20 @@ export const db = new Proxy({} as object, {
 }) as unknown as V77Db;
 
 async function execStatements(backend: "d1" | "sqlite", sql: string, { ignoreErrors = false } = {}) {
-  const statements = sql.split(";")
+  const statements = sql
+    .split(";")
     .map((s) => s.trim())
     .filter((s) => s.length > 0 && !s.startsWith("--"));
   if (backend === "d1") {
     const d1 = global.__v77_d1!;
+    if (!ignoreErrors && statements.length > 1) {
+      try {
+        await d1.batch(statements.map((stmt) => d1.prepare(stmt)));
+        return;
+      } catch {
+        // Fall back to statement-by-statement if batch fails
+      }
+    }
     for (const stmt of statements) {
       try {
         await d1.prepare(stmt).run();
@@ -107,7 +116,25 @@ async function execStatements(backend: "d1" | "sqlite", sql: string, { ignoreErr
   }
 }
 
+async function isD1SchemaUpToDate(d1: D1Database): Promise<boolean> {
+  try {
+    await d1.batch([
+      d1.prepare("SELECT id, trial_ends_at, billing_interval FROM organisations LIMIT 1"),
+      d1.prepare("SELECT id FROM lifecycle_email_log LIMIT 1"),
+      d1.prepare("SELECT id, dora_ref, iso27001_ref FROM controls LIMIT 1"),
+    ]);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 async function execDdl(backend: "d1" | "sqlite") {
+  if (backend === "d1" && global.__v77_d1) {
+    if (await isD1SchemaUpToDate(global.__v77_d1)) {
+      return;
+    }
+  }
   await execStatements(backend, SQLITE_DDL);
   await execStatements(backend, MIGRATIONS, { ignoreErrors: true });
 }

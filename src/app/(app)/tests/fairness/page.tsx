@@ -23,8 +23,8 @@ export default async function FairnessPage() {
   return (
     <div>
       <PageHeader
-        title="Fairness tests"
-        subtitle="Quantitative bias metrics also fold into the shared scored eval suite report. Upload a predictions CSV with y_true, y_pred, and a sensitive attribute column. Computes demographic parity and equalized odds."
+        title="Global Algorithmic Fairness & Bias Audit Lab"
+        subtitle="Computes Four-Fifths (80%) impact ratio, demographic parity, and equalized odds across EU AI Act Art. 10, US NYC Local Law 144 / EEOC / Colorado SB 24-205, UK Equality Act 2010, Australia Guardrail 3/4, and NZ Privacy Act IPP 8."
       />
       <FairnessForm systems={systems.map((s) => ({ id: s.id, name: s.name }))} />
       <div className="mt-6 space-y-4">

@@ -1,74 +1,75 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { MarketingChrome } from "@/components/marketing-chrome";
+import { GLOBAL_JURISDICTIONS } from "@/lib/global/jurisdictions";
 
 export const revalidate = 300;
 
 export const metadata: Metadata = {
-  title: "Frameworks — V77 Trust",
+  title: "Global AI Frameworks (EU, US, UK, Australia & New Zealand) — V77 Trust",
   description:
-    "Crosswalk for the EU AI Act, NIST AI RMF, ISO/IEC 42001, GDPR AI controls, DORA and ISO/IEC 27001.",
+    "Unified AI governance crosswalk covering the EU AI Act, US State AI Laws (Colorado SB 24-205, NYC LL144, California AB 2013), NIST AI RMF, UK ICO/ATRS/FCA, Australia 10 Mandatory Guardrails (VAISS) & OAIC ADM, New Zealand Privacy Act 2020 (IPP 1–13) & Algorithm Charter, ISO/IEC 42001, GDPR, DORA, and ISO/IEC 27001.",
 };
 
 const frameworks = [
   {
-    name: "EU AI Act",
+    name: "🇪🇺 EU AI Act (Reg. 2024/1689)",
     summary:
-      "Risk-tier classification, Annex III high-risk obligations, transparency for limited-risk systems, and GPAI documentation expectations.",
+      "Full Art. 5(1)(a–h) prohibited practices screening, Annex I/III high-risk classification, Art. 6(3) exemptions, Art. 25 provider escalation, Annex IV technical documentation, and Art. 47/49 conformity exports.",
     points: [
-      "Guided risk questionnaire mapped to Act categories",
-      "Control pack for high-risk deployer / provider duties",
-      "FRIA / DPIA templates for fundamental-rights impact",
+      "Guided 25-question statutory risk classifier",
+      "Auto-drafted Annex IV, Art. 47 Declaration of Conformity & Art. 49 EU DB JSON",
+      "Art. 27 FRIA & Art. 73 serious-incident deadlines (2 / 10 / 15 days)",
     ],
   },
   {
-    name: "NIST AI RMF",
+    name: "🇺🇸 US State & Federal AI Mandates",
     summary:
-      "Govern, Map, Measure and Manage functions crosswalked into the same control catalogue used for EU obligations.",
+      "Built for the Colorado AI Act (SB 24-205), NYC Local Law 144 (AEDT Bias Audit), California AB 2013 / SB 942 / CCPA ADMT, Illinois HB 3773, and NIST AI RMF 1.0 / AI 600-1.",
     points: [
-      "Map organisational AI risk context and stakeholders",
-      "Measure technical trustworthiness (fairness, robustness, PII)",
-      "Manage findings with owners, due dates and evidence",
+      "Colorado SB 24-205 NIST AI RMF / ISO 42001 safe-harbor crosswalk & annual Impact Assessment",
+      "NYC Local Law 144 Four-Fifths Rule (0.80 Impact Ratio) hiring bias calculator",
+      "California AB 2013 training data summary & 90-day AG discrimination reporting",
     ],
   },
   {
-    name: "ISO/IEC 42001",
+    name: "🇬🇧 United Kingdom (ICO, ATRS & FCA)",
     summary:
-      "AI management system controls for policy, roles, lifecycle and continual improvement — aligned in the crosswalk.",
+      "Aligned with UK DSIT's 5 Cross-Sectoral AI Principles, UK GDPR & the Data (Use and Access) Act 2025, the UK Algorithmic Transparency Recording Standard (ATRS), and FCA / PRA SS1/23.",
     points: [
-      "AIMS-oriented control areas in the registry",
-      "Assessment workflow for implementation status",
-      "Auditor workspace for review comments and sign-off",
+      "UK ICO AI DPIA & Art. 22 Automated Decision-Making (ADM) human review safeguards",
+      "UK ATRS Tier 1 & Tier 2 public-sector algorithmic transparency templates",
+      "FCA Consumer Duty fair-outcome testing & PRA SS1/23 model risk governance",
     ],
   },
   {
-    name: "GDPR (AI-related)",
+    name: "🇦🇺 Australia (10 Guardrails & OAIC ADM)",
     summary:
-      "Lawful basis, DPIA, automated decision-making, special-category data and transparency duties when AI processes personal data.",
+      "Native support for the Australian Government's 10 Mandatory Guardrails for High-Risk AI / Voluntary AI Safety Standard (VAISS), OAIC Privacy Act APP 1 ADM reforms, and NSW AIAF.",
     points: [
-      "Arts. 5–6, 9, 12–14, 22, 25, 30, 32, 33–36 cited where applicable",
-      "DPIA linked to FRIA when both apply",
-      "No invented article numbers — public Regulation (EU) 2016/679 only",
+      "Complete 10-Guardrail conformity assessment (accountability, data, testing, human control, contestability)",
+      "OAIC Privacy Amendment Act 2024 (APP 1) automated decision-making transparency",
+      "APRA CPS 230 / CPS 234 operational resilience & DTA government procurement readiness",
     ],
   },
   {
-    name: "DORA",
+    name: "🇳🇿 New Zealand (Privacy Act 2020 & Algorithm Charter)",
     summary:
-      "ICT risk management and third-party risk for financial entities when AI supports critical or important functions (Regulation (EU) 2022/2554).",
+      "Covers the NZ Office of the Privacy Commissioner (OPC) AI Guidance across IPPs 1–13, the Algorithm Charter for Aotearoa New Zealand, and the NZ Public Service AI Framework.",
     points: [
-      "Arts. 5–6 governance and ICT risk framework",
-      "Arts. 17–19 ICT-related incident management",
-      "Arts. 28–30 ICT third-party risk for AI vendors",
+      "Mandatory pre-deployment AI Privacy Impact Assessment (PIA) & IPP 8 accuracy checks",
+      "Algorithm Charter Probability × Impact risk matrix, peer review & plain-English explainability",
+      "Te Tiriti o Waitangi & Māori Data Sovereignty governance checkpoints",
     ],
   },
   {
-    name: "ISO/IEC 27001",
+    name: "🌐 ISO/IEC 42001, NIST AI RMF, GDPR, DORA & ISO 27001",
     summary:
-      "Information security Annex A themes mapped to AI admin access, logging, secure development and supplier risk — identifiers only, no standard text reproduced.",
+      "Certifiable AI Management System (AIMS) controls mapped once across global privacy, financial resilience (DORA / SR 11-7 / PRA SS1/23 / APRA CPS 230), and information security standards.",
     points: [
-      "A.5 access, supplier and incident themes",
-      "A.8 logging, monitoring and secure development themes",
-      "Crosswalked alongside AI Act and DORA controls",
+      "24 core controls mapped across 10 global statutes and standards",
+      "SHA-256 hash-chained evidence locker & 4-tier external Auditor Sign-Off",
+      "CI/CD release gate API (/api/v1/compliance-gate) for GitHub Actions",
     ],
   },
 ];
@@ -77,13 +78,15 @@ export default function FrameworksPage() {
   return (
     <MarketingChrome>
       <section className="mx-auto max-w-6xl px-4 pb-14 sm:px-6">
-        <p className="text-xs font-bold uppercase tracking-[0.18em] text-sky-700">Frameworks</p>
+        <p className="text-xs font-bold uppercase tracking-[0.18em] text-sky-700">Global Multi-Jurisdiction Crosswalk</p>
         <h1 className="mt-3 max-w-3xl text-3xl font-semibold tracking-tight text-[#0F2A4A] sm:text-4xl">
-          One crosswalk for the frameworks that matter.
+          Audit once. Comply across the EU, USA, UK, Australia &amp; New Zealand.
         </h1>
         <p className="mt-4 max-w-3xl text-base leading-relaxed text-slate-600">
-          Map once, evidence once. V77 Trust keeps EU AI Act, NIST AI RMF, ISO/IEC 42001, GDPR AI-related, DORA and
-          ISO/IEC 27001 references in a shared catalogue so programmes do not diverge into parallel trackers.
+          Map once, evidence once. V77 Trust unifies the EU AI Act, US Federal &amp; State AI Laws (NIST AI RMF,
+          Colorado SB 24-205, NYC LL144, California AB 2013), UK ICO / ATRS / FCA, Australia&apos;s 10 Mandatory
+          High-Risk AI Guardrails (VAISS) &amp; OAIC ADM, New Zealand&apos;s Privacy Act 2020 (IPP 1–13) &amp; Algorithm
+          Charter, ISO/IEC 42001, GDPR, DORA, and ISO/IEC 27001 in one shared control catalogue.
         </p>
         <div className="mt-10 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {frameworks.map((f) => (
@@ -101,10 +104,44 @@ export default function FrameworksPage() {
             </article>
           ))}
         </div>
+
+        <div className="mt-12 space-y-4">
+          <h2 className="text-2xl font-semibold text-[#0F2A4A]">
+            Regional Regulatory Coverage &amp; High-Need Sectors
+          </h2>
+          <div className="grid gap-4 lg:grid-cols-2">
+            {GLOBAL_JURISDICTIONS.map((j) => (
+              <div key={j.id} className="card p-5">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <h3 className="text-lg font-semibold text-[#0F2A4A]">
+                    {j.flag} {j.name}
+                  </h3>
+                  <span className="rounded-full bg-sky-50 px-2.5 py-0.5 text-xs font-medium text-sky-800">
+                    {j.incidentReportingWindow}
+                  </span>
+                </div>
+                <p className="mt-2 text-sm text-slate-600">{j.summary}</p>
+                <div className="mt-3 flex flex-wrap gap-1.5">
+                  {j.flagshipLaws.map((law) => (
+                    <span key={law} className="rounded-md bg-slate-100 px-2 py-0.5 text-xs text-slate-700">
+                      {law}
+                    </span>
+                  ))}
+                </div>
+                <ul className="mt-3 space-y-1 text-xs text-slate-700">
+                  {j.keyObligations.map((ob) => (
+                    <li key={ob}>• {ob}</li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        </div>
+
         <p className="mt-10 text-sm text-slate-600">
-          Ready to run the crosswalk on your inventory?{" "}
+          Ready to run the global crosswalk on your AI inventory?{" "}
           <Link href="/signup" className="font-semibold text-sky-800 hover:underline">
-            Start free
+            Start 14-day trial
           </Link>{" "}
           or{" "}
           <Link href="/contact" className="font-semibold text-sky-800 hover:underline">

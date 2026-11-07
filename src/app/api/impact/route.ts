@@ -3,7 +3,7 @@ import { and, desc, eq } from "drizzle-orm";
 import { z } from "zod";
 import { db, ensureDb, schema } from "@/lib/db";
 import { getSession } from "@/lib/auth/session";
-import { getImpactTemplate, validateImpactAnswers } from "@/lib/impact/templates";
+import { getImpactTemplate, IMPACT_TEMPLATES, validateImpactAnswers, type ImpactTemplateId } from "@/lib/impact/templates";
 import { synthesizeImpactAnswers } from "@/lib/impact/autofill";
 import { id } from "@/lib/ids";
 import { seedIfEmpty } from "@/lib/db/seed";
@@ -18,12 +18,12 @@ export async function GET() {
     .from(schema.impactAssessments)
     .where(eq(schema.impactAssessments.orgId, session.orgId))
     .orderBy(desc(schema.impactAssessments.updatedAt));
-  return NextResponse.json({ items: rows, templates: ["fria", "dpia"] });
+  return NextResponse.json({ items: rows, templates: IMPACT_TEMPLATES.map((t) => t.id) });
 }
 
 const createSchema = z.object({
   systemId: z.string().uuid(),
-  templateId: z.enum(["fria", "dpia"]),
+  templateId: z.enum(["fria", "dpia", "us_aia", "uk_atrs", "au_guardrails", "nz_charter"]),
   title: z.string().min(1).max(200).optional(),
 });
 
@@ -129,7 +129,7 @@ export async function PATCH(req: Request) {
         }
       }
       answersToSave = synthesizeImpactAnswers({
-        templateId: (impact.templateId === "dpia" ? "dpia" : "fria"),
+        templateId: (impact.templateId as ImpactTemplateId) || "fria",
         orgName: session.orgName,
         system: sys,
         fairnessSummary,

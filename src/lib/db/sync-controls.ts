@@ -2,7 +2,7 @@ import { eq } from "drizzle-orm";
 import { CONTROL_SEEDS } from "@/lib/crosswalk";
 import { db, ensureDb, schema } from "@/lib/db";
 
-/** Upsert control catalogue from CONTROL_SEEDS (insert missing, refresh crosswalk refs). */
+/** Upsert control catalogue from CONTROL_SEEDS (insert missing, refresh crosswalk refs only when changed). */
 export async function syncControlCatalogue(): Promise<{ inserted: number; updated: number }> {
   await ensureDb();
   const existing = await db.select().from(schema.controls);
@@ -29,6 +29,19 @@ export async function syncControlCatalogue(): Promise<{ inserted: number; update
       inserted++;
       continue;
     }
+    const unchanged =
+      row.title === c.title &&
+      row.description === c.description &&
+      row.area === c.area &&
+      row.euRef === c.euRef &&
+      row.nistRef === c.nistRef &&
+      row.isoRef === c.isoRef &&
+      row.gdprRef === c.gdprRef &&
+      row.doraRef === c.doraRef &&
+      row.iso27001Ref === c.iso27001Ref &&
+      row.appliesTo === c.appliesTo;
+    if (unchanged) continue;
+
     await db
       .update(schema.controls)
       .set({

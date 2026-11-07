@@ -80,14 +80,16 @@ export default function HomePage() {
       <section className="mx-auto max-w-6xl px-4 sm:px-6 pb-10 pt-6">
         <div className="grid items-center gap-10 lg:grid-cols-[1.15fr_0.85fr]">
           <div>
-            <p className="text-xs font-bold uppercase tracking-[0.18em] text-sky-700">Global AI audit platform</p>
+            <p className="text-xs font-bold uppercase tracking-[0.18em] text-sky-700">
+              Global AI Governance &amp; Statutory Audit Platform · EU · US · UK · AU · NZ
+            </p>
             <h1 className="mt-3 max-w-2xl text-4xl font-semibold tracking-tight text-[#0F2A4A] sm:text-5xl">
               System of record and system of proof for AI governance.
             </h1>
             <p className="mt-5 max-w-2xl text-base leading-relaxed text-slate-600">
-              Inventory systems, classify EU AI Act risk, map controls across leading frameworks, run technical
-              evaluations, collect evidence, and export auditor-ready reports — with multi-tenant RBAC and an
-              immutable audit log.
+              Inventory AI systems, classify statutory risk, map 24 controls across the EU AI Act, US Colorado SB
+              24-205 / NYC Local Law 144 / NIST AI RMF, UK ICO / ATRS, Australia 10 Guardrails, and NZ Algorithm
+              Charter, run live fairness &amp; red-team evaluations, and export signed audit packs.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <a href="#risk-checker" className="btn btn-primary">
