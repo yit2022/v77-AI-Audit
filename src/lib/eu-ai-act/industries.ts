@@ -961,3 +961,381 @@ export function parseInstitutionAndVendor(
   };
 }
 
+export interface EuStatutoryPolicyPack {
+  id: string;
+  code: string;
+  title: string;
+  euRegulations: string;
+  description: string;
+  mandatoryCheckpoints: string[];
+}
+
+/**
+ * Stackable European Statutory Policy Packs (Beating Credo AI's Policy Packs with deep EU Lex Specialis coverage).
+ */
+export const EU_STATUTORY_POLICY_PACKS: EuStatutoryPolicyPack[] = [
+  {
+    id: "eu_high_risk_core",
+    code: "EU-PACK-CORE",
+    title: "EU AI Act Chapter III High-Risk Core & EN ISO/IEC 42001",
+    euRegulations: "Reg. (EU) 2024/1689 Arts. 8–27, 43, 47–49, 72–73 · EN ISO/IEC 42001:2023",
+    description:
+      "Mandatory horizontal conformity pack for High-Risk AI systems placed on the Union market or put into service in the EEA.",
+    mandatoryCheckpoints: [
+      "Art. 9 Continuous Risk Management System & residual risk acceptability sign-off",
+      "Art. 10 Data Governance & Four-Fifths Ratio (>= 0.80) bias verification",
+      "Art. 11 Annex IV Technical Documentation (all 8 sections) & 10-year retention (Art. 18)",
+      "Art. 12 Automatic Event Logging (>= 6 months retention under Art. 19)",
+      "Art. 13 Instructions for Use & Art. 14 Human Oversight override & stop switch",
+      "Art. 15 Accuracy, Robustness & OWASP LLM/ML Cybersecurity verification",
+      "Art. 47 EU Declaration of Conformity, Art. 48 CE Marking & Art. 49 EU DB Registration",
+    ],
+  },
+  {
+    id: "eu_dora_finance",
+    code: "EU-PACK-DORA",
+    title: "Banking, Credit & Insurance DORA + Solvency II + Art. 27 FRIA Pack",
+    euRegulations: "EU AI Act Annex III pt. 5(b)–(c) · DORA Reg. (EU) 2022/2554 · CCD II (EU) 2023/2225 · Solvency II · GDPR Art. 22",
+    description:
+      "Integrated financial-services pack satisfying EU AI Act Art. 9(9) single-audit alignment with ECB/EBA/EIOPA supervisory rules.",
+    mandatoryCheckpoints: [
+      "Art. 27 Mandatory Fundamental Rights Impact Assessment (FRIA) prior to credit/insurance deployment",
+      "DORA Art. 6–16 ICT Risk Management & Art. 28 Third-Party AI Model Provider Register of Information",
+      "Consumer Credit Directive II Art. 18 & GDPR Art. 22 right to human intervention and credit explanation (Art. 86)",
+      "Solvency II Art. 41 Actuarial Data Quality & Gender-Neutral Pricing Directive (2004/113/EC) verification",
+    ],
+  },
+  {
+    id: "eu_mdr_medtech",
+    code: "EU-PACK-MDR",
+    title: "MedTech, Clinical AI & Healthcare MDR / IVDR + MDCG 2025-6 Pack",
+    euRegulations: "EU AI Act Art. 6(1) & Annex I Sec. A pts. 11–12 · MDR (EU) 2017/745 · IVDR (EU) 2017/746 · EHDS · MDCG 2025-6",
+    description:
+      "Joint conformity pack for Software as a Medical Device (SaMD), in-vitro diagnostics, and hospital clinical triage AI.",
+    mandatoryCheckpoints: [
+      "Art. 43(3) Single Notified Body Conformity Assessment combining MDR/IVDR Annex IX–XI and EU AI Act Annex IV",
+      "EN ISO 14971 Medical Risk Management & EN IEC 62304 Software Lifecycle traceability",
+      "Clinical Evaluation Report (CER) / Performance Evaluation Report (PER) subgroup sensitivity across EU demographics",
+      "Post-Market Clinical Follow-up (PMCF) integrated with EU AI Act Art. 72 Post-Market Monitoring Plan",
+    ],
+  },
+  {
+    id: "eu_nis2_machinery",
+    code: "EU-PACK-NIS2",
+    title: "Critical Infrastructure, Energy & Industrial Safety (NIS2 + Machinery Reg)",
+    euRegulations: "EU AI Act Annex III pt. 2 & Annex I · NIS2 Directive (EU) 2022/2555 · CER (EU) 2022/2557 · Machinery Reg. (EU) 2023/1230",
+    description:
+      "Operational-technology (OT), smart-grid, water/utility, automotive ADAS, and industrial robotics safety pack.",
+    mandatoryCheckpoints: [
+      "Deterministic safety-envelope override and hardware emergency stop (EN ISO 13849 / IEC 61508)",
+      "NIS2 Art. 21 Supply-Chain & OT Cybersecurity resilience against adversarial sensor spoofing (Art. 15(5))",
+      "Dual Incident Reporting alignment: NIS2 24h CSIRT early warning + EU AI Act Art. 73 2/10/15-day incident SLA",
+    ],
+  },
+  {
+    id: "eu_hr_workplace",
+    code: "EU-PACK-HR",
+    title: "Employment, Works Council (Art. 26(7)) & EU Platform Work Directive Pack",
+    euRegulations: "EU AI Act Annex III pt. 4(a)–(b) · Art. 5(1)(f) · Art. 26(7) · Platform Work Directive (EU) 2024/2831 · GDPR Art. 88",
+    description:
+      "Workplace, recruitment, talent analytics, and algorithmic management governance pack for European employers and HR SaaS.",
+    mandatoryCheckpoints: [
+      "Art. 5(1)(f) Verification that no workplace emotion recognition or affective state inference is performed",
+      "Art. 26(7) Mandatory prior formal notification to Works Council (Betriebsrat / CSE) and affected employees",
+      "EU Pay Transparency Directive (2023/970) & Four-Fifths gender/age/disability selection parity audit",
+    ],
+  },
+  {
+    id: "eu_gpai_code",
+    code: "EU-PACK-GPAI",
+    title: "EU AI Office GPAI Code of Practice & Chapter V (Arts. 51–55) Pack",
+    euRegulations: "EU AI Act Chapter V (Arts. 51–55) · Annex XI & Annex XII · EU DSM Copyright Directive (EU) 2019/790 Art. 4(3)",
+    description:
+      "Foundation model, fine-tuned LLM, and B2B AI provider pack aligned with the European Commission AI Office GPAI Code.",
+    mandatoryCheckpoints: [
+      "Art. 53(1)(a)–(b) Annex XI (AI Office) & Annex XII (Downstream Provider) technical documentation",
+      "Art. 53(1)(c) EU Copyright Directive Art. 4(3) machine-readable TDM opt-out compliance policy",
+      "Art. 53(1)(d) Public summary of training content using the official EU AI Office template",
+      "Art. 55 Systemic Risk (>= 10^25 FLOPs) adversarial red-teaming & EU AI Office incident reporting",
+    ],
+  },
+  {
+    id: "eu_agentic_ai",
+    code: "EU-PACK-AGENTIC",
+    title: "EU Autonomous & Agentic AI Tool-Boundary & Human-Gate Pack",
+    euRegulations: "EU AI Act Art. 14 (Human Oversight) · Art. 15 (Cybersecurity/Confused Deputy) · Art. 12 (Tool-Call Logging) · OWASP Agentic Top 10",
+    description:
+      "Purpose-built European governance pack for autonomous AI agents that plan, invoke external APIs/tools, query databases, or orchestrate sub-agents.",
+    mandatoryCheckpoints: [
+      "Agent Autonomy Tier classification (L1 Copilot → L2 Human-Approved Tool Use → L3 Bounded Autonomy → L4 Multi-Agent)",
+      "Least-privilege API/Tool permission manifest & blast-radius financial/operational transaction cap",
+      "Art. 14 Mandatory Human-in-the-Loop approval gate before irreversible external actions (payments, contract changes, citizen decisions)",
+      "Art. 15 Indirect Prompt Injection & Confused-Deputy privilege escalation red-team verification",
+    ],
+  },
+];
+
+export function getRecommendedPolicyPacks(
+  domain: string | null | undefined,
+  riskTier: string | null | undefined,
+  gpai?: boolean,
+): EuStatutoryPolicyPack[] {
+  const pb = getEuIndustryPlaybook(domain);
+  const packs: EuStatutoryPolicyPack[] = [EU_STATUTORY_POLICY_PACKS[0]]; // Core pack always included
+  if (pb.id === "banking_credit" || pb.id === "insurance_risk") {
+    packs.push(EU_STATUTORY_POLICY_PACKS.find((p) => p.id === "eu_dora_finance")!);
+  } else if (pb.id === "healthcare_medtech") {
+    packs.push(EU_STATUTORY_POLICY_PACKS.find((p) => p.id === "eu_mdr_medtech")!);
+  } else if (pb.id === "critical_infrastructure" || pb.id === "manufacturing_automotive") {
+    packs.push(EU_STATUTORY_POLICY_PACKS.find((p) => p.id === "eu_nis2_machinery")!);
+  } else if (pb.id === "employment_hr") {
+    packs.push(EU_STATUTORY_POLICY_PACKS.find((p) => p.id === "eu_hr_workplace")!);
+  }
+  if (gpai || riskTier === "gpai" || pb.id === "b2b_saas_gpai") {
+    packs.push(EU_STATUTORY_POLICY_PACKS.find((p) => p.id === "eu_gpai_code")!);
+  }
+  packs.push(EU_STATUTORY_POLICY_PACKS.find((p) => p.id === "eu_agentic_ai")!);
+  return packs;
+}
+
+/**
+ * Classifies the EU Data & Model Sovereignty posture of a system based on its model vendor.
+ */
+export function classifyEuSovereigntyPosture(modelVendor: string | null | undefined): {
+  tierLabel: string;
+  shortBadge: string;
+  badgeClass: string;
+  gdprRequirement: string;
+} {
+  const v = (modelVendor || "").toLowerCase();
+  if (
+    v.includes("mistral") ||
+    v.includes("aleph alpha") ||
+    v.includes("internal") ||
+    v.includes("on-prem") ||
+    v.includes("sovereign") ||
+    v.includes("xgboost") ||
+    v.includes("pytorch")
+  ) {
+    return {
+      tierLabel: "Tier 1: EU Sovereign Model & EEA-Native Hosting",
+      shortBadge: "🇪🇺 Tier 1: EU Sovereign AI",
+      badgeClass: "border-emerald-300 bg-emerald-50 text-emerald-900",
+      gdprRequirement: "100% EEA data residency & model sovereignty; no third-country data transfer under GDPR Chapter V.",
+    };
+  }
+  if (
+    v.includes("eu-") ||
+    v.includes("europe-") ||
+    v.includes("frankfurt") ||
+    v.includes("sweden") ||
+    v.includes("belgium") ||
+    v.includes("dublin") ||
+    v.includes("paris") ||
+    v.includes("european")
+  ) {
+    return {
+      tierLabel: "Tier 2: EU Cloud Region (EEA Data Boundary + Zero Retention)",
+      shortBadge: "🇪🇺 Tier 2: EU Cloud Region (EEA)",
+      badgeClass: "border-sky-300 bg-sky-50 text-sky-900",
+      gdprRequirement: "Hosted in EEA region (Frankfurt/Sweden/Belgium); verify GDPR Art. 28 DPA & zero-training-retention flag.",
+    };
+  }
+  return {
+    tierLabel: "Tier 3: Global / Third-Country Model Endpoint (GDPR Chapter V Check)",
+    shortBadge: "🌐 Tier 3: GDPR Art. 46 SCCs Required",
+    badgeClass: "border-amber-300 bg-amber-50 text-amber-900",
+    gdprRequirement: "Verify GDPR Art. 46 Standard Contractual Clauses (SCCs), Transfer Impact Assessment (TIA), and PII pseudonymization.",
+  };
+}
+
+export const AGENTIC_AUTONOMY_TIERS = [
+  {
+    id: "L0_deterministic",
+    label: "L0: Non-Agentic ML / Statistical Scoring Model (No Autonomous Tool Calls)",
+  },
+  {
+    id: "L1_copilot",
+    label: "L1: Assistive Copilot / RAG Assistant (Read-Only Retrieval — 100% Human Action)",
+  },
+  {
+    id: "L2_human_gated",
+    label: "L2: Human-Gated AI Agent (Proposes Tool/API Calls — Mandatory Art. 14 Human Approval Gate)",
+  },
+  {
+    id: "L3_bounded_autonomy",
+    label: "L3: Bounded Autonomous Agent (Executes Whitelisted APIs within Strict Policy Caps + Instant Kill-Switch)",
+  },
+  {
+    id: "L4_multi_agent",
+    label: "L4: Multi-Agent Orchestrator (Delegates Sub-Tasks Across Agents — High-Scrutiny Art. 14 & Art. 15 Controls)",
+  },
+] as const;
+
+export type EuStatutoryDeliverableKind =
+  | "art48_ce_marking"
+  | "art6_4_derogation"
+  | "art26_7_works_council"
+  | "art86_explanation"
+  | "art14_agentic_charter";
+
+export function generateEuStatutoryDeliverable(
+  kind: EuStatutoryDeliverableKind,
+  ctx: {
+    institutionName: string;
+    systemName: string;
+    systemId: string;
+    domain: string;
+    roleInValueChain: string;
+    riskTier: string | null;
+    intendedPurpose: string;
+    modelVendor: string;
+    autonomyTier?: string;
+  },
+): { title: string; filename: string; content: string } {
+  const dateStr = new Date().toISOString().slice(0, 10);
+  const playbook = getEuIndustryPlaybook(ctx.domain);
+  const sov = classifyEuSovereigntyPosture(ctx.modelVendor);
+
+  switch (kind) {
+    case "art48_ce_marking":
+      return {
+        title: "Article 48 Digital CE Marking of Conformity & Notified Body Dossier",
+        filename: `eu-ai-act-art48-ce-marking-${ctx.systemId.slice(0, 8)}.md`,
+        content: `# EUROPEAN UNION — ARTICLE 48 DIGITAL CE MARKING OF CONFORMITY DOSSIER
+**Regulation (EU) 2024/1689 (Artificial Intelligence Act) — Articles 43, 47 & 48**
+
+---
+## 1. CE Conformity Marking Certificate Summary
+- **CE Marking Symbol:** **C E** (Digital Conformity Marking affixed pursuant to Article 48(2) of Regulation (EU) 2024/1689)
+- **Audited Institution / Provider / Deployer Entity:** ${ctx.institutionName}
+- **AI System Name & Identifier:** ${ctx.systemName} (\`${ctx.systemId}\`)
+- **Regulated European Sector:** ${playbook.name} (${playbook.euAiActBasis})
+- **Classified EU AI Act Risk Tier:** ${(ctx.riskTier || "high_risk").toUpperCase()}
+- **Model & Sovereign Hosting Posture:** ${ctx.modelVendor} — ${sov.tierLabel}
+- **Date of Digital CE Affixing:** ${dateStr}
+
+## 2. Statutory Conformity Assessment Procedure Executed (Article 43)
+1. **Quality Management System (Article 17 & EN ISO/IEC 42001:2023):** Verified across 24 statutory controls.
+2. **Annex IV Technical Documentation (Article 11):** All 8 statutory sections compiled and retained for 10 years pursuant to Article 18.
+3. **EU Declaration of Conformity (Article 47 & Annex V):** Executed and linked to EU Database Registration (Article 49).
+4. **Co-Regulated Union Harmonisation Legislation:** ${playbook.coRegulations.join(" · ")}.
+5. **Competent Supervisory Authorities:** ${playbook.competentAuthorities.join(" · ")}.
+
+## 3. Digital CE Affixing Statement (Article 48(2)–(5))
+For high-risk AI systems provided digitally, this digital **CE** marking is made easily accessible via the system interface, machine-readable metadata, and accompanying Article 13 Instructions for Use.`,
+      };
+
+    case "art6_4_derogation":
+      return {
+        title: "Article 6(3) & 6(4) Non-High-Risk Derogation Assessment & Art. 49(2) Filing",
+        filename: `eu-ai-act-art6-3-derogation-dossier-${ctx.systemId.slice(0, 8)}.md`,
+        content: `# EU AI ACT ARTICLE 6(3) & 6(4) DEROGATION ASSESSMENT DOSSIER
+**Mandatory Documentation Before Putting into Service (Regulation (EU) 2024/1689 Art. 6(3), Art. 6(4) & Art. 49(2))**
+
+---
+## 1. Entity & AI System Identification
+- **Audited Institution / Operator:** ${ctx.institutionName}
+- **AI System Name:** ${ctx.systemName} (\`${ctx.systemId}\`)
+- **Annex III Reference Domain:** ${playbook.name}
+- **Intended Purpose (Art. 3(12)):** ${ctx.intendedPurpose}
+- **Assessment Date:** ${dateStr}
+
+## 2. Statutory Derogation Criteria Verification (Article 6(3))
+Pursuant to Article 6(3), an AI system referred to in Annex III shall not be considered high-risk where it does not pose a significant risk of harm to the health, safety or fundamental rights of natural persons, including by not materially influencing the outcome of decision making, and fulfills one or more of the following conditions:
+- [x] **(a) Narrow Procedural Task:** Performs a narrow procedural task subject to human workflow governance; OR
+- [x] **(b) Improvement of Prior Human Activity:** Intended to improve the result of a previously completed human activity; OR
+- [x] **(c) Preparatory Task:** Performs a preparatory task to an assessment relevant for the purposes of the use cases listed in Annex III.
+
+## 3. Mandatory Profiling Override Check (Article 6(3) Final Subparagraph)
+> *"Notwithstanding the first subparagraph, an AI system referred to in Annex III shall always be considered to be high-risk where the AI system performs profiling of natural persons."*
+- **Profiling Check Result:** If the system performs automated profiling of natural persons within the meaning of GDPR Article 4(4), this derogation **does not apply** and full Chapter III High-Risk obligations are enforced.
+
+## 4. Mandatory Article 49(2) EU Database Registration & National Authority Availability
+Pursuant to **Article 6(4)** and **Article 49(2)** (Annex VIII Section B), this documented assessment is retained by **${ctx.institutionName}**, registered in the EU Database, and made available upon request to the National Competent Authority (${playbook.competentAuthorities.join(", ")}).`,
+      };
+
+    case "art26_7_works_council":
+      return {
+        title: "Article 26(7) European Works Council (Betriebsrat / CSE) & Employee Notification",
+        filename: `eu-ai-act-art26-7-works-council-notice-${ctx.systemId.slice(0, 8)}.md`,
+        content: `# STATUTORY WORKPLACE AI NOTIFICATION TO WORKERS' REPRESENTATIVES & EMPLOYEES
+**Pursuant to Article 26(7) of Regulation (EU) 2024/1689 (EU AI Act), Directive (EU) 2024/2831 & GDPR Art. 13/88**
+
+---
+- **Deploying Institution / Employer:** ${ctx.institutionName}
+- **Recipient:** European Works Council (*Betriebsrat* / *Comité Social et Économique — CSE* / Trade Union & Affected Employees)
+- **AI System Name:** ${ctx.systemName} (\`${ctx.systemId}\`)
+- **Date of Prior Notification:** ${dateStr}
+
+## 1. Statutory Notice Under EU AI Act Article 26(7)
+Before putting into service or using a high-risk AI system at the workplace, **${ctx.institutionName}** hereby formally informs workers' representatives and the affected workers that they will be subject to the use of the above-referenced AI system, in accordance with Union and national law and practice on information and consultation of workers.
+
+## 2. Purpose, Scope & Operational Boundaries of the AI System
+- **Intended Purpose (Art. 3(12)):** ${ctx.intendedPurpose}
+- **Prohibition of Workplace Emotion Recognition (Art. 5(1)(f)):** This system is strictly prohibited from inferring emotions of natural persons in the workplace.
+- **Human Oversight & Right of Review (Art. 14 & Art. 26(2)):** Trained human supervisors with necessary competence and authority review all system outputs. No automated adverse employment decision is taken without meaningful human intervention (GDPR Art. 22).
+
+## 3. Data Protection & Works Council Consultation Reference
+- **GDPR Art. 35 DPIA & Art. 27 FRIA Status:** Completed and available for Works Council inspection in the V77 Trust Evidence Vault.`,
+      };
+
+    case "art86_explanation":
+      return {
+        title: "Article 86 Right to Explanation of Individual Decision-Making Notice",
+        filename: `eu-ai-act-art86-right-to-explanation-${ctx.systemId.slice(0, 8)}.md`,
+        content: `# STATUTORY NOTICE: RIGHT TO EXPLANATION OF INDIVIDUAL AI-ASSISTED DECISION
+**Issued Pursuant to Article 86 of Regulation (EU) 2024/1689 (EU AI Act) & GDPR Articles 15 & 22**
+
+---
+- **Issuing Institution (Deployer):** ${ctx.institutionName}
+- **AI System Involved:** ${ctx.systemName} (\`${ctx.systemId}\`)
+- **Sector & Regulatory Basis:** ${playbook.name} (${playbook.euAiActBasis})
+- **Date of Notice:** ${dateStr}
+
+## 1. Disclosure of AI System Role in the Decision Process (Article 86(1))
+You are receiving this notice because a decision taken by **${ctx.institutionName}** was assisted by **${ctx.systemName}**, an AI system regulated under Annex III of the European Union Artificial Intelligence Act (Regulation (EU) 2024/1689).
+- **Intended Purpose of the AI System:** ${ctx.intendedPurpose}
+- **Role of the AI Output:** Decision-support recommendation reviewed by a qualified human officer pursuant to EU AI Act Article 14 and Article 26(2).
+
+## 2. Main Elements & Parameters of the Decision Considered
+1. **Primary Input Variables Evaluated:** Structured application/case attributes verified under Article 10 data governance controls.
+2. **Key Contributing Factors (SHAP / Reason Codes):** [Factor 1: Primary risk/eligibility indicator] · [Factor 2: Secondary consistency check] · [Factor 3: Historical verification metric].
+3. **Fairness & Non-Discrimination Assurance:** Verified under the EU AI Act Article 10 Four-Fifths Ratio (>= 0.80 across protected demographics).
+
+## 3. Your Statutory Rights as an Affected Person in the European Union
+- **Right to Human Intervention & Contestability (GDPR Art. 22(3) & EU AI Act Art. 86):** You have the right to request a fresh review by a human specialist, express your point of view, correct any inaccurate input data, and contest the decision.
+- **Supervisory Complaint Right (EU AI Act Art. 85):** You have the right to lodge a complaint with the relevant Market Surveillance Authority (${playbook.competentAuthorities.join(", ")}).`,
+      };
+
+    case "art14_agentic_charter":
+      return {
+        title: "Article 14 & 15 Autonomous / Agentic AI Tool-Boundary & Kill-Switch Charter",
+        filename: `eu-ai-act-art14-agentic-ai-charter-${ctx.systemId.slice(0, 8)}.md`,
+        content: `# EUROPEAN AUTONOMOUS & AGENTIC AI GOVERNANCE CHARTER
+**Pursuant to EU AI Act Articles 12, 14 & 15 and EN ISO/IEC 42001 — Agentic Tool-Use & Autonomy Boundaries**
+
+---
+- **Audited Institution:** ${ctx.institutionName}
+- **AI System / Agent Name:** ${ctx.systemName} (\`${ctx.systemId}\`)
+- **Assigned Agent Autonomy Tier:** ${ctx.autonomyTier || AGENTIC_AUTONOMY_TIERS[2].label}
+- **Underlying Foundation Model & Sovereignty:** ${ctx.modelVendor} (${sov.tierLabel})
+- **Charter Effective Date:** ${dateStr}
+
+## 1. Whitelisted Tool & API Permission Manifest (Least-Privilege Boundary)
+- **Permitted Read Scopes:** Scoped read-only retrieval against approved domain knowledge bases and structured case records.
+- **Restricted / Gated Write Scopes:** Any external state mutation (e.g., credit/claim approval, wire execution, customer communication, medical order, or infrastructure actuation) requires **explicit cryptographic human confirmation (Art. 14(4)(d))**.
+- **Prohibited Actions:** Autonomous privilege escalation, unlogged sub-agent spawning, or execution of raw shell/SQL commands.
+
+## 2. Article 14 Human Approval Gate & Hardware/Software Kill-Switch
+- **Human-in-the-Loop Gate:** High-impact tool invocations pause execution and route a structured diff to a qualified human operator.
+- **Immediate Stop Button (Art. 14(4)(e)):** Operators can halt the agent session and roll back pending tool calls immediately to a safe state.
+
+## 3. Article 15 Confused-Deputy & Indirect Prompt Injection Defenses
+- Untrusted external content (emails, PDFs, web pages, third-party documents) is isolated from system instructions and cannot trigger privileged tool calls.
+- Every tool invocation, input prompt, and output rationale is cryptographically hashed (SHA-256) and retained for >= 6 months per Article 12 & Article 19.`,
+      };
+  }
+}
+
+

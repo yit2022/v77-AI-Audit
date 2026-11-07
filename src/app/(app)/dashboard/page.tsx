@@ -6,7 +6,12 @@ import { db, ensureDb, schema } from "@/lib/db";
 import { getSession } from "@/lib/auth/session";
 import { PageHeader, RiskBadge } from "@/components/ui";
 import { DemoTour } from "@/components/demo-tour";
-import { getEuIndustryPlaybook, parseInstitutionAndVendor } from "@/lib/eu-ai-act/industries";
+import {
+  classifyEuSovereigntyPosture,
+  getEuIndustryPlaybook,
+  getRecommendedPolicyPacks,
+  parseInstitutionAndVendor,
+} from "@/lib/eu-ai-act/industries";
 
 export default async function DashboardPage() {
   const session = await getSession();
@@ -233,7 +238,9 @@ export default async function DashboardPage() {
             <tbody>
               {recentSystems.map((s) => {
                 const { institution, modelVendor } = parseInstitutionAndVendor(s.vendorName, session.orgName);
+                const sovereignty = classifyEuSovereigntyPosture(modelVendor);
                 const playbook = getEuIndustryPlaybook(s.domain);
+                const policyPacks = getRecommendedPolicyPacks(s.domain, s.riskTier);
                 const assess = assessmentBySystem.get(s.id);
                 let stageLabel = "Stage 1/6 · Needs Risk Classification";
                 let stageColor = "bg-amber-50 text-amber-800 border-amber-200";
@@ -253,6 +260,11 @@ export default async function DashboardPage() {
                     <td className="px-5 py-3">
                       <div className="font-semibold text-[#0F2A4A]">{institution}</div>
                       <div className="text-[11px] text-slate-500">Model: {modelVendor}</div>
+                      <span
+                        className={`mt-1 inline-block rounded-full border px-2 py-0.5 text-[10px] font-semibold ${sovereignty.badgeClass}`}
+                      >
+                        {sovereignty.shortBadge}
+                      </span>
                     </td>
                     <td className="px-5 py-3">
                       <Link className="font-semibold text-sky-900 hover:underline" href={`/systems/${s.id}`}>
@@ -260,6 +272,16 @@ export default async function DashboardPage() {
                       </Link>
                       <div className="text-[11px] capitalize text-slate-500">
                         Role: {s.roleInValueChain} · Lifecycle: {s.lifecycleStatus}
+                      </div>
+                      <div className="mt-1 flex flex-wrap gap-1">
+                        {policyPacks.slice(0, 2).map((pk) => (
+                          <span
+                            key={pk.id}
+                            className="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[10px] font-semibold text-slate-700"
+                          >
+                            {pk.code}
+                          </span>
+                        ))}
                       </div>
                     </td>
                     <td className="px-5 py-3 text-xs text-slate-700">{playbook.shortLabel}</td>

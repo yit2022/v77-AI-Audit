@@ -14,6 +14,10 @@ export default async function EuAiActPage() {
     .select({
       id: schema.aiSystems.id,
       name: schema.aiSystems.name,
+      domain: schema.aiSystems.domain,
+      intendedPurpose: schema.aiSystems.intendedPurpose,
+      vendorName: schema.aiSystems.vendorName,
+      gpai: schema.aiSystems.gpai,
       riskTier: schema.aiSystems.riskTier,
       roleInValueChain: schema.aiSystems.roleInValueChain,
     })
@@ -23,10 +27,10 @@ export default async function EuAiActPage() {
   return (
     <div>
       <PageHeader
-        title="EU AI Act deep dive"
-        subtitle="Risk tiers, provider/deployer obligations, Annex IV technical documentation and conformity assessment tracking. Link FRIA work to a GDPR DPIA when personal data is processed."
+        title="EU AI Act Statutory Hub, Policy Packs & CE Conformity Suite"
+        subtitle="Manage EU Statutory Policy Packs (DORA, MDR/IVDR, NIS2, HR Works Council, GPAI & Agentic AI), 1-click Annex IV Technical Documentation, Art. 47 DoC, Art. 48 Digital CE Marking, Art. 49 EU Database JSON, Art. 6(4) Derogation, Art. 26(7) Works Council Notice, and Art. 86 Right-to-Explanation."
       />
-      <EuAiActClient systems={systems} />
+      <EuAiActClient systems={systems} orgName={session.orgName} />
     </div>
   );
 }

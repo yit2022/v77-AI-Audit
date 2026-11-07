@@ -8,7 +8,12 @@ import { PageHeader, RiskBadge, EmptyState } from "@/components/ui";
 import { filterRegistry, summariseRegistry } from "@/lib/registry/summary";
 import { RegistryFilters } from "@/components/registry-filters";
 import { InventoryCsvImport } from "@/components/inventory-csv-import";
-import { getEuIndustryPlaybook, parseInstitutionAndVendor } from "@/lib/eu-ai-act/industries";
+import {
+  classifyEuSovereigntyPosture,
+  getEuIndustryPlaybook,
+  getRecommendedPolicyPacks,
+  parseInstitutionAndVendor,
+} from "@/lib/eu-ai-act/industries";
 
 export default async function SystemsPage({
   searchParams,
@@ -172,6 +177,8 @@ export default async function SystemsPage({
         <div className="mt-4 grid gap-4">
           {visible.map((s) => {
             const { institution, modelVendor } = parseInstitutionAndVendor(s.vendorName, session.orgName);
+            const sovereignty = classifyEuSovereigntyPosture(modelVendor);
+            const policyPacks = getRecommendedPolicyPacks(s.domain, s.riskTier, s.gpai);
             const playbook = getEuIndustryPlaybook(s.domain);
             const assess = assessmentBySystem.get(s.id);
             let stageBadge = "Stage 1/6 · Needs Risk Classification";
@@ -198,6 +205,9 @@ export default async function SystemsPage({
                       <span className="inline-flex items-center rounded-md border border-slate-200 bg-slate-50 px-2.5 py-0.5 text-xs font-medium text-slate-700">
                         {playbook.shortLabel}
                       </span>
+                      <span className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold ${sovereignty.badgeClass}`}>
+                        {sovereignty.shortBadge}
+                      </span>
                       <span className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold ${stageClass}`}>
                         {stageBadge}
                       </span>
@@ -210,6 +220,16 @@ export default async function SystemsPage({
                     <p className="mt-1 max-w-3xl text-sm text-slate-600">
                       {s.description || "No description"}
                     </p>
+                    <div className="mt-2 flex flex-wrap gap-1.5">
+                      {policyPacks.map((pk) => (
+                        <span
+                          key={pk.id}
+                          className="rounded border border-slate-200 bg-slate-50 px-2 py-0.5 font-mono text-[11px] font-semibold text-[#0F2A4A]"
+                        >
+                          {pk.code}: {pk.title.split(" (")[0]}
+                        </span>
+                      ))}
+                    </div>
                   </div>
                   <div className="flex flex-col items-end gap-2">
                     <RiskBadge tier={s.riskTier} />
