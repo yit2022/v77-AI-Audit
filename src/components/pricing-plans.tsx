@@ -4,10 +4,8 @@ import { useState } from "react";
 import Link from "next/link";
 import {
   BILLABLE_PLANS,
-  DISPLAY_CURRENCIES,
   displayPriceForCurrency,
   type BillingInterval,
-  type DisplayCurrency,
 } from "@/lib/billing/currency";
 import { COMPANY } from "@/lib/company";
 import { PLAN_LIMITS } from "@/lib/billing/limits-config";
@@ -18,46 +16,28 @@ export function PricingPlans({
   showCheckoutHint?: boolean;
 }) {
   const [interval, setInterval] = useState<BillingInterval>("monthly");
-  const [currency, setCurrency] = useState<DisplayCurrency>("EUR");
 
   return (
     <div>
       <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
-        <div className="flex flex-wrap items-center gap-2">
-          <div className="inline-flex rounded-full border border-slate-200 bg-white p-1 text-sm">
-            <button
-              type="button"
-              className={`rounded-full px-4 py-1.5 ${interval === "monthly" ? "bg-[#0F2A4A] text-white" : "text-slate-600"}`}
-              onClick={() => setInterval("monthly")}
-            >
-              Monthly
-            </button>
-            <button
-              type="button"
-              className={`rounded-full px-4 py-1.5 ${interval === "annual" ? "bg-[#0F2A4A] text-white" : "text-slate-600"}`}
-              onClick={() => setInterval("annual")}
-            >
-              Annual <span className="ml-1 text-xs opacity-80">2 months free</span>
-            </button>
-          </div>
-          <div className="inline-flex rounded-full border border-slate-200 bg-white p-1 text-xs">
-            {DISPLAY_CURRENCIES.map((c) => (
-              <button
-                key={c.code}
-                type="button"
-                className={`rounded-full px-2.5 py-1 font-medium ${
-                  currency === c.code ? "bg-sky-700 text-white" : "text-slate-600 hover:text-slate-900"
-                }`}
-                onClick={() => setCurrency(c.code)}
-                title={c.regionHint}
-              >
-                {c.label}
-              </button>
-            ))}
-          </div>
+        <div className="inline-flex rounded-full border border-slate-200 bg-white p-1 text-sm">
+          <button
+            type="button"
+            className={`rounded-full px-4 py-1.5 ${interval === "monthly" ? "bg-[#0F2A4A] text-white" : "text-slate-600"}`}
+            onClick={() => setInterval("monthly")}
+          >
+            Monthly
+          </button>
+          <button
+            type="button"
+            className={`rounded-full px-4 py-1.5 ${interval === "annual" ? "bg-[#0F2A4A] text-white" : "text-slate-600"}`}
+            onClick={() => setInterval("annual")}
+          >
+            Annual <span className="ml-1 text-xs opacity-80">2 months free</span>
+          </button>
         </div>
         <p className="text-xs text-slate-500">
-          Global pricing (ex VAT / GST / sales tax) · Multi-currency cards, SEPA Direct Debit &amp; PO invoicing
+          Prices in EUR (ex VAT) · Stripe EUR checkout (Card &amp; SEPA Direct Debit) · EU VAT / VIES reverse charge
         </p>
       </div>
 
@@ -67,7 +47,7 @@ export function PricingPlans({
           return (
             <div key={p.tier} className="card flex flex-col p-5">
               <h3 className="text-lg font-semibold text-[#0F2A4A]">{p.name}</h3>
-              <p className="mt-1 text-sm font-medium text-slate-800">{displayPriceForCurrency(p, currency, interval)}</p>
+              <p className="mt-1 text-sm font-medium text-slate-800">{displayPriceForCurrency(p, "EUR", interval)}</p>
               <p className="mt-2 text-xs text-slate-500">
                 Up to {limits.systems} systems · {limits.users} users · {limits.frameworks} frameworks
               </p>

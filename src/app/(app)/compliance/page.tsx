@@ -5,7 +5,6 @@ import { eq } from "drizzle-orm";
 import { db, ensureDb, schema } from "@/lib/db";
 import { getSession } from "@/lib/auth/session";
 import { PageHeader } from "@/components/ui";
-import { GLOBAL_JURISDICTIONS } from "@/lib/global/jurisdictions";
 import {
   buildTrend,
   overdueRemediation,
@@ -105,43 +104,15 @@ export default async function ComplianceDashboardPage() {
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div>
             <h2 className="text-sm font-semibold text-[#0F2A4A]">
-              Global Multi-Jurisdiction Readiness (EU · USA · UK · Australia · New Zealand)
+              🇪🇺 European Union Statutory &amp; Financial Sector Readiness (EU AI Act · GDPR · DORA · EN ISO/IEC 42001)
             </h2>
             <p className="text-xs text-slate-500">
-              Single-control-catalogue crosswalk readiness across major global AI governance regimes.
+              Unified European readiness across high-risk Annex III obligations (including Art. 9(9) DORA banking &amp; insurance integration), GDPR Art. 35 DPIA, and EN ISO/IEC 42001 AIMS certification.
             </p>
           </div>
           <Link href="/impact" className="text-xs font-semibold text-sky-800 hover:underline">
-            Open Regional Impact Assessments →
+            Open Art. 27 FRIA &amp; GDPR Art. 35 DPIA →
           </Link>
-        </div>
-        <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
-          {GLOBAL_JURISDICTIONS.map((j) => {
-            const jScore =
-              j.id === "eu"
-                ? scores.eu_ai_act
-                : j.id === "us"
-                  ? scores.nist
-                  : j.id === "uk"
-                    ? Math.round((scores.gdpr + scores.iso42001) / 2)
-                    : j.id === "au"
-                      ? Math.round((scores.iso42001 + scores.eu_ai_act) / 2)
-                      : Math.round((scores.gdpr + scores.nist) / 2);
-            return (
-              <div key={j.id} className="rounded-xl border border-slate-100 bg-slate-50/70 p-3.5">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-semibold text-[#0F2A4A]">
-                    {j.flag} {j.shortName}
-                  </span>
-                  <span className="text-sm font-bold text-sky-900">{jScore}%</span>
-                </div>
-                <div className="mt-1.5 h-1.5 overflow-hidden rounded bg-white">
-                  <div className="h-full bg-sky-500" style={{ width: `${jScore}%` }} />
-                </div>
-                <p className="mt-2 text-[11px] leading-snug text-slate-500">{j.flagshipLaws[0]}</p>
-              </div>
-            );
-          })}
         </div>
       </div>
 

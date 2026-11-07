@@ -23,8 +23,8 @@ export default async function FairnessPage() {
   return (
     <div>
       <PageHeader
-        title="Global Algorithmic Fairness & Bias Audit Lab"
-        subtitle="Computes Four-Fifths (80%) impact ratio, demographic parity, and equalized odds across EU AI Act Art. 10, US NYC Local Law 144 / EEOC / Colorado SB 24-205, UK Equality Act 2010, Australia Guardrail 3/4, and NZ Privacy Act IPP 8."
+        title="Algorithmic Fairness & Non-Discrimination Lab (EU AI Act Art. 10 & Art. 15)"
+        subtitle="Computes Four-Fifths (80%) impact ratio, demographic parity, and equalized odds across protected subgroups to verify EU AI Act Art. 10(2)(f)–(g) bias examination and EU Charter Art. 21 non-discrimination."
       />
       <FairnessForm systems={systems.map((s) => ({ id: s.id, name: s.name }))} />
       <div className="mt-6 space-y-4">

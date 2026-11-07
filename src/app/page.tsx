@@ -81,15 +81,16 @@ export default function HomePage() {
         <div className="grid items-center gap-10 lg:grid-cols-[1.15fr_0.85fr]">
           <div>
             <p className="text-xs font-bold uppercase tracking-[0.18em] text-sky-700">
-              Global AI Governance &amp; Statutory Audit Platform · EU · US · UK · AU · NZ
+              European AI Governance &amp; EU AI Act Statutory Audit Platform
             </p>
             <h1 className="mt-3 max-w-2xl text-4xl font-semibold tracking-tight text-[#0F2A4A] sm:text-5xl">
-              System of record and system of proof for AI governance.
+              System of record and system of proof for European AI compliance.
             </h1>
             <p className="mt-5 max-w-2xl text-base leading-relaxed text-slate-600">
-              Inventory AI systems, classify statutory risk, map 24 controls across the EU AI Act, US Colorado SB
-              24-205 / NYC Local Law 144 / NIST AI RMF, UK ICO / ATRS, Australia 10 Guardrails, and NZ Algorithm
-              Charter, run live fairness &amp; red-team evaluations, and export signed audit packs.
+              Built for European banks, insurers, enterprises, and auditors. Inventory AI systems, classify EU AI Act
+              risk (Art. 5, Annex I/III, Art. 6(3), Art. 25), auto-draft Annex IV, Art. 27 FRIA &amp; GDPR Art. 35
+              DPIA, map controls across DORA &amp; EN ISO/IEC 42001, run fairness &amp; OWASP red-team suites, and
+              export signed Art. 47 / Art. 49 conformity packs.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <a href="#risk-checker" className="btn btn-primary">

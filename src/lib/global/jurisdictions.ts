@@ -1,4 +1,4 @@
-export type JurisdictionId = "eu" | "us" | "uk" | "au" | "nz";
+export type JurisdictionId = "eu";
 
 export type JurisdictionProfile = {
   id: JurisdictionId;
@@ -19,115 +19,35 @@ export const GLOBAL_JURISDICTIONS: JurisdictionProfile[] = [
     flag: "🇪🇺",
     name: "European Union & EEA",
     shortName: "EU / EEA",
-    primaryRegulators: ["EU AI Office", "National Market Surveillance Authorities", "EDPB / National DPAs", "EBA / ESMA (DORA)"],
+    primaryRegulators: [
+      "EU AI Office",
+      "National Market Surveillance Authorities",
+      "EDPB / National DPAs",
+      "EBA / EIOPA / ESMA (DORA & Annex III pt. 5 Banking/Insurance)",
+    ],
     flagshipLaws: [
       "EU AI Act (Regulation (EU) 2024/1689)",
       "GDPR (Regulation (EU) 2016/679 Arts. 22, 35)",
       "DORA (Regulation (EU) 2022/2554)",
-      "EN ISO/IEC 42001:2023",
+      "EN ISO/IEC 42001:2023 & ISO/IEC 27001:2022",
     ],
     summary:
-      "Risk-tiered statutory regulation prohibiting unacceptable AI practices (Art. 5), regulating Annex I/III high-risk systems (Arts. 6–49), enforcing Art. 50 transparency, and governing GPAI models (Arts. 51–55).",
-    highNeedSectors: ["HR & Employment", "Financial Services & Credit", "Healthcare & MedTech", "Education", "Critical Infrastructure", "Public Sector"],
+      "Risk-tiered European Union statutory regulation prohibiting unacceptable AI practices (Art. 5), regulating Annex I/III high-risk systems including Banking Creditworthiness & Life/Health Insurance Pricing (Annex III pt. 5(b)/(c)), enforcing Art. 50 transparency, and governing GPAI models (Arts. 51–55).",
+    highNeedSectors: [
+      "Banking & Credit Institutions (Annex III pt. 5(b) & DORA)",
+      "Life & Health Insurance (Annex III pt. 5(c) & EIOPA)",
+      "HR & Employment (Annex III pt. 4)",
+      "Healthcare & MedTech (Annex I / III)",
+      "Critical Infrastructure & Energy (Annex III pt. 2)",
+      "Public Sector & Essential Services (Annex III pt. 5(a))",
+    ],
     keyObligations: [
       "Art. 5(1)(a–h) prohibited practices screening & Art. 6(3) narrow-procedural derogation checks",
       "Art. 9–15 technical controls, Annex IV technical documentation & Art. 47 EU Declaration of Conformity",
       "Art. 27 Fundamental Rights Impact Assessment (FRIA) & GDPR Art. 35 DPIA",
-      "Art. 73 serious-incident reporting within 2, 10, or 15 calendar days",
+      "Art. 73 serious-incident reporting within 2, 10, or 15 calendar days (plus GDPR Art. 33 / DORA Art. 19)",
     ],
-    incidentReportingWindow: "2 / 10 / 15 days (EU AI Act Art. 73) · 72 hours (GDPR Art. 33)",
-  },
-  {
-    id: "us",
-    flag: "🇺🇸",
-    name: "United States (Federal & State Mandates)",
-    shortName: "United States",
-    primaryRegulators: ["NIST", "EEOC / NYC DCWP", "Colorado Attorney General", "California CPPA", "FTC / CFPB / OCC"],
-    flagshipLaws: [
-      "Colorado AI Act (SB 24-205 — High-Risk Consequential Decisions)",
-      "NYC Local Law 144 (AEDT Automated Employment Bias Audit)",
-      "California AB 2013 (Training Data Transparency), SB 942 & CCPA ADMT",
-      "NIST AI RMF 1.0 & NIST AI 600-1 (Generative AI Profile)",
-    ],
-    summary:
-      "Combines NIST AI RMF 1.0 / ISO 42001 safe-harbor governance with enforceable state mandates for high-risk consequential decisions (Colorado SB 24-205), hiring bias audits (NYC LL144 Four-Fifths Rule), and generative AI transparency (California AB 2013 / SB 942).",
-    highNeedSectors: ["HR & Recruiting SaaS", "FinTech, Lending & Insurance", "Healthcare & Life Sciences", "Housing & Legal Tech", "Enterprise B2B SaaS"],
-    keyObligations: [
-      "Colorado SB 24-205 affirmative-defense risk management policy aligned to NIST AI RMF / ISO 42001",
-      "Annual High-Risk AI Impact Assessment & consumer pre-decision / adverse-action disclosures",
-      "NYC Local Law 144 quantitative Four-Fifths Rule (0.80 Impact Ratio) bias audit & public summary",
-      "California AB 2013 training data summary disclosure & 90-day algorithmic discrimination AG notification",
-    ],
-    incidentReportingWindow: "90 days to Attorney General upon discovering algorithmic discrimination (CO SB 24-205)",
-  },
-  {
-    id: "uk",
-    flag: "🇬🇧",
-    name: "United Kingdom",
-    shortName: "United Kingdom",
-    primaryRegulators: ["ICO (Information Commissioner's Office)", "DSIT / UK AISI", "FCA & Bank of England / PRA", "CMA & Ofcom"],
-    flagshipLaws: [
-      "UK GDPR & Data (Use and Access) Act 2025 (Art. 22 ADM & AI DPIA)",
-      "UK DSIT 5 Cross-Sectoral AI Principles & BS ISO/IEC 42001",
-      "UK Algorithmic Transparency Recording Standard (ATRS)",
-      "FCA Consumer Duty (PRIN 2A) & PRA SS1/23 Model Risk Management",
-    ],
-    summary:
-      "Regulator-led statutory enforcement across data protection (ICO AI & Data Protection Guidance), financial services (FCA Consumer Duty & PRA SS1/23), public procurement (UK ATRS), and EU AI Act Art. 2(1)(c) extraterritorial compliance for UK exporters.",
-    highNeedSectors: ["London / UK FinTech & Banking", "Central & Local Government Suppliers (ATRS)", "Healthcare (NHS DTAC)", "UK SaaS Exporting to EU27"],
-    keyObligations: [
-      "ICO AI Data Protection Impact Assessment (DPIA) & statistical accuracy / fairness validation",
-      "UK GDPR Art. 22 Automated Decision-Making (ADM) human intervention & contestability safeguards",
-      "UK Algorithmic Transparency Recording Standard (ATRS) Tier 1 & Tier 2 public sector disclosures",
-      "FCA Consumer Duty fair-value/outcome testing & PRA SS1/23 model risk inventory and validation",
-    ],
-    incidentReportingWindow: "72 hours to ICO (UK GDPR Art. 33) · Immediate FCA SUP 15.3 material incident notice",
-  },
-  {
-    id: "au",
-    flag: "🇦🇺",
-    name: "Australia",
-    shortName: "Australia",
-    primaryRegulators: ["DISR (Dept. of Industry, Science & Resources)", "OAIC (Office of the Australian Information Commissioner)", "APRA & ASIC", "DTA (Digital Transformation Agency)"],
-    flagshipLaws: [
-      "DISR 10 Mandatory Guardrails for AI in High-Risk Settings & Voluntary AI Safety Standard (VAISS)",
-      "Privacy and Other Legislation Amendment Act 2024 (OAIC APP 1 Automated Decision-Making)",
-      "DTA Policy for Responsible Use of AI in Government & NSW AI Assessment Framework (AIAF)",
-      "APRA CPS 230 (Operational Risk) & CPS 234 (Information Security)",
-    ],
-    summary:
-      "Enforces 10 lifecycle AI guardrails across accountability, risk management, data provenance, testing, human control, end-user transparency, contestability, supply-chain disclosures, record-keeping, and conformity, paired with OAIC APP 1 Automated Decision-Making transparency.",
-    highNeedSectors: ["Banking, Superannuation & Insurance (APRA)", "Federal & State Government Suppliers (DTA / NSW AIAF)", "Healthcare & Education", "Critical Infrastructure"],
-    keyObligations: [
-      "Conformity against all 10 DISR High-Risk AI Guardrails / Voluntary AI Safety Standard (VAISS)",
-      "OAIC Privacy Act APP 1 transparency for substantially automated decisions affecting rights/interests",
-      "Guardrail 5 meaningful human intervention & Guardrail 7 end-user contestability mechanisms",
-      "Guardrail 8 AI supply-chain transparency & Guardrail 9 third-party audit record retention",
-    ],
-    incidentReportingWindow: "30 days assessment / immediate OAIC Notifiable Data Breaches (NDB) · 72 hours (APRA CPS 234)",
-  },
-  {
-    id: "nz",
-    flag: "🇳🇿",
-    name: "New Zealand (Aotearoa)",
-    shortName: "New Zealand",
-    primaryRegulators: ["OPC (Office of the Privacy Commissioner)", "GCDO / Digital.govt.nz & Stats NZ", "FMA & Reserve Bank of New Zealand (RBNZ)"],
-    flagshipLaws: [
-      "New Zealand Privacy Act 2020 (Information Privacy Principles IPPs 1–13 AI Guidance)",
-      "Algorithm Charter for Aotearoa New Zealand",
-      "NZ Public Service AI Framework (2025/2026) & GCDO Responsible AI Guidance",
-      "Te Tiriti o Waitangi / Māori Data Sovereignty Principles",
-    ],
-    summary:
-      "Governed by the Privacy Act 2020 IPPs 1–13 (requiring pre-deployment PIAs, IPP 8 accuracy verification before acting on AI outputs, and IPP 12 cross-border controls) and the Algorithm Charter for Aotearoa New Zealand.",
-    highNeedSectors: ["NZ Public Sector & Crown Entities", "Trans-Tasman (ANZ) Banking, FinTech & Insurance", "Healthcare & Primary Industries", "IT & GovTech Consultancies"],
-    keyObligations: [
-      "Mandatory Privacy Impact Assessment (PIA) under OPC AI Guidance prior to high-risk AI deployment",
-      "Privacy Act 2020 IPP 8 accuracy verification before relying on generative or predictive AI outputs",
-      "Algorithm Charter Probability × Impact risk matrix, peer review, and plain-English explainability",
-      "Māori Data Sovereignty & Te Tiriti o Waitangi governance for datasets affecting tangata whenua",
-    ],
-    incidentReportingWindow: "72 hours target to OPC via NotifyUs for notifiable privacy breaches (Privacy Act 2020 Part 6)",
+    incidentReportingWindow: "2 / 10 / 15 days (EU AI Act Art. 73) · 72 hours (GDPR Art. 33 / DORA Art. 19)",
   },
 ];
 

@@ -23,7 +23,7 @@ export async function GET() {
 
 const createSchema = z.object({
   systemId: z.string().uuid(),
-  templateId: z.enum(["fria", "dpia", "us_aia", "uk_atrs", "au_guardrails", "nz_charter"]),
+  templateId: z.enum(["fria", "dpia"]),
   title: z.string().min(1).max(200).optional(),
 });
 

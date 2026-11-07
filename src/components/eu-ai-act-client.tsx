@@ -18,6 +18,13 @@ type SystemOpt = {
 
 export function EuAiActClient({ systems }: { systems: SystemOpt[] }) {
   const [systemId, setSystemId] = useState(systems[0]?.id || "");
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const qId = new URLSearchParams(window.location.search).get("systemId");
+    if (qId && systems.some((s) => s.id === qId)) {
+      setSystemId(qId);
+    }
+  }, [systems]);
   const system = systems.find((s) => s.id === systemId) || systems[0];
   const role = (system?.roleInValueChain || "provider") as ValueChainRole;
   const tier = (system?.riskTier || "minimal") as "prohibited" | "high_risk" | "limited" | "minimal" | "gpai";

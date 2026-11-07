@@ -290,37 +290,27 @@ describe("Upgrade 4 & 5: Art. 73 Incident Deadlines (2/10/15d) & CI/CD Complianc
   });
 });
 
-describe("Upgrade 6: Global Multi-Jurisdiction Expansion (EU, US, UK, Australia, New Zealand)", () => {
-  it("maps all 24 controls across EU, US, UK, Australia, and New Zealand statutory references", () => {
-    expect(GLOBAL_JURISDICTIONS.map((j) => j.id)).toEqual(["eu", "us", "uk", "au", "nz"]);
+describe("Upgrade 6: EU-Focused Banking, Insurance (DORA) & Statutory Audit Platform", () => {
+  it("focuses jurisdiction profile on European Union (EU AI Act, GDPR, DORA, EN ISO/IEC 42001)", () => {
+    expect(GLOBAL_JURISDICTIONS.map((j) => j.id)).toEqual(["eu"]);
     expect(Object.keys(GLOBAL_CONTROL_REFS).length).toBeGreaterThanOrEqual(24);
-    const rms01 = getGlobalControlRefs("V77-RMS-01");
-    expect(rms01.usRef).toContain("CO SB 24-205");
-    expect(rms01.ukRef).toContain("UK DSIT");
-    expect(rms01.auRef).toContain("DISR Guardrail");
-    expect(rms01.nzRef).toContain("NZ Public Service AI Framework");
+    const dora01 = getGlobalControlRefs("V77-DORA-01");
+    expect(dora01).toBeTruthy();
   });
 
-  it("provides 6 global impact assessment templates (fria, dpia, us_aia, uk_atrs, au_guardrails, nz_charter) with 1-click auto-drafting", () => {
-    expect(IMPACT_TEMPLATES.map((t) => t.id)).toEqual([
-      "fria",
-      "dpia",
-      "us_aia",
-      "uk_atrs",
-      "au_guardrails",
-      "nz_charter",
-    ]);
+  it("provides EU statutory impact assessment templates (fria & dpia) with 1-click auto-drafting", () => {
+    expect(IMPACT_TEMPLATES.map((t) => t.id)).toEqual(["fria", "dpia"]);
 
-    for (const tplId of ["us_aia", "uk_atrs", "au_guardrails", "nz_charter"] as const) {
+    for (const tplId of ["fria", "dpia"] as const) {
       const drafted = synthesizeImpactAnswers({
         templateId: tplId,
-        orgName: "Vertex77 Global Corp",
+        orgName: "EuroBank AG",
         system: {
-          id: "sys-global-1",
-          name: "TalentRank AI",
-          description: "Automated candidate screening assistant",
-          purpose: "Employment candidate screening",
-          domain: "employment",
+          id: "sys-bank-1",
+          name: "CreditGuard EU",
+          description: "Retail creditworthiness scoring AI",
+          purpose: "Retail creditworthiness & mortgage scoring (Annex III pt. 5(b))",
+          domain: "banking_credit",
           riskTier: "high_risk",
         },
         fairnessSummary: "Four-Fifths Ratio=0.91",
@@ -333,24 +323,14 @@ describe("Upgrade 6: Global Multi-Jurisdiction Expansion (EU, US, UK, Australia,
     }
   });
 
-  it("formats global multi-currency plans (EUR, USD, GBP, AUD, NZD) and computes global incident reporting windows", () => {
+  it("formats EUR plans and computes EU AI Act Art. 73 + GDPR Art. 33 / DORA Art. 19 incident reporting windows", () => {
     const team = BILLABLE_PLANS.find((p) => p.tier === "team")!;
     expect(displayPriceForCurrency(team, "EUR", "monthly")).toContain("499");
-    expect(displayPriceForCurrency(team, "USD", "monthly")).toContain("$");
-    expect(displayPriceForCurrency(team, "GBP", "monthly")).toContain("£");
-    expect(displayPriceForCurrency(team, "AUD", "monthly")).toContain("$");
-    expect(displayPriceForCurrency(team, "NZD", "monthly")).toContain("$");
 
-    const usCo = computeArt73Deadline({ euArticleRef: "US CO SB 24-205 § 6-1-1703(7)", discoveredAt: "2026-11-01" });
-    expect(usCo.deadlineDays).toBe(90);
-
-    const ukIco = computeArt73Deadline({ euArticleRef: "UK GDPR Art. 33 / ICO", discoveredAt: "2026-11-01" });
-    expect(ukIco.deadlineDays).toBe(3);
-
-    const auOaic = computeArt73Deadline({ euArticleRef: "AU Guardrail 9 / APRA CPS 234", discoveredAt: "2026-11-01" });
-    expect(auOaic.deadlineDays).toBe(3);
-
-    const nzOpc = computeArt73Deadline({ euArticleRef: "NZ Privacy Act s.114 (OPC)", discoveredAt: "2026-11-01" });
-    expect(nzOpc.deadlineDays).toBe(3);
+    const gdprDora = computeArt73Deadline({
+      euArticleRef: "GDPR Art. 33 / DORA Art. 19",
+      discoveredAt: "2026-11-01",
+    });
+    expect(gdprDora.deadlineDays).toBe(3);
   });
 });

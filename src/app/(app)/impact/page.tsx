@@ -25,17 +25,15 @@ export default async function ImpactListPage() {
   return (
     <div>
       <PageHeader
-        title="Global Impact & Conformity Assessments"
-        subtitle="Multi-jurisdiction statutory impact templates with 1-click telemetry auto-drafting across EU, US, UK, Australia, and New Zealand."
+        title="EU AI Act Art. 27 FRIA & GDPR Art. 35 DPIA"
+        subtitle="European statutory impact assessment templates with 1-click telemetry auto-drafting from your live Evals, Fairness, and Red-Team runs."
       />
       <div className="card mb-6 border-sky-200 bg-sky-50/70 p-4 text-sm text-slate-700">
-        <strong className="text-[#0F2A4A]">6 Global Statutory Assessment Templates Included:</strong>{" "}
-        <strong>EU</strong> (Art. 27 FRIA &amp; GDPR Art. 35 DPIA) ·{" "}
-        <strong>United States</strong> (Colorado SB 24-205 / NYC LL144 / NIST AI RMF) ·{" "}
-        <strong>United Kingdom</strong> (UK ATRS Tier 1/2 &amp; UK GDPR / ICO AI Assessment) ·{" "}
-        <strong>Australia</strong> (10 Mandatory High-Risk AI Guardrails &amp; OAIC APP 1 ADM) ·{" "}
-        <strong>New Zealand</strong> (Privacy Act 2020 IPP 1–13 &amp; Algorithm Charter). Open any assessment and click{" "}
-        <strong>Auto-draft from system telemetry</strong> to populate statutory answers from your live Evals, Fairness, and Red-Team runs.
+        <strong className="text-[#0F2A4A]">EU AI Act Art. 27 FRIA &amp; GDPR Art. 35 DPIA Linkage:</strong> when a
+        high-risk AI system (such as banking credit scoring or insurance risk assessment under Annex III pt. 5)
+        processes personal data, deployers must complete both an <strong>Article 27 Fundamental Rights Impact Assessment (FRIA)</strong>{" "}
+        and a <strong>GDPR Article 35 Data Protection Impact Assessment (DPIA)</strong>. Start either assessment below
+        and click <strong>Auto-draft from system telemetry</strong> to populate statutory answers automatically.
       </div>
       <ImpactCreateForm systems={systems} templates={IMPACT_TEMPLATES.map((t) => ({ id: t.id, name: t.name }))} />
       <div className="mt-6 space-y-3">

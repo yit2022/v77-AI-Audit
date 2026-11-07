@@ -78,8 +78,21 @@ export default function NewSystemPage() {
             </select>
           </div>
           <div>
-            <label className="mb-1 block text-xs font-semibold text-slate-600">Domain</label>
-            <input name="domain" className="input" defaultValue="general" />
+            <label className="mb-1 block text-xs font-semibold text-slate-600">
+              EU AI Act Annex III / Sector Domain
+            </label>
+            <select name="domain" className="select" defaultValue="banking_credit">
+              <option value="banking_credit">Banking &amp; Creditworthiness Scoring (Annex III pt. 5(b) / DORA)</option>
+              <option value="insurance_risk">Life &amp; Health Insurance Pricing / Risk (Annex III pt. 5(c) / DORA)</option>
+              <option value="finance_aml">Financial Services AML / Fraud Detection (Art. 6 / DORA)</option>
+              <option value="employment_hr">Employment, Recruitment &amp; Worker Management (Annex III pt. 4)</option>
+              <option value="healthcare_medtech">Healthcare &amp; Medical Devices (Annex I / III)</option>
+              <option value="education">Education &amp; Vocational Training (Annex III pt. 3)</option>
+              <option value="critical_infrastructure">Critical Infrastructure &amp; Energy (Annex III pt. 2)</option>
+              <option value="biometrics">Biometrics &amp; Identification (Annex III pt. 1)</option>
+              <option value="public_services">Essential Public Services &amp; Benefits (Annex III pt. 5(a))</option>
+              <option value="general">General Enterprise / Customer Support (Art. 50 / GPAI)</option>
+            </select>
           </div>
           <div>
             <label className="mb-1 block text-xs font-semibold text-slate-600">Version</label>

@@ -1,11 +1,4 @@
-export type Art73Category =
-  | "art_73_2"
-  | "art_73_3"
-  | "art_73_4"
-  | "us_co_sb205"
-  | "uk_ico_72h"
-  | "au_oaic_apra"
-  | "nz_opc_72h";
+export type Art73Category = "art_73_2" | "art_73_3" | "art_73_4" | "gdpr_art_33";
 
 export const ART_73_CATEGORIES: Array<{
   id: Art73Category;
@@ -17,51 +10,30 @@ export const ART_73_CATEGORIES: Array<{
   {
     id: "art_73_2",
     articleRef: "Art. 73(2)",
-    label: "🇪🇺 EU AI Act Art. 73(2) — Standard serious incident / fundamental rights harm (15-day window)",
+    label: "EU AI Act Art. 73(2) — Standard serious incident / fundamental rights harm (15-day window)",
     deadlineDays: 15,
     description: "Report immediately after establishing causal link, and no later than 15 days after becoming aware.",
   },
   {
     id: "art_73_3",
     articleRef: "Art. 73(3)",
-    label: "🇪🇺 EU AI Act Art. 73(3) — Widespread infringement or critical infrastructure disruption (2-day window)",
+    label: "EU AI Act Art. 73(3) — Widespread infringement or critical infrastructure disruption (2-day window)",
     deadlineDays: 2,
     description: "Report immediately, and no later than 2 days after becoming aware of the serious incident.",
   },
   {
     id: "art_73_4",
     articleRef: "Art. 73(4)",
-    label: "🇪🇺 EU AI Act Art. 73(4) — Death of a person (10-day window)",
+    label: "EU AI Act Art. 73(4) — Death of a person (10-day window)",
     deadlineDays: 10,
     description: "Report immediately after establishing or suspecting causal link, and no later than 10 days after becoming aware.",
   },
   {
-    id: "us_co_sb205",
-    articleRef: "US CO SB 24-205 § 6-1-1703(7)",
-    label: "🇺🇸 US Colorado SB 24-205 — Algorithmic discrimination discovery to Attorney General (90-day window)",
-    deadlineDays: 90,
-    description: "Mandatory disclosure to the Colorado Attorney General within 90 days after discovering algorithmic discrimination.",
-  },
-  {
-    id: "uk_ico_72h",
-    articleRef: "UK GDPR Art. 33 / ICO",
-    label: "🇬🇧 UK ICO / FCA — AI personal-data breach or serious operational incident (3-day / 72h window)",
+    id: "gdpr_art_33",
+    articleRef: "GDPR Art. 33 / DORA Art. 19",
+    label: "GDPR Art. 33 / DORA Art. 19 — Personal data breach or major ICT/AI incident (3-day / 72h window)",
     deadlineDays: 3,
-    description: "Notify the UK Information Commissioner's Office (ICO) within 72 hours (3 days) where AI incident affects personal data or rights.",
-  },
-  {
-    id: "au_oaic_apra",
-    articleRef: "AU Guardrail 9 / APRA CPS 234",
-    label: "🇦🇺 Australia OAIC / APRA CPS 234 — Material AI security or privacy incident (3-day / 72h window)",
-    deadlineDays: 3,
-    description: "Notify APRA within 72 hours for material information security incidents (CPS 234) and OAIC under the Notifiable Data Breaches scheme.",
-  },
-  {
-    id: "nz_opc_72h",
-    articleRef: "NZ Privacy Act s.114 (OPC)",
-    label: "🇳🇿 New Zealand OPC NotifyUs — Notifiable AI privacy breach causing serious harm (3-day / 72h window)",
-    deadlineDays: 3,
-    description: "Notify the NZ Office of the Privacy Commissioner via NotifyUs (72-hour target) when an AI incident poses serious harm under s.114.",
+    description: "Notify the competent EU Data Protection Authority within 72 hours (GDPR Art. 33) and financial supervisory authority under DORA Art. 19.",
   },
 ];
 

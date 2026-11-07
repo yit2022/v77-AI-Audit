@@ -6,16 +6,16 @@ import { GLOBAL_JURISDICTIONS } from "@/lib/global/jurisdictions";
 export const revalidate = 300;
 
 export const metadata: Metadata = {
-  title: "Global AI Frameworks (EU, US, UK, Australia & New Zealand) — V77 Trust",
+  title: "European AI Governance Frameworks (EU AI Act, GDPR, DORA, ISO 42001) — V77 Trust",
   description:
-    "Unified AI governance crosswalk covering the EU AI Act, US State AI Laws (Colorado SB 24-205, NYC LL144, California AB 2013), NIST AI RMF, UK ICO/ATRS/FCA, Australia 10 Mandatory Guardrails (VAISS) & OAIC ADM, New Zealand Privacy Act 2020 (IPP 1–13) & Algorithm Charter, ISO/IEC 42001, GDPR, DORA, and ISO/IEC 27001.",
+    "Unified European Union AI governance crosswalk covering the EU AI Act (Reg. 2024/1689), GDPR (Reg. 2016/679), DORA (Reg. 2022/2554 for Banking & Insurance), EN ISO/IEC 42001:2023, ISO/IEC 27001:2022, and NIST AI RMF.",
 };
 
 const frameworks = [
   {
-    name: "🇪🇺 EU AI Act (Reg. 2024/1689)",
+    name: "🇪🇺 EU AI Act (Regulation (EU) 2024/1689)",
     summary:
-      "Full Art. 5(1)(a–h) prohibited practices screening, Annex I/III high-risk classification, Art. 6(3) exemptions, Art. 25 provider escalation, Annex IV technical documentation, and Art. 47/49 conformity exports.",
+      "Full Art. 5(1)(a–h) prohibited practices screening, Annex I/III high-risk classification (including Annex III pt. 5(b) Creditworthiness & pt. 5(c) Life/Health Insurance), Art. 6(3) exemptions, Art. 25 provider escalation, Annex IV technical documentation, and Art. 47/49 conformity exports.",
     points: [
       "Guided 25-question statutory risk classifier",
       "Auto-drafted Annex IV, Art. 47 Declaration of Conformity & Art. 49 EU DB JSON",
@@ -23,52 +23,52 @@ const frameworks = [
     ],
   },
   {
-    name: "🇺🇸 US State & Federal AI Mandates",
+    name: "🏦 DORA (Regulation (EU) 2022/2554 — Banking & Insurance)",
     summary:
-      "Built for the Colorado AI Act (SB 24-205), NYC Local Law 144 (AEDT Bias Audit), California AB 2013 / SB 942 / CCPA ADMT, Illinois HB 3773, and NIST AI RMF 1.0 / AI 600-1.",
+      "Digital Operational Resilience Act crosswalk for European credit institutions, insurers, and investment firms deploying high-risk AI and third-party foundation models.",
     points: [
-      "Colorado SB 24-205 NIST AI RMF / ISO 42001 safe-harbor crosswalk & annual Impact Assessment",
-      "NYC Local Law 144 Four-Fifths Rule (0.80 Impact Ratio) hiring bias calculator",
-      "California AB 2013 training data summary & 90-day AG discrimination reporting",
+      "DORA Arts. 5–16 ICT & AI risk management integrated with EU AI Act Art. 9(9)",
+      "DORA Art. 19 major ICT/AI incident reporting & Art. 28 third-party AI vendor register",
+      "EBA / EIOPA supervisory audit pack & model risk governance",
     ],
   },
   {
-    name: "🇬🇧 United Kingdom (ICO, ATRS & FCA)",
+    name: "🔒 GDPR (Regulation (EU) 2016/679 — Arts. 5, 22, 25, 32, 35)",
     summary:
-      "Aligned with UK DSIT's 5 Cross-Sectoral AI Principles, UK GDPR & the Data (Use and Access) Act 2025, the UK Algorithmic Transparency Recording Standard (ATRS), and FCA / PRA SS1/23.",
+      "European data protection controls for personal-data AI training, inference, automated credit/insurance profiling (Art. 22), and data subject rights.",
     points: [
-      "UK ICO AI DPIA & Art. 22 Automated Decision-Making (ADM) human review safeguards",
-      "UK ATRS Tier 1 & Tier 2 public-sector algorithmic transparency templates",
-      "FCA Consumer Duty fair-outcome testing & PRA SS1/23 model risk governance",
+      "Automated DPIA (Art. 35) complementary to EU AI Act Art. 27 FRIA",
+      "Art. 22 human intervention, explanation & contestability workflows",
+      "72-hour national Data Protection Authority (Art. 33) breach notification tracking",
     ],
   },
   {
-    name: "🇦🇺 Australia (10 Guardrails & OAIC ADM)",
+    name: "📜 EN ISO/IEC 42001:2023 (AIMS)",
     summary:
-      "Native support for the Australian Government's 10 Mandatory Guardrails for High-Risk AI / Voluntary AI Safety Standard (VAISS), OAIC Privacy Act APP 1 ADM reforms, and NSW AIAF.",
+      "Certifiable AI Management System (AIMS) standard adopted by CEN-CENELEC across the European Union for Clause 4–10 and Annex A controls.",
     points: [
-      "Complete 10-Guardrail conformity assessment (accountability, data, testing, human control, contestability)",
-      "OAIC Privacy Amendment Act 2024 (APP 1) automated decision-making transparency",
-      "APRA CPS 230 / CPS 234 operational resilience & DTA government procurement readiness",
-    ],
-  },
-  {
-    name: "🇳🇿 New Zealand (Privacy Act 2020 & Algorithm Charter)",
-    summary:
-      "Covers the NZ Office of the Privacy Commissioner (OPC) AI Guidance across IPPs 1–13, the Algorithm Charter for Aotearoa New Zealand, and the NZ Public Service AI Framework.",
-    points: [
-      "Mandatory pre-deployment AI Privacy Impact Assessment (PIA) & IPP 8 accuracy checks",
-      "Algorithm Charter Probability × Impact risk matrix, peer review & plain-English explainability",
-      "Te Tiriti o Waitangi & Māori Data Sovereignty governance checkpoints",
-    ],
-  },
-  {
-    name: "🌐 ISO/IEC 42001, NIST AI RMF, GDPR, DORA & ISO 27001",
-    summary:
-      "Certifiable AI Management System (AIMS) controls mapped once across global privacy, financial resilience (DORA / SR 11-7 / PRA SS1/23 / APRA CPS 230), and information security standards.",
-    points: [
-      "24 core controls mapped across 10 global statutes and standards",
+      "Clause 4–10 governance & Annex A control implementation tracking",
       "SHA-256 hash-chained evidence locker & 4-tier external Auditor Sign-Off",
+      "Readiness gap analysis for accredited European certification bodies & Notified Bodies",
+    ],
+  },
+  {
+    name: "🛡️ EN ISO/IEC 27001:2022 & EU AI Act Art. 15 Cybersecurity",
+    summary:
+      "Information security and AI robustness controls mapped across EN ISO/IEC 27001:2022, EU AI Act Art. 15, and OWASP LLM Top 10.",
+    points: [
+      "16-scenario OWASP LLM Top 10 adversarial red-team suite (prompt injection, data poisoning, PII exfiltration)",
+      "10-case scored evaluation benchmark & Four-Fifths subgroup fairness checks (Art. 10)",
+      "Immutable cryptographic SHA-256 audit log & role-based access control",
+    ],
+  },
+  {
+    name: "📐 NIST AI RMF 1.0 (GOVERN · MAP · MEASURE · MANAGE)",
+    summary:
+      "Technical risk management crosswalk linking NIST AI RMF 1.0 functions directly to EU AI Act Articles 9–15 and EN ISO/IEC 42001.",
+    points: [
+      "24 core controls mapped once across all 6 frameworks",
+      "Automated gap analysis & weighted readiness scoring",
       "CI/CD release gate API (/api/v1/compliance-gate) for GitHub Actions",
     ],
   },
@@ -78,15 +78,14 @@ export default function FrameworksPage() {
   return (
     <MarketingChrome>
       <section className="mx-auto max-w-6xl px-4 pb-14 sm:px-6">
-        <p className="text-xs font-bold uppercase tracking-[0.18em] text-sky-700">Global Multi-Jurisdiction Crosswalk</p>
+        <p className="text-xs font-bold uppercase tracking-[0.18em] text-sky-700">European AI Statutory Crosswalk</p>
         <h1 className="mt-3 max-w-3xl text-3xl font-semibold tracking-tight text-[#0F2A4A] sm:text-4xl">
-          Audit once. Comply across the EU, USA, UK, Australia &amp; New Zealand.
+          Audit once. Comply across the EU AI Act, GDPR, DORA &amp; EN ISO/IEC 42001.
         </h1>
         <p className="mt-4 max-w-3xl text-base leading-relaxed text-slate-600">
-          Map once, evidence once. V77 Trust unifies the EU AI Act, US Federal &amp; State AI Laws (NIST AI RMF,
-          Colorado SB 24-205, NYC LL144, California AB 2013), UK ICO / ATRS / FCA, Australia&apos;s 10 Mandatory
-          High-Risk AI Guardrails (VAISS) &amp; OAIC ADM, New Zealand&apos;s Privacy Act 2020 (IPP 1–13) &amp; Algorithm
-          Charter, ISO/IEC 42001, GDPR, DORA, and ISO/IEC 27001 in one shared control catalogue.
+          Map once, evidence once. V77 Trust unifies the EU AI Act (Regulation (EU) 2024/1689), GDPR (Regulation (EU)
+          2016/679), DORA (Regulation (EU) 2022/2554 for European banks and insurers), EN ISO/IEC 42001:2023, EN
+          ISO/IEC 27001:2022, and NIST AI RMF 1.0 in one shared 24-control catalogue.
         </p>
         <div className="mt-10 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {frameworks.map((f) => (

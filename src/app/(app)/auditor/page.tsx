@@ -25,8 +25,8 @@ export default async function AuditorPage() {
   return (
     <div>
       <PageHeader
-        title="Auditor workspace"
-        subtitle="Comment on engagements and record a formal sign-off opinion. Auditors and admins can sign."
+        title="EU AI Act & DORA Auditor Engagement Workbench"
+        subtitle="5-Phase statutory audit workbench: inspect system classification & DORA scope, verify 24 controls & SHA-256 evidence, inspect technical & Annex IV/FRIA/DPIA dossiers, raise findings, and record formal statutory sign-off."
       />
       <AuditorClient
         assessments={assessments}
