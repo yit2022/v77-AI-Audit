@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { PageHeader, RiskBadge } from "@/components/ui";
+import { EU_INDUSTRY_PLAYBOOKS, getEuIndustryPlaybook } from "@/lib/eu-ai-act/industries";
 
 type Question = {
   id: string;
@@ -20,6 +21,14 @@ type ClassificationResponseResult = {
   art25ProviderEscalation?: boolean;
   obligationsSummary?: string[];
 };
+
+const ALL_ARCHETYPES = EU_INDUSTRY_PLAYBOOKS.flatMap((pb) =>
+  pb.archetypes.map((arch) => ({
+    ...arch,
+    industryId: pb.id,
+    industryName: pb.name,
+  })),
+);
 
 const SECTION_META: Array<{ id: string; title: string; subtitle: string }> = [
   {
@@ -53,22 +62,55 @@ const SECTION_META: Array<{ id: string; title: string; subtitle: string }> = [
 export default function ClassificationPage() {
   const { systemId } = useParams<{ systemId: string }>();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [questions, setQuestions] = useState<Question[]>([]);
   const [answers, setAnswers] = useState<Record<string, string>>({});
+  const [selectedArchetypeId, setSelectedArchetypeId] = useState<string>(ALL_ARCHETYPES[0]?.id || "");
   const [result, setResult] = useState<ClassificationResponseResult | null>(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
+  function applyArchetypeAnswers(archId: string, qList: Question[]) {
+    const arch = ALL_ARCHETYPES.find((a) => a.id === archId) || ALL_ARCHETYPES[0];
+    if (!arch) return;
+    setSelectedArchetypeId(arch.id);
+    const yesSet = new Set(arch.classifierYesIds);
+    const next: Record<string, string> = {};
+    for (const q of qList) {
+      next[q.id] = yesSet.has(q.id) ? "yes" : "no";
+    }
+    setAnswers(next);
+  }
+
   useEffect(() => {
-    fetch("/api/classification")
-      .then((r) => r.json())
-      .then((d) => {
-        setQuestions(d.questions || []);
-        const init: Record<string, string> = {};
-        for (const q of d.questions || []) init[q.id] = "no";
-        setAnswers(init);
-      });
-  }, []);
+    Promise.all([
+      fetch("/api/classification").then((r) => r.json()),
+      fetch("/api/systems")
+        .then((r) => r.json())
+        .catch(() => ({ systems: [] })),
+    ]).then(([classData, sysData]) => {
+      const qList: Question[] = classData.questions || [];
+      setQuestions(qList);
+
+      const urlArch = searchParams.get("archetype");
+      if (urlArch && ALL_ARCHETYPES.some((a) => a.id === urlArch)) {
+        applyArchetypeAnswers(urlArch, qList);
+        return;
+      }
+
+      const matchedSys = (sysData.systems || []).find((s: { id: string; domain?: string }) => s.id === systemId);
+      if (matchedSys?.domain) {
+        const pb = getEuIndustryPlaybook(matchedSys.domain);
+        if (pb.archetypes[0]) {
+          applyArchetypeAnswers(pb.archetypes[0].id, qList);
+          return;
+        }
+      }
+
+      applyArchetypeAnswers(ALL_ARCHETYPES[0].id, qList);
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [systemId]);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -87,16 +129,62 @@ export default function ClassificationPage() {
     const data = await res.json();
     setResult(data.result);
     if (data.assessmentId) {
-      setTimeout(() => router.push(`/assessments/${data.assessmentId}`), 1600);
+      setTimeout(() => router.push(`/systems/${systemId}`), 1200);
     }
   }
 
+  const activeYesCount = Object.values(answers).filter((v) => v === "yes").length;
+
   return (
-    <div className="max-w-3xl">
+    <div className="max-w-4xl space-y-6">
       <PageHeader
-        title="EU AI Act risk classification"
-        subtitle="Complete statutory questionnaire covering Art. 5(1)(a–h) prohibitions, Annex I/III high-risk triggers, Art. 6(3) exemptions, Art. 25 provider role escalation, Art. 50 transparency, and Chapter V GPAI."
+        title="Step 2: EU AI Act Statutory Risk Classifier (AI Pre-Populated)"
+        subtitle="Zero guesswork: Select the system's European regulatory blueprint below to auto-populate all 25 statutory questions (Art. 5, Annex I/III, Art. 6(3), Art. 25, Art. 50 & Chapter V GPAI), then click Save & Classify."
       />
+
+      {/* AI Statutory Blueprint Pre-Population Bar */}
+      <div className="card border-sky-200 bg-gradient-to-br from-sky-50/80 via-white to-indigo-50/40 p-5">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <span className="inline-flex items-center rounded-full bg-[#0F2A4A] px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-white">
+              Zero-Guesswork Statutory Pre-Fill
+            </span>
+            <h2 className="mt-1 text-sm font-semibold text-[#0F2A4A]">
+              Select AI System Blueprint to Pre-Populate All 25 EU AI Act Questions
+            </h2>
+            <p className="text-xs text-slate-600">
+              All 25 statutory questions are automatically answered based on your selected European use case ({activeYesCount} statutory triggers marked &ldquo;Yes&rdquo;).
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={(e) => submit(e as unknown as React.FormEvent)}
+            disabled={loading || questions.length === 0}
+            className="btn btn-primary"
+          >
+            {loading ? "Classifying…" : "1-Click Save Classification & Create Assessment →"}
+          </button>
+        </div>
+
+        <div className="mt-3">
+          <select
+            className="select border-sky-300 bg-white font-medium text-slate-900"
+            value={selectedArchetypeId}
+            onChange={(e) => applyArchetypeAnswers(e.target.value, questions)}
+          >
+            {EU_INDUSTRY_PLAYBOOKS.map((pb) => (
+              <optgroup key={pb.id} label={pb.name}>
+                {pb.archetypes.map((arch) => (
+                  <option key={arch.id} value={arch.id}>
+                    {arch.label}
+                  </option>
+                ))}
+              </optgroup>
+            ))}
+          </select>
+        </div>
+      </div>
+
       <form onSubmit={submit} className="space-y-6">
         {SECTION_META.map((section) => (
           <div key={section.id} className="card p-5">
@@ -104,34 +192,46 @@ export default function ClassificationPage() {
               {section.title}
             </h2>
             <p className="mb-4 mt-1 text-xs text-slate-500">{section.subtitle}</p>
-            <div className="space-y-5">
+            <div className="space-y-4">
               {questions
                 .filter((q) => q.section === section.id)
-                .map((q) => (
-                  <div key={q.id}>
-                    <p className="text-sm font-medium text-slate-800">{q.prompt}</p>
-                    <p className="mt-1 text-xs text-slate-500">{q.help}</p>
-                    <div className="mt-2 flex gap-4 text-sm">
-                      {["yes", "no", "na"].map((v) => (
-                        <label key={v} className="flex items-center gap-1.5 capitalize">
-                          <input
-                            type="radio"
-                            name={q.id}
-                            checked={answers[q.id] === v}
-                            onChange={() => setAnswers((a) => ({ ...a, [q.id]: v }))}
-                          />
-                          {v === "na" ? "N/A" : v}
-                        </label>
-                      ))}
+                .map((q) => {
+                  const isYes = answers[q.id] === "yes";
+                  return (
+                    <div
+                      key={q.id}
+                      className={`rounded-xl border p-3.5 transition ${
+                        isYes ? "border-sky-300 bg-sky-50/60" : "border-slate-200 bg-white"
+                      }`}
+                    >
+                      <div className="flex flex-wrap items-start justify-between gap-3">
+                        <div className="max-w-2xl">
+                          <p className="text-sm font-medium text-slate-900">{q.prompt}</p>
+                          <p className="mt-1 text-xs text-slate-500">{q.help}</p>
+                        </div>
+                        <select
+                          className={`rounded-lg border px-3 py-1.5 text-xs font-semibold ${
+                            isYes
+                              ? "border-sky-400 bg-[#0F2A4A] text-white"
+                              : "border-slate-300 bg-slate-50 text-slate-700"
+                          }`}
+                          value={answers[q.id] || "no"}
+                          onChange={(e) => setAnswers((a) => ({ ...a, [q.id]: e.target.value }))}
+                        >
+                          <option value="yes">Yes — Statutory Trigger Applies</option>
+                          <option value="no">No — Does Not Apply</option>
+                          <option value="na">N/A — Not Applicable</option>
+                        </select>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
             </div>
           </div>
         ))}
         {error ? <p className="text-sm text-red-700">{error}</p> : null}
         {result ? (
-          <div className="card space-y-2 p-4">
+          <div className="card space-y-2 border-emerald-300 bg-emerald-50/50 p-4">
             <div className="flex flex-wrap items-center gap-2">
               <RiskBadge tier={result.tier} />
               {result.gpai ? <span className="badge badge-limited">GPAI (Art. 53)</span> : null}
@@ -147,7 +247,7 @@ export default function ClassificationPage() {
           </div>
         ) : null}
         <button className="btn btn-primary" disabled={loading}>
-          {loading ? "Classifying…" : "Classify & create assessment"}
+          {loading ? "Classifying…" : "Save Classification & Open 360° Project Command Center →"}
         </button>
       </form>
     </div>

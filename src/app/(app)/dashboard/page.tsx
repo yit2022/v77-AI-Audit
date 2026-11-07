@@ -6,20 +6,25 @@ import { db, ensureDb, schema } from "@/lib/db";
 import { getSession } from "@/lib/auth/session";
 import { PageHeader, RiskBadge } from "@/components/ui";
 import { DemoTour } from "@/components/demo-tour";
+import { getEuIndustryPlaybook, parseInstitutionAndVendor } from "@/lib/eu-ai-act/industries";
 
 export default async function DashboardPage() {
   const session = await getSession();
   if (!session) return null;
   await ensureDb();
 
-  const [systemCountRows, assessmentCountRows, evidenceRows, controlRows, recentSystems] =
+  const [systemCountRows, assessmentRows, evidenceRows, controlRows, recentSystems] =
     await Promise.all([
       db
         .select({ value: count() })
         .from(schema.aiSystems)
         .where(eq(schema.aiSystems.orgId, session.orgId)),
       db
-        .select({ value: count() })
+        .select({
+          id: schema.assessments.id,
+          systemId: schema.assessments.systemId,
+          status: schema.assessments.status,
+        })
         .from(schema.assessments)
         .where(eq(schema.assessments.orgId, session.orgId)),
       db
@@ -34,47 +39,73 @@ export default async function DashboardPage() {
           domain: schema.aiSystems.domain,
           roleInValueChain: schema.aiSystems.roleInValueChain,
           riskTier: schema.aiSystems.riskTier,
+          vendorName: schema.aiSystems.vendorName,
+          lifecycleStatus: schema.aiSystems.lifecycleStatus,
         })
         .from(schema.aiSystems)
         .where(eq(schema.aiSystems.orgId, session.orgId))
         .orderBy(desc(schema.aiSystems.createdAt))
-        .limit(8),
+        .limit(12),
     ]);
 
+  const assessmentBySystem = new Map<
+    string,
+    { id: string; status: string; signedOff: boolean }
+  >();
+  for (const a of assessmentRows) {
+    if (!assessmentBySystem.has(a.systemId)) {
+      assessmentBySystem.set(a.systemId, {
+        id: a.id,
+        status: a.status,
+        signedOff: a.status === "signed_off" || a.status === "approved",
+      });
+    }
+  }
+
+  // Group active projects by Audited Institution / Client Entity
+  const institutionMap = new Map<string, number>();
+  for (const s of recentSystems) {
+    const { institution } = parseInstitutionAndVendor(s.vendorName, session.orgName);
+    institutionMap.set(institution, (institutionMap.get(institution) || 0) + 1);
+  }
+
   const stats = [
-    { label: "AI systems", value: Number(systemCountRows[0]?.value ?? 0), href: "/systems" },
-    { label: "Assessments", value: Number(assessmentCountRows[0]?.value ?? 0), href: "/assessments" },
-    { label: "Evidence items", value: Number(evidenceRows[0]?.value ?? 0), href: "/evidence" },
-    { label: "Controls in library", value: Number(controlRows[0]?.value ?? 0), href: "/controls" },
+    { label: "Active AI Audit Projects", value: Number(systemCountRows[0]?.value ?? 0), href: "/systems" },
+    { label: "Audited Institutions / Units", value: Math.max(institutionMap.size, 1), href: "/systems" },
+    { label: "Conformity Assessments", value: assessmentRows.length, href: "/assessments" },
+    { label: "SHA-256 Evidence Items", value: Number(evidenceRows[0]?.value ?? 0), href: "/evidence" },
   ];
 
   return (
     <div>
       <DemoTour />
       <PageHeader
-        title="EU AI Act & DORA Audit Command Dashboard"
-        subtitle={`Welcome, ${session.name}. Execute your 6-step European AI compliance & audit workflow for ${session.orgName}.`}
+        title="European AI Audit & Compliance Command Dashboard"
+        subtitle={`Workspace: ${session.orgName} · Track active AI audit projects, which Audited Institution / Client Entity each project belongs to, and their 6-stage EU AI Act conformity progress.`}
         actions={
           <div className="flex flex-wrap gap-2">
+            <Link href="/partner" className="btn btn-secondary">
+              Multi-Client / Partner Orgs
+            </Link>
             <Link href="/auditor" className="btn btn-secondary">
               Auditor Workbench
             </Link>
             <Link href="/systems/new" className="btn btn-primary">
-              + Register AI System (Start Project)
+              + Start New AI Audit Project
             </Link>
           </div>
         }
       />
 
-      {/* 6-Step EU AI Act & Banking/Insurance Audit Project Pipeline */}
+      {/* 6-Step European AI Audit Project Pipeline */}
       <div className="card mb-6 p-5">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div>
             <h2 className="text-sm font-semibold uppercase tracking-wide text-[#0F2A4A]">
-              How to Run an EU AI Act / Banking &amp; Insurance (DORA) Audit Project — Step by Step
+              6-Step European AI Audit Pipeline (All 11 Regulated EU Sectors)
             </h2>
             <p className="text-xs text-slate-500">
-              Whether you are internal Bank/Insurance staff preparing a high-risk AI system or an internal/external Auditor verifying conformity, follow these 6 steps:
+              Covers Banking/Credit, Insurance, HR/Recruitment, Healthcare (MDR/IVDR), Critical Infrastructure (NIS2), Automotive/Manufacturing (Machinery Reg), Education, Public Sector, Biometrics, E-Commerce (DSA), and GPAI:
             </p>
           </div>
         </div>
@@ -82,14 +113,14 @@ export default async function DashboardPage() {
           {[
             {
               step: "Step 1: Register",
-              title: "AI System Inventory",
-              desc: "Register credit, insurance, HR, or GenAI systems & Annex III domain.",
+              title: "Select Blueprint & Institution",
+              desc: "Dropdown-select industry, AI blueprint & Audited Institution (100% AI pre-filled).",
               href: "/systems/new",
             },
             {
               step: "Step 2: Classify",
               title: "EU AI Act Risk Tier",
-              desc: "Run 25-question Art. 5, Annex III, Art. 6(3) & Art. 25 classifier.",
+              desc: "Pre-populated 25-question Art. 5, Annex I/III, Art. 6(3) & Art. 25 classifier.",
               href: "/systems",
             },
             {
@@ -107,7 +138,7 @@ export default async function DashboardPage() {
             {
               step: "Step 5: Evidence",
               title: "24 Controls & Vault",
-              desc: "Map EU AI Act, GDPR, DORA & ISO 42001 controls with SHA-256 files.",
+              desc: "1-click pre-populated EU AI Act, GDPR, DORA & ISO 42001 control notes.",
               href: "/assessments",
             },
             {
@@ -139,55 +170,132 @@ export default async function DashboardPage() {
         ))}
       </div>
 
-      <div className="mt-8 card overflow-hidden">
-        <div className="flex items-center justify-between border-b border-slate-200 px-5 py-3">
-          <span className="text-sm font-semibold text-slate-800">
-            Active AI Systems — Click any system to open its 360° Command Center
-          </span>
+      {/* Audited Institutions / Entities Breakdown */}
+      {institutionMap.size > 0 ? (
+        <div className="mt-6 card p-5">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <h2 className="text-sm font-semibold text-[#0F2A4A]">
+                Audited Institutions / Client Entities &amp; Business Units in This Workspace
+              </h2>
+              <p className="text-xs text-slate-500">
+                Every AI audit project is tagged with its owning Institution / Client Entity and Business Unit:
+              </p>
+            </div>
+            <Link href="/systems/new" className="text-xs font-semibold text-sky-800 hover:underline">
+              + Add Project for Another Institution →
+            </Link>
+          </div>
+          <div className="mt-3 flex flex-wrap gap-2">
+            {Array.from(institutionMap.entries()).map(([inst, cnt]) => (
+              <Link
+                key={inst}
+                href={`/systems?institution=${encodeURIComponent(inst)}`}
+                className="inline-flex items-center gap-2 rounded-xl border border-sky-200 bg-sky-50/70 px-3.5 py-2 text-xs font-medium text-[#0F2A4A] hover:border-sky-400"
+              >
+                <span className="font-semibold">{inst}</span>
+                <span className="rounded-full bg-[#0F2A4A] px-2 py-0.5 text-[11px] font-bold text-white">
+                  {cnt} {cnt === 1 ? "project" : "projects"}
+                </span>
+              </Link>
+            ))}
+          </div>
+        </div>
+      ) : null}
+
+      {/* Active Audit Projects Table */}
+      <div className="mt-6 card overflow-hidden">
+        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200 px-5 py-3.5">
+          <div>
+            <span className="text-sm font-semibold text-slate-800">
+              Active AI Audit Projects &amp; Assigned Institutions
+            </span>
+            <span className="ml-2 text-xs text-slate-500">
+              Click any project to open its 6-Step 360° Command Center ({controlRows[0]?.value ?? 24} statutory controls per project)
+            </span>
+          </div>
           <Link href="/systems" className="text-xs font-semibold text-sky-800 hover:underline">
-            View full registry →
+            View &amp; filter full project registry →
           </Link>
         </div>
-        <table className="w-full text-left text-sm">
-          <thead className="bg-slate-50 text-xs uppercase text-slate-500">
-            <tr>
-              <th className="px-5 py-2 font-semibold">AI System</th>
-              <th className="px-5 py-2 font-semibold">Annex III / Sector Domain</th>
-              <th className="px-5 py-2 font-semibold">Value-Chain Role</th>
-              <th className="px-5 py-2 font-semibold">EU Risk Tier</th>
-              <th className="px-5 py-2 text-right font-semibold">Quick Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {recentSystems.map((s) => (
-              <tr key={s.id} className="border-t border-slate-100">
-                <td className="px-5 py-3">
-                  <Link className="font-semibold text-sky-900 hover:underline" href={`/systems/${s.id}`}>
-                    {s.name}
-                  </Link>
-                </td>
-                <td className="px-5 py-3 text-slate-600">{s.domain}</td>
-                <td className="px-5 py-3 capitalize text-slate-600">{s.roleInValueChain}</td>
-                <td className="px-5 py-3">
-                  <RiskBadge tier={s.riskTier} />
-                </td>
-                <td className="px-5 py-3 text-right">
-                  <div className="inline-flex flex-wrap justify-end gap-2">
-                    <Link href={`/systems/${s.id}`} className="btn btn-primary px-3 py-1 text-xs">
-                      Command Center →
-                    </Link>
-                    <Link href={`/classification/${s.id}`} className="btn btn-secondary px-2.5 py-1 text-xs">
-                      Classify
-                    </Link>
-                    <a href={`/api/audit-pack?systemId=${s.id}`} className="btn btn-secondary px-2.5 py-1 text-xs">
-                      Audit Pack ZIP
-                    </a>
-                  </div>
-                </td>
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-sm">
+            <thead className="bg-slate-50 text-xs uppercase text-slate-500">
+              <tr>
+                <th className="px-5 py-2.5 font-semibold">Audited Institution / Entity</th>
+                <th className="px-5 py-2.5 font-semibold">AI Audit Project / System</th>
+                <th className="px-5 py-2.5 font-semibold">EU Regulated Sector</th>
+                <th className="px-5 py-2.5 font-semibold">Audit Project Status</th>
+                <th className="px-5 py-2.5 font-semibold">EU Risk Tier</th>
+                <th className="px-5 py-2.5 text-right font-semibold">Quick Actions</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {recentSystems.map((s) => {
+                const { institution, modelVendor } = parseInstitutionAndVendor(s.vendorName, session.orgName);
+                const playbook = getEuIndustryPlaybook(s.domain);
+                const assess = assessmentBySystem.get(s.id);
+                let stageLabel = "Stage 1/6 · Needs Risk Classification";
+                let stageColor = "bg-amber-50 text-amber-800 border-amber-200";
+                if (assess?.signedOff) {
+                  stageLabel = "Stage 6/6 · Auditor Signed Off";
+                  stageColor = "bg-emerald-50 text-emerald-800 border-emerald-200";
+                } else if (assess) {
+                  stageLabel = "Stage 5/6 · Controls & Audit In Progress";
+                  stageColor = "bg-sky-50 text-sky-800 border-sky-200";
+                } else if (s.riskTier) {
+                  stageLabel = "Stage 3/6 · Classified — Testing & Docs";
+                  stageColor = "bg-indigo-50 text-indigo-800 border-indigo-200";
+                }
+
+                return (
+                  <tr key={s.id} className="border-t border-slate-100 align-middle">
+                    <td className="px-5 py-3">
+                      <div className="font-semibold text-[#0F2A4A]">{institution}</div>
+                      <div className="text-[11px] text-slate-500">Model: {modelVendor}</div>
+                    </td>
+                    <td className="px-5 py-3">
+                      <Link className="font-semibold text-sky-900 hover:underline" href={`/systems/${s.id}`}>
+                        {s.name}
+                      </Link>
+                      <div className="text-[11px] capitalize text-slate-500">
+                        Role: {s.roleInValueChain} · Lifecycle: {s.lifecycleStatus}
+                      </div>
+                    </td>
+                    <td className="px-5 py-3 text-xs text-slate-700">{playbook.shortLabel}</td>
+                    <td className="px-5 py-3">
+                      <span className={`inline-block rounded-full border px-2.5 py-0.5 text-xs font-medium ${stageColor}`}>
+                        {stageLabel}
+                      </span>
+                    </td>
+                    <td className="px-5 py-3">
+                      <RiskBadge tier={s.riskTier} />
+                    </td>
+                    <td className="px-5 py-3 text-right">
+                      <div className="inline-flex flex-wrap justify-end gap-1.5">
+                        <Link href={`/systems/${s.id}`} className="btn btn-primary px-3 py-1 text-xs">
+                          Command Center →
+                        </Link>
+                        {assess ? (
+                          <Link href={`/assessments/${assess.id}`} className="btn btn-secondary px-2.5 py-1 text-xs">
+                            24 Controls
+                          </Link>
+                        ) : (
+                          <Link href={`/classification/${s.id}`} className="btn btn-secondary px-2.5 py-1 text-xs">
+                            Classify
+                          </Link>
+                        )}
+                        <a href={`/api/audit-pack?systemId=${s.id}`} className="btn btn-secondary px-2.5 py-1 text-xs">
+                          Audit ZIP
+                        </a>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );

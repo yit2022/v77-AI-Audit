@@ -6,6 +6,7 @@ import { eq, and, desc } from "drizzle-orm";
 import { db, ensureDb, schema } from "@/lib/db";
 import { getSession } from "@/lib/auth/session";
 import { PageHeader, RiskBadge } from "@/components/ui";
+import { getEuIndustryPlaybook, parseInstitutionAndVendor } from "@/lib/eu-ai-act/industries";
 
 export default async function SystemDetailPage({
   params,
@@ -149,14 +150,17 @@ export default async function SystemDetailPage({
     },
   ];
 
+  const playbook = getEuIndustryPlaybook(system.domain);
+  const { institution, modelVendor } = parseInstitutionAndVendor(system.vendorName, session.orgName);
+
   return (
     <div className="space-y-6">
       <PageHeader
-        title={`${system.name} — EU AI Act Command Center`}
-        subtitle={
+        title={`${system.name} — 360° EU AI Audit Command Center`}
+        subtitle={`Audited Institution: ${institution} · Sector: ${playbook.name} · ${
           system.description ||
-          "End-to-end European Union AI Act (Reg. 2024/1689), GDPR, DORA, and EN ISO/IEC 42001 system workspace."
-        }
+          "End-to-end European Union AI Act (Reg. 2024/1689), GDPR, and EN ISO/IEC 42001 system workspace."
+        }`}
         actions={
           <div className="flex flex-wrap gap-2">
             <Link href={`/classification/${system.id}`} className="btn btn-primary">
@@ -172,12 +176,36 @@ export default async function SystemDetailPage({
         }
       />
 
+      {/* Audited Institution & European Sector Statutory Banner */}
+      <div className="card border-sky-200 bg-sky-50/60 p-4 text-xs text-slate-700">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <span className="font-bold text-[#0F2A4A]">Audited Institution / Client Entity:</span>{" "}
+            <span className="font-semibold text-sky-950">{institution}</span>
+            <span className="mx-2 text-slate-400">|</span>
+            <span className="font-bold text-[#0F2A4A]">Industry Playbook:</span>{" "}
+            <span className="font-semibold text-sky-950">{playbook.name}</span>
+          </div>
+          <span className="rounded-full bg-white px-2.5 py-0.5 font-semibold text-sky-900">
+            {playbook.euAiActBasis}
+          </span>
+        </div>
+        <div className="mt-1.5 flex flex-wrap gap-x-6 gap-y-1">
+          <span>
+            <strong>EU Co-Regulations:</strong> {playbook.coRegulations.join(" · ")}
+          </span>
+          <span>
+            <strong>Competent Authorities:</strong> {playbook.competentAuthorities.join(" · ")}
+          </span>
+        </div>
+      </div>
+
       {/* 6-Step Guided EU AI Act Project Pipeline */}
       <div className="card p-5">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div>
             <h2 className="text-sm font-semibold uppercase tracking-wide text-[#0F2A4A]">
-              6-Step EU AI Act &amp; DORA Audit Pipeline
+              6-Step European AI Audit Project Pipeline
             </h2>
             <p className="text-xs text-slate-500">
               Follow each step in order from system classification to technical verification, statutory documentation, control evidence, and formal auditor sign-off.
@@ -220,13 +248,17 @@ export default async function SystemDetailPage({
             <RiskBadge tier={system.riskTier} />
           </div>
           <dl className="grid gap-2.5 text-sm sm:grid-cols-2">
+            <div className="sm:col-span-2">
+              <dt className="text-xs uppercase text-slate-500">Audited Institution / Client Entity</dt>
+              <dd className="mt-0.5 font-semibold text-[#0F2A4A]">{institution}</dd>
+            </div>
             <div>
               <dt className="text-xs uppercase text-slate-500">Intended purpose</dt>
               <dd className="mt-0.5 text-slate-800">{system.intendedPurpose || "—"}</dd>
             </div>
             <div>
               <dt className="text-xs uppercase text-slate-500">Sector / Annex III Domain</dt>
-              <dd className="mt-0.5 capitalize text-slate-800">{system.domain}</dd>
+              <dd className="mt-0.5 text-slate-800">{playbook.shortLabel}</dd>
             </div>
             <div>
               <dt className="text-xs uppercase text-slate-500">Value-chain role (Art. 3)</dt>
@@ -240,7 +272,7 @@ export default async function SystemDetailPage({
             </div>
             <div>
               <dt className="text-xs uppercase text-slate-500">Vendor / Model</dt>
-              <dd className="mt-0.5 text-slate-800">{system.vendorName || "Internal"} ({system.versionLabel || "v1.0"})</dd>
+              <dd className="mt-0.5 text-slate-800">{modelVendor} ({system.versionLabel || "v1.0"})</dd>
             </div>
             <div>
               <dt className="text-xs uppercase text-slate-500">Art. 49 EU Database ID</dt>

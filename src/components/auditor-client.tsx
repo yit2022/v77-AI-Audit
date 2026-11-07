@@ -3,9 +3,62 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
-type Assessment = { id: string; name: string; status: string; systemName: string };
+type Assessment = {
+  id: string;
+  name: string;
+  status: string;
+  systemName: string;
+  institutionName?: string;
+};
 type Comment = { id: string; body: string; authorName: string; createdAt: string };
 type Signoff = { opinion: string; summary: string; signedAt: string } | null;
+
+const OPINION_SUMMARY_TEMPLATES: Record<string, string[]> = {
+  pass: [
+    "Unqualified Conformity Opinion (Pass): Based on our examination of the 24 statutory controls, Annex IV technical documentation, Art. 27 FRIA, GDPR Art. 35 DPIA, Art. 10 Four-Fifths fairness verification, and Art. 15 OWASP Red-Team & Scored Evals, the AI system satisfies the applicable requirements of Regulation (EU) 2024/1689 (EU AI Act) and EN ISO/IEC 42001:2023.",
+    "Unqualified Conformity Opinion (Pass — Financial / DORA Scope): All EU AI Act Chapter III / Annex III obligations, GDPR Art. 22 human intervention safeguards, and DORA (Reg. (EU) 2022/2554) ICT risk controls are verified and backed by SHA-256 evidence.",
+  ],
+  pass_with_findings: [
+    "Qualified Conformity Opinion (Pass with Findings): The AI system demonstrates substantial conformity with Regulation (EU) 2024/1689 (EU AI Act), GDPR, and EN ISO/IEC 42001, subject to timely remediation of the non-blocking observations logged in the Findings Register prior to next post-market review (Art. 72).",
+    "Qualified Conformity Opinion (Conditional Market Release): Technical robustness (Art. 15), fairness (Art. 10), and Annex IV documentation are verified; minor documentation updates on human oversight SOPs (Art. 14) are tracked with assigned remediation deadlines.",
+  ],
+  fail: [
+    "Adverse Opinion (Non-Conformant / Blocker): Material non-conformities identified under EU AI Act Chapter III (e.g., incomplete Art. 10 fairness verification, missing Art. 14 human override controls, or unaddressed high-severity findings). Market placement or production deployment must be withheld until corrective actions are verified.",
+  ],
+};
+
+const FINDING_PRESETS = [
+  {
+    title: "Art. 14 Human Oversight Override SOP Requires Formal Operator Sign-Off Log",
+    severity: "medium",
+    ref: "EU AI Act Art. 14 & Art. 26(2)",
+    desc: "While human-in-the-loop review is active in the workflow, operator override rationale should be logged in structured form for Art. 12 / Art. 19 6-month retention.",
+  },
+  {
+    title: "Art. 10 Subgroup Demographic Parity Monitoring Threshold Alert Needed",
+    severity: "high",
+    ref: "EU AI Act Art. 10(2)(f) & Art. 72",
+    desc: "Configure automated post-market drift alerting if any protected subgroup Four-Fifths ratio approaches the 0.80 statutory threshold.",
+  },
+  {
+    title: "Annex IV Section 3 Monitoring & Control Specifications Update Required",
+    severity: "low",
+    ref: "EU AI Act Art. 11 & Annex IV Sec. 3",
+    desc: "Expand Annex IV Section 3 to include the latest versioned threshold parameters from the production release.",
+  },
+  {
+    title: "Art. 27 FRIA Notification Package Ready for Market Surveillance Authority Filing",
+    severity: "low",
+    ref: "EU AI Act Art. 27(3)",
+    desc: "FRIA is complete and verified; schedule formal notification submission to the relevant National Competent Authority.",
+  },
+];
+
+const WORKING_PAPER_PRESETS = [
+  "Verified SHA-256 cryptographic hashes in the Evidence Vault against Annex IV technical documentation and Art. 12 logging outputs; no integrity discrepancies found.",
+  "Reviewed Art. 10 Four-Fifths disparate-impact run and Art. 15 OWASP LLM Top 10 adversarial red-team report; all critical guardrails passed.",
+  "Confirmed Art. 27 Fundamental Rights Impact Assessment (FRIA) and GDPR Art. 35 DPIA are aligned and signed by the DPO / AI Risk Owner.",
+];
 
 type Dossier = {
   system: {
@@ -145,7 +198,7 @@ export function AuditorClient({
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div className="min-w-[280px] flex-1">
             <label className="mb-1 block text-xs font-bold uppercase tracking-wide text-slate-600">
-              Select Audit Engagement (AI System &amp; Assessment)
+              Select Audit Engagement (Audited Institution · AI Project &amp; Assessment)
             </label>
             <select
               className="select"
@@ -154,7 +207,7 @@ export function AuditorClient({
             >
               {assessments.map((a) => (
                 <option key={a.id} value={a.id}>
-                  {a.name} ({a.systemName}) — [{a.status.replaceAll("_", " ")}]
+                  [{a.institutionName || "Audited Institution"}] {a.systemName} — {a.name} ({a.status.replaceAll("_", " ")})
                 </option>
               ))}
             </select>
@@ -355,10 +408,33 @@ export function AuditorClient({
           {canSign ? (
             <div className="space-y-2 border-t border-slate-100 pt-3">
               <label className="block text-xs font-semibold text-slate-600">Audit Opinion</label>
-              <select className="select" value={opinion} onChange={(e) => setOpinion(e.target.value)}>
+              <select
+                className="select"
+                value={opinion}
+                onChange={(e) => {
+                  const nextOp = e.target.value;
+                  setOpinion(nextOp);
+                  const tpls = OPINION_SUMMARY_TEMPLATES[nextOp] || [];
+                  if (tpls[0]) setSummary(tpls[0]);
+                }}
+              >
                 <option value="pass">Pass (Unqualified Conformity)</option>
                 <option value="pass_with_findings">Pass with findings (Qualified)</option>
                 <option value="fail">Fail (Non-Conformant / Blocker)</option>
+              </select>
+              <select
+                className="w-full rounded-lg border border-sky-200 bg-sky-50/70 px-2.5 py-1 text-xs text-slate-700"
+                value=""
+                onChange={(e) => {
+                  if (e.target.value) setSummary(e.target.value);
+                }}
+              >
+                <option value="">✨ Select Pre-Populated Statutory Opinion Wording…</option>
+                {(OPINION_SUMMARY_TEMPLATES[opinion] || []).map((tpl, idx) => (
+                  <option key={idx} value={tpl}>
+                    {tpl.slice(0, 80)}…
+                  </option>
+                ))}
               </select>
               <textarea
                 className="textarea"
@@ -379,8 +455,29 @@ export function AuditorClient({
             Raise Audit Finding (Non-Conformity / Gap)
           </h2>
           <p className="text-xs text-slate-500">
-            Log a finding directly against this AI system ({dossier?.findings?.length || 0} existing findings).
+            Select a pre-populated statutory finding template or enter custom details ({dossier?.findings?.length || 0} existing findings).
           </p>
+          <select
+            className="w-full rounded-lg border border-sky-200 bg-sky-50/70 px-2.5 py-1.5 text-xs text-slate-700"
+            value=""
+            onChange={(e) => {
+              const idx = Number(e.target.value);
+              const preset = FINDING_PRESETS[idx];
+              if (preset) {
+                setFindingTitle(preset.title);
+                setFindingSeverity(preset.severity);
+                setFindingRef(preset.ref);
+                setFindingDesc(preset.desc);
+              }
+            }}
+          >
+            <option value="">✨ Select Pre-Populated Audit Finding Template…</option>
+            {FINDING_PRESETS.map((p, idx) => (
+              <option key={idx} value={String(idx)}>
+                [{p.severity.toUpperCase()}] {p.title}
+              </option>
+            ))}
+          </select>
           <input
             className="input text-sm"
             placeholder="Finding title (e.g. Missing Art. 14 override SOP)"
@@ -427,7 +524,21 @@ export function AuditorClient({
               <p className="text-xs text-slate-500">No working-paper comments yet.</p>
             ) : null}
           </div>
-          <div className="mt-3">
+          <div className="mt-3 space-y-2">
+            <select
+              className="w-full rounded-lg border border-sky-200 bg-sky-50/70 px-2.5 py-1 text-xs text-slate-700"
+              value=""
+              onChange={(e) => {
+                if (e.target.value) setBody(e.target.value);
+              }}
+            >
+              <option value="">✨ Select Pre-Populated Working-Paper Note…</option>
+              {WORKING_PAPER_PRESETS.map((wp, idx) => (
+                <option key={idx} value={wp}>
+                  {wp.slice(0, 75)}…
+                </option>
+              ))}
+            </select>
             <textarea
               className="textarea text-xs"
               value={body}
